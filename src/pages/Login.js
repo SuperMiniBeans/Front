@@ -1,6 +1,9 @@
-import styled, {css} from "styled-components";
-import axios from "axios";
+import styled from "styled-components";
+// import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+// import { useCookies } from "react-cookie";
 
 const Wrapper = styled.div`
   width: 400px;
@@ -16,10 +19,6 @@ const Input = styled.input`
   border: 1px solid #aaa;
 `
 
-
-
-
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,46 +26,68 @@ function Login() {
   const [emailMessage, setEmailMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
 
+  /* 쿠키에 저장할 값 */
+  // const [cookies, setCookie, removeCookie] = useCookies(["rememberUserId"]);
+  // const [rememberId, setrememberId] = useState(false);
+
+  const navigate = useNavigate();
+
+  /* 아이디 유효성 검사 */
   const userEmail = e => {
     setEmail(e.target.value);
     const emailReg = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
 
     if (!emailReg.test(e.target.value)) {
-      setEmailMessage("잘못된 이메일 형식");
+      setEmailMessage("잘못된 이메일 형식입니다");
     } else {
-      setEmailMessage("올바른 이메일 형식");
+      setEmailMessage("올바른 이메일 형식입니다");
     }
   }
 
+  /* 비밀번호 유효성 검사 */
   const userPassword = e => {
     setPassword(e.target.value);
     const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
     if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("잘못된 비밀번호 형식");
+      setPasswordMessage("잘못된 비밀번호 형식입니다");
     } else {
-      setPasswordMessage("올바른 비밀번호 형식");
+      setPasswordMessage("올바른 비밀번호 형식입니다");
     }
+  }
+
+  /* 회원가입 페이지로 이동 */
+  function goJoin() {
+    navigate('/Join');
+  }
+
+  function SignIn() {
+    function request() {
+      axios.post('http://localhost:8080/login', {
+        userEmail: email,
+        userPassword: password
+      })
+        .then(response => {
+          alert(response.status + "로그인이 완료되었습니다.");
+          console.log(email, password);
+        }).catch(error => {
+          alert(error);
+          console.log(email, password);
+        });
+    }
+    request();
   }
 
   return(
     <Wrapper>
+      <h2>로그인</h2>
 
-    <h2>로그인</h2>
-
-    <div className="ItemWrap">
+      <div className="ItemWrap">
         <div>
           <label>이메일</label>
         </div>
         <div className="inputWrap">
           <Input type="text" value={email} placeholder="이메일을 입력해주세요" onChange={userEmail}></Input>
-          {/* @
-          <select name="email_select">
-            <option value='write'>직접 입력</option>
-            <option value='gmail.com'>gmail.com</option>
-            <option value='naver.com'>naver.com</option>
-          </select> */}
-          <button>중복확인</button>
           <p>{emailMessage}</p>
         </div>
       </div>
@@ -81,6 +102,19 @@ function Login() {
           <p>{passwordMessage}</p>
         </div>
       </div>
+
+      <div className="flexbox"></div>
+      <div>
+        <input type="checkbox"></input> 아이디 저장
+      </div>
+      <div>
+        <div><p>아이디 찾기</p></div>
+        <div><p>비밀번호 재설정</p></div>
+      </div>
+
+      <button type="submit" onClick={SignIn}>로그인</button>
+      <button type="submit" onClick={goJoin}>회원가입</button>
+
     </Wrapper>
 
   )

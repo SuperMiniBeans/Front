@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import Post from "../components/Post";
+// import Post from "../components/Post";
 
 const Wrapper = styled.div`
   width: 400px;
@@ -19,6 +19,7 @@ const FormWrap = styled.div`
 const Input = styled.input`
   width: 100%;
   height: 40px;
+  padding-left: 16px;
   border: 1px solid #aaa;
 `
 
@@ -29,12 +30,12 @@ function Join() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   // const [postcode, setPostcode] = useState("");
   // const [address, setAddress] = useState("");
-  const [enroll_company, setEnroll_company] = useState({
-    postcode: '',
-    address: '',
-  });
-  const [detailAddress, setDetailAddress] = useState("");
-  const [etcAddress, setEtcAddress] = useState("");
+  // const [enroll_company, setEnroll_company] = useState({
+  //   postcode: '',
+  //   address: '',
+  // });
+  // const [detailAddress, setDetailAddress] = useState("");
+  // const [etcAddress, setEtcAddress] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
 
   const [emailMessage, setEmailMessage] = useState("");
@@ -43,37 +44,40 @@ function Join() {
   const [phoneNumMessage, setphoneNumMessage] = useState("");
 
 
-  const [popup, setPopup] = useState(false);
+  // 주소 검색창 팝업
+  // const [popup, setPopup] = useState(false);
 
 
-
-
+  // 사용자 이름 받기
   const userName = e => {
     setName(e.target.value);
   }
 
+  // 사용자 이메일 받기, 유효성 검사
   const userEmail = e => {
     setEmail(e.target.value);
     const emailReg = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
 
     if (!emailReg.test(e.target.value)) {
-      setEmailMessage("잘못된 이메일 형식");
+      setEmailMessage("잘못된 이메일 형식입니다");
     } else {
-      setEmailMessage("올바른 이메일 형식");
+      setEmailMessage("올바른 이메일 형식입니다");
     }
   }
 
+  // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
     setPassword(e.target.value);
     const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
     if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("잘못된 비밀번호 형식");
+      setPasswordMessage("잘못된 비밀번호 형식입니다");
     } else {
-      setPasswordMessage("올바른 비밀번호 형식");
+      setPasswordMessage("올바른 비밀번호 형식입니다");
     }
   }
 
+  // 사용자 비밀번호 확인
   const userPasswordConfirm = e => {
     setPasswordConfirm(e.target.value);
 
@@ -84,25 +88,27 @@ function Join() {
     }
   }
     
-  const handleInput = (e) => {
-    setEnroll_company({
-      ...enroll_company,
-      [e.target.name]: e.target.value,
-    })
-  }
+  // 주소 검색 관련
+  // const handleInput = (e) => {
+  //   setEnroll_company({
+  //     ...enroll_company,
+  //     [e.target.name]: e.target.value,
+  //   })
+  // }
   
-  const handleComplete = (data) => {
-    setPopup(!popup);
-  }
+  // const handleComplete = (data) => {
+  //   setPopup(!popup);
+  // }
 
-  const userDetailAddress = e => {
-    setDetailAddress(e.target.value);
-  }
+  // const userDetailAddress = e => {
+  //   setDetailAddress(e.target.value);
+  // }
 
-  const userEtcAddress = e => {
-    setEtcAddress(e.target.value);
-  }
+  // const userEtcAddress = e => {
+  //   setEtcAddress(e.target.value);
+  // }
 
+  // 사용자 연락처 받기
   const userPhoneNumber = e => {
     setphoneNumber(e.target.value);
     const phonNumReg = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;
@@ -110,66 +116,31 @@ function Join() {
     if (!phonNumReg.test(e.target.value)) {
       setphoneNumMessage("올바른 형식이 아닙니다");
     } else {
-      setphoneNumMessage("굿");
+      setphoneNumMessage("올바르게 입력되었습니다");
     }
   }
-  
 
-
-
-
+  // 회원가입 버튼 클릭시 실행될 작업
   function SignUp() {
     function request() {
 
-      axios.post('/join', {
-        name: name,
-        email: email,
-        password: password,
-        address: enroll_company,
-        phone: phoneNumber
+      axios.post('http://localhost:8080/join', {
+        userName: name,
+        userEmail: email,
+        userPassword: password,
+        // address: enroll_company,
+        userPhoneNumber: phoneNumber,
       })
         .then(response => {
           alert(response.status + " 회원가입이 완료되었습니다.");
-          console.log(name, email, password, enroll_company, phoneNumber);
+          console.log(name, email, password, phoneNumber);
         }).catch(error => {
-          console.log("요청한 데이터: " + name + ", " + email + ", " + password)
-          console.log(name, email, password, enroll_company, phoneNumber);
-
           alert(error);
+          console.log(name, email, password, phoneNumber);
         });
     }
     request();
   }
-
-  // const onSubmit = useCallback(
-  //   async (e) => {
-  //     e.preventDefault();
-  //     try {
-  //       await axios
-  //       .post('/join', {
-  //         name: name,
-  //         email: email,
-  //         password: password,
-  //         address: {setDetailAddress},
-  //         phonenumber: phoneNumber
-  //       })
-  //       .then((res) => {
-  //         console.log('응답', res);
-  //         if(res.status === 200) {
-  //           console.log('회원가입 성공');
-  //         }
-  //       })
-  //     } catch(err) {
-  //       console.log(err);
-  //     }
-  //   },
-  //   [email, name, password, setDetailAddress, phoneNumber]
-  // )
-  
-
-
-
-
 
   return (
     <Wrapper>
@@ -225,7 +196,13 @@ function Join() {
             </div>
           </div>
 
-          <div className="ItemWrap">
+          <div>우편번호<Input type="text" readOnly></Input></div>
+          <div>주소<Input type="text" readOnly></Input></div>
+          <div>상세주소<Input type="text"></Input></div>
+          <div>참고항목<Input type="text"></Input></div>
+
+
+          {/* <div className="ItemWrap">
             <div>
               <label>우편번호</label>
             </div>
@@ -261,7 +238,7 @@ function Join() {
             <div>
               <Input type="text" value={etcAddress} onChange={userEtcAddress} ></Input>
             </div>
-          </div>
+          </div> */}
           
           <div className="ItemWrap">
             <div>

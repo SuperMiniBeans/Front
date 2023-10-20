@@ -1,5 +1,3 @@
-// import logo from './logo.svg';
-// import './App.css';
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -8,7 +6,7 @@ import GlobalStyle from './styles/GlobalStyle';
 
 
 function App() {
-
+  
   return (
     <div>
       <GlobalStyle />
