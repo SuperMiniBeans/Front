@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-// import Post from "../components/Post";
+// import { response } from "express";
+import Post from "../components/Post";
 
 const Wrapper = styled.div`
   width: 400px;
@@ -19,8 +20,17 @@ const FormWrap = styled.div`
 const Input = styled.input`
   width: 100%;
   height: 40px;
-  padding-left: 16px;
+  padding-left: 10px;
   border: 1px solid #aaa;
+`
+
+const CompleteBtn = styled.button`
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  color: #fff;
+  background-color: #000;
+  cursor: pointer;
 `
 
 function Join() {
@@ -30,12 +40,12 @@ function Join() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   // const [postcode, setPostcode] = useState("");
   // const [address, setAddress] = useState("");
-  // const [enroll_company, setEnroll_company] = useState({
-  //   postcode: '',
-  //   address: '',
-  // });
-  // const [detailAddress, setDetailAddress] = useState("");
-  // const [etcAddress, setEtcAddress] = useState("");
+  const [enroll_company, setEnroll_company] = useState({
+    postcode: '',
+    address: '',
+  });
+  const [detailAddress, setDetailAddress] = useState("");
+  const [etcAddress, setEtcAddress] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
 
   const [emailMessage, setEmailMessage] = useState("");
@@ -45,7 +55,7 @@ function Join() {
 
 
   // 주소 검색창 팝업
-  // const [popup, setPopup] = useState(false);
+  const [popup, setPopup] = useState(false);
 
 
   // 사용자 이름 받기
@@ -64,6 +74,19 @@ function Join() {
       setEmailMessage("올바른 이메일 형식입니다");
     }
   }
+
+  // 이메일 중복 체크
+  // function checkEmail() {
+  //   console.log(e.target.value);
+  //   axios.get(' ')
+  //     .then(response => {
+  //       if(response === false) {
+  //         alert('사용 가능한 아이디입니다');
+  //       } else {
+  //         alert('이미 사용중인 아이디입니다');
+  //       }
+  //     })
+  // }
 
   // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
@@ -89,24 +112,24 @@ function Join() {
   }
     
   // 주소 검색 관련
-  // const handleInput = (e) => {
-  //   setEnroll_company({
-  //     ...enroll_company,
-  //     [e.target.name]: e.target.value,
-  //   })
-  // }
+  const handleInput = (e) => {
+    setEnroll_company({
+      ...enroll_company,
+      [e.target.name]: e.target.value,
+    })
+  }
   
-  // const handleComplete = (data) => {
-  //   setPopup(!popup);
-  // }
+  const handleComplete = (data) => {
+    setPopup(!popup);
+  }
 
-  // const userDetailAddress = e => {
-  //   setDetailAddress(e.target.value);
-  // }
+  const userDetailAddress = e => {
+    setDetailAddress(e.target.value);
+  }
 
-  // const userEtcAddress = e => {
-  //   setEtcAddress(e.target.value);
-  // }
+  const userEtcAddress = e => {
+    setEtcAddress(e.target.value);
+  }
 
   // 사용자 연락처 받기
   const userPhoneNumber = e => {
@@ -123,12 +146,11 @@ function Join() {
   // 회원가입 버튼 클릭시 실행될 작업
   function SignUp() {
     function request() {
-
       axios.post('http://localhost:8080/join', {
         userName: name,
         userEmail: email,
         userPassword: password,
-        // address: enroll_company,
+        address: enroll_company,
         userPhoneNumber: phoneNumber,
       })
         .then(response => {
@@ -145,7 +167,7 @@ function Join() {
   return (
     <Wrapper>
       <div className="Join">
-        <h2>회원가입</h2>
+        <h2 style={{textAlign: 'center'}}>회원가입</h2>
 
         <FormWrap action="/join" method="POST">
           <div className="ItemWrap">
@@ -196,13 +218,7 @@ function Join() {
             </div>
           </div>
 
-          <div>우편번호<Input type="text" readOnly></Input></div>
-          <div>주소<Input type="text" readOnly></Input></div>
-          <div>상세주소<Input type="text"></Input></div>
-          <div>참고항목<Input type="text"></Input></div>
-
-
-          {/* <div className="ItemWrap">
+          <div className="ItemWrap">
             <div>
               <label>우편번호</label>
             </div>
@@ -238,7 +254,7 @@ function Join() {
             <div>
               <Input type="text" value={etcAddress} onChange={userEtcAddress} ></Input>
             </div>
-          </div> */}
+          </div>
           
           <div className="ItemWrap">
             <div>
@@ -254,7 +270,7 @@ function Join() {
 
         <br /><br />
 
-        <button type="submit" onClick={SignUp}>회원가입</button>
+        <CompleteBtn type="submit" onClick={SignUp}>회원가입</CompleteBtn>
       </div>
     </Wrapper>
   );
