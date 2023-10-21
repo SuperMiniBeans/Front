@@ -1,6 +1,9 @@
 function Home() {
   return(
-    <div>홈입니다</div>
+    <div>
+      <br /><br />
+      홈입니다
+    </div>
   )
 }
 

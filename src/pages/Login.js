@@ -16,8 +16,28 @@ const Wrapper = styled.div`
 const Input = styled.input`
   width: 100%;
   height: 40px;
+  padding-left: 10px;
   border: 1px solid #aaa;
 `
+
+const CompleteBtn = styled.button`
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  color: #fff;
+  background-color: #000;
+  cursor: pointer;
+`
+
+const CompleteBtn2 = styled.button`
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  border: 1px solid #000;
+  background-color: #fff;
+  cursor: pointer;
+`
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -71,8 +91,8 @@ function Login() {
           alert(response.status + "로그인이 완료되었습니다.");
           console.log(email, password);
         }).catch(error => {
-          alert(error);
           console.log(email, password);
+          alert(error);
         });
     }
     request();
@@ -112,8 +132,8 @@ function Login() {
         <div><p>비밀번호 재설정</p></div>
       </div>
 
-      <button type="submit" onClick={SignIn}>로그인</button>
-      <button type="submit" onClick={goJoin}>회원가입</button>
+      <CompleteBtn type="submit" onClick={SignIn}>로그인</CompleteBtn>
+      <CompleteBtn2 type="submit" onClick={goJoin}>회원가입</CompleteBtn2>
 
     </Wrapper>
 
