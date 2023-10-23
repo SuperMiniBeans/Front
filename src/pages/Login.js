@@ -82,20 +82,17 @@ function Login() {
   }
 
   function SignIn() {
-    function request() {
-      axios.post('http://localhost:8080/login', {
-        userEmail: email,
-        userPassword: password
-      })
-        .then(response => {
-          alert(response.status + "로그인이 완료되었습니다.");
-          console.log(email, password);
-        }).catch(error => {
-          console.log(email, password);
-          alert(error);
-        });
-    }
-    request();
+    axios.post('http://localhost:8080/login', {
+      userEmail: email,
+      userPassword: password
+    })
+      .then(response => {
+        alert(response.status + "로그인이 완료되었습니다.");
+        console.log(email, password);
+      }).catch(error => {
+        console.log(email, password);
+        alert(error);
+      });
   }
 
   return(
@@ -118,7 +115,7 @@ function Login() {
         </div>
         <div>
           <Input
-            type="password" value={password} placeholder="비밀번호를 입력해주세요" maxLength={8} onChange={userPassword} ></Input>
+            type="password" value={password} placeholder="비밀번호를 입력해주세요" maxLength={8} onChange={userPassword}></Input>
           <p>{passwordMessage}</p>
         </div>
       </div>

@@ -3,35 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 // import { response } from "express";
 import Post from "../components/Post";
-
-const Wrapper = styled.div`
-  width: 400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  background-color: pink;
-`;
-
-const FormWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 40px;
-  padding-left: 10px;
-  border: 1px solid #aaa;
-`
-
-const CompleteBtn = styled.button`
-  width: 100%;
-  height: 40px;
-  text-align: center;
-  color: #fff;
-  background-color: #000;
-  cursor: pointer;
-`
+import { CompleteBtn } from "../styles/ButtonStyle";
+import { FlexBox } from "../styles/Layout";
 
 function Join() {
   const [name, setName] = useState("");
@@ -145,136 +118,156 @@ function Join() {
 
   // 회원가입 버튼 클릭시 실행될 작업
   function SignUp() {
-    function request() {
-      axios.post('http://localhost:8080/join', {
-        userName: name,
-        userEmail: email,
-        userPassword: password,
-        address: enroll_company,
-        userPhoneNumber: phoneNumber,
-      })
-        .then(response => {
-          alert(response.status + " 회원가입이 완료되었습니다.");
-          console.log(name, email, password, phoneNumber);
-        }).catch(error => {
-          alert(error);
-          console.log(name, email, password, phoneNumber);
-        });
-    }
-    request();
+    axios.post('/join', {
+      userName: name,
+      userEmail: email,
+      userPassword: password,
+      address: enroll_company,
+      userPhoneNumber: phoneNumber,
+    })
+      .then(response => {
+        alert(response.status + " 회원가입이 완료되었습니다.");
+        console.log(name, email, password, phoneNumber);
+      }).catch(error => {
+        alert(error);
+        console.log(name, email, password, phoneNumber);
+      });
   }
 
   return (
-    <Wrapper>
+    <JoinWrapper>
       <div className="Join">
         <h2 style={{textAlign: 'center'}}>회원가입</h2>
 
         <FormWrap action="/join" method="POST">
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>이름</label>
             </div>
             <div>
-              <Input type="text" value={name} placeholder="이름을 입력하세요" onChange={userName} ></Input>
+              <Input type="text" value={name} placeholder="이름을 입력하세요" onChange={userName}></Input>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap className="ItemWrap">
             <div>
               <label>이메일</label>
             </div>
-            <div className="inputWrap">
-              <Input type="text" value={email} placeholder="이메일 입력 후 중복확인 버튼을 눌러주세요" onChange={userEmail}></Input>
-              {/* @
-              <select name="email_select">
-                <option value='write'>직접 입력</option>
-                <option value='gmail.com'>gmail.com</option>
-                <option value='naver.com'>naver.com</option>
-              </select> */}
-              <button>중복확인</button>
-              <p>{emailMessage}</p>
+            <div>
+              <FlexBox>
+                <Input type="text" value={email} placeholder="이메일 입력 후 중복확인 버튼을 눌러주세요" onChange={userEmail}></Input>
+                <button style={{width: '90px'}}>중복확인</button>
+              </FlexBox>
+              <div><span>{emailMessage}</span></div>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>비밀번호</label>
             </div>
             <div>
               <Input
                 type="password" value={password} placeholder="영문,숫자를 조합하여 4~8자리로 입력해주세요" maxLength={8} onChange={userPassword} ></Input>
-              <p>{passwordMessage}</p>
+              <div><span>{passwordMessage}</span></div>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
-              <label>비밀번호</label>
+              <label>비밀번호 확인</label>
             </div>
             <div>
               <Input
                 type="password" value={passwordConfirm} placeholder="비밀번호를 다시 입력해주세요" maxLength={8} onChange={userPasswordConfirm}></Input>
-              <p>{passwordConfirmMessage}</p>
+              <div><span>{passwordConfirmMessage}</span></div>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>우편번호</label>
             </div>
             <div>
-              <Input type="number" value={enroll_company.postcode} placeholder="우편번호" onChange={handleInput} readOnly></Input>
-              <button onClick={handleComplete}>우편번호 검색</button>
+              <FlexBox>
+                <Input type="number" value={enroll_company.postcode} placeholder="우편번호를 검색하세요" onChange={handleInput} readOnly></Input>
+                <button onClick={handleComplete} style={{width: '120px'}}>우편번호 검색</button>
+              </FlexBox>
               {popup && <Post company={enroll_company} setcompany={setEnroll_company}></Post>}
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>주소</label>
             </div>
             <div>
               <Input type="text" value={enroll_company.address} onChange={handleInput} readOnly></Input>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>상세주소</label>
             </div>
             <div>
               <Input type="text" value={detailAddress} placeholder="상세주소를 입력해주세요" onChange={userDetailAddress} ></Input>
             </div>
-          </div>
+          </ItemWrap>
 
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>참고항목</label>
             </div>
             <div>
-              <Input type="text" value={etcAddress} onChange={userEtcAddress} ></Input>
+              <Input type="text" value={etcAddress} onChange={userEtcAddress}></Input>
             </div>
-          </div>
+          </ItemWrap>
           
-          <div className="ItemWrap">
+          <ItemWrap>
             <div>
               <label>휴대폰 번호</label>
             </div>
             <div>
               <Input type="text" value={phoneNumber} placeholder="숫자만 입력해주세요" onChange={userPhoneNumber} ></Input>
-              <p>{phoneNumMessage}</p>
+              <div><span>{phoneNumMessage}</span></div>
             </div>
-          </div>
-
+          </ItemWrap>
         </FormWrap>
 
         <br /><br />
 
         <CompleteBtn type="submit" onClick={SignUp}>회원가입</CompleteBtn>
       </div>
-    </Wrapper>
+    </JoinWrapper>
   );
 }
+
+/* 스타일 정의 */
+const JoinWrapper = styled.div`
+  width: 400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const FormWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ItemWrap = styled.div`
+  height: 88px;
+`
+
+const Input = styled.input`
+  width: 100%;
+  height: 40px;
+  margin-bottom: 4px;
+  padding-left: 10px;
+  border: 1px solid #aaa;
+`
 
 export default Join;
 
