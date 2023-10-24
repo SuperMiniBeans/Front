@@ -11,3 +11,9 @@ export const FlexBox = styled.div`
   position: relative;
   display: flex;
 `
+
+export const FlexBoxSB = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+`
