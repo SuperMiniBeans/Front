@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FlexBox, FlexBoxSB } from "../styles/Layout";
 import { useCookies } from "react-cookie";
+import { FlexBox, FlexBoxSB } from "../styles/Layout";
+import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
 
 
 function Login() {
@@ -119,8 +120,8 @@ function Login() {
           </FlexBox>
         </FlexBoxSB>
 
-        <CompleteBtn type="submit" onClick={SignIn}>로그인</CompleteBtn>
-        <CompleteBtn2 type="submit" onClick={goJoin}>회원가입</CompleteBtn2>
+        <BtnBg type="submit" onClick={SignIn}>로그인</BtnBg>
+        <BtnBorder type="submit" onClick={goJoin}>회원가입</BtnBorder>
       </FormWrap>
 
 
@@ -155,24 +156,6 @@ const Input = styled.input`
   height: 40px;
   padding-left: 10px;
   border: 1px solid #aaa;
-`
-
-const CompleteBtn = styled.button`
-  width: 100%;
-  height: 40px;
-  text-align: center;
-  color: #fff;
-  background-color: #000;
-  cursor: pointer;
-`
-
-const CompleteBtn2 = styled.button`
-  width: 100%;
-  height: 40px;
-  text-align: center;
-  border: 1px solid #000;
-  background-color: #fff;
-  cursor: pointer;
 `
 
 export default Login;

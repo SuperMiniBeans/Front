@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import axios from "axios";
 // import { response } from "express";
-import { CompleteBtn } from "../styles/ButtonStyle";
+import { BtnBg } from "../styles/ButtonStyle";
 import { FlexBox } from "../styles/Layout";
 import Post from "../components/Post";
 
@@ -167,8 +167,8 @@ function Join() {
             </div>
             <div>
               <FlexBox>
-                <Input type="text" name="userEmail" value={email} placeholder="이메일 입력 후 중복확인 버튼을 눌러주세요" onChange={userEmail}></Input>
-                <button onClick={checkEmail} style={{width: '90px'}}>중복확인</button>
+                <EmailInput type="text" name="userEmail" value={email} placeholder="이메일을 입력해주세요" onChange={userEmail}></EmailInput>
+                <EmailChkBtn onClick={checkEmail} style={{width: '90px'}}>중복확인</EmailChkBtn>
               </FlexBox>
               <div><span>{emailMessage}</span></div>
             </div>
@@ -202,8 +202,8 @@ function Join() {
             </div>
             <div>
               <FlexBox>
-                <Input type="number" name="userAddressNumber" value={enroll_company.postcode} placeholder="우편번호를 검색하세요" onChange={handleInput} readOnly></Input>
-                <button onClick={handleComplete} style={{width: '120px'}}>우편번호 검색</button>
+                <PostcodeInput type="number" name="userAddressNumber" value={enroll_company.postcode} placeholder="우편번호를 검색하세요" onChange={handleInput} readOnly></PostcodeInput>
+                <AdrSearchBtn onClick={handleComplete} style={{width: '120px'}}>우편번호 검색</AdrSearchBtn>
               </FlexBox>
               {popup && <Post company={enroll_company} setcompany={setEnroll_company}></Post>}
             </div>
@@ -247,7 +247,7 @@ function Join() {
           </ItemWrap>
         </FormWrap>
 
-        <CompleteBtn type="submit" onClick={SignUp}>회원가입</CompleteBtn>
+        <JoinBtn type="submit" onClick={SignUp}>회원가입</JoinBtn>
       </div>
     </JoinWrapper>
   );
@@ -281,6 +281,34 @@ const Input = styled.input`
   height: 40px;
   padding-left: 10px;
   border: 1px solid #aaa;
+`
+
+const EmailInput = styled.input`
+  width: 300px;
+  height: 40px;
+  padding-left: 10px;
+  border: 1px solid #aaa;
+`
+
+const EmailChkBtn = styled(BtnBg)`
+margin-left: 10px;
+  width: 120px;
+`
+
+const PostcodeInput = styled.input`
+  width: 270px;
+  height: 40px;
+  padding-left: 10px;
+  border: 1px solid #aaa;
+`
+
+const AdrSearchBtn = styled(BtnBg)`
+  margin-left: 10px;
+  width: 120px;
+`
+
+const JoinBtn = styled(BtnBg)`
+  width: 100%;
 `
 
 export default Join;
