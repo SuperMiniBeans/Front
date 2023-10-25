@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from 'react-router-dom';
+import Header from './components/Header';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Join from './pages/Join';
@@ -10,6 +11,7 @@ function App() {
   return (
     <div>
       <GlobalStyle />
+      <Header />
       <div><Link to="/">홈</Link></div>
       <div><Link to="/login">로그인</Link></div>
       <div><Link to="/join">회원가입</Link></div>
