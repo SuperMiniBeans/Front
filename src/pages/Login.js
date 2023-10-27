@@ -82,9 +82,12 @@ function Login() {
       userPassword: password
     })
       .then(response => {
-        alert(response.status + "로그인이 완료되었습니다.");
-        console.log(id, password);
-        navigate('/');
+        if(response.data.userId === id && response.data.userPassword === password) {
+          console.log(response.data.msg);
+          console.log(id, password);
+          alert(response.status + "로그인이 완료되었습니다.");
+          navigate('/');
+        }
       }).catch(error => {
         console.log(id, password);
         alert(error);
