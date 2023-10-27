@@ -10,28 +10,27 @@ function Header() {
       <HeaderWrap>
         <HeaderFlexBox>
           <div><h1><Link to="/">LYS</Link></h1></div>
+
           <FlexBoxSB>
+            <nav className="mainmenu">
+              <Gnb>
+                <li><Link to="/">OUTER</Link></li>
+                <li><Link to="/">TOP</Link></li>
+                <li><Link to="/">BOTTOM</Link></li>
+                <li><Link to="/">ACC</Link></li>
+                {/* <li><Link to="/">관리자</Link></li> */}
+              </Gnb>
+            </nav>
 
-          </FlexBoxSB>
-          <nav className="mainmenu">
-            <Gnb>
-              <li><Link to="/">OUTER</Link></li>
-              <li><Link to="/">TOP</Link></li>
-              <li><Link to="/">BOTTOM</Link></li>
-              <li><Link to="/">ACC</Link></li>
-              {/* <li><Link to="/">관리자</Link></li> */}
-            </Gnb>
-          </nav>
-
-          <div>
             <FlexBox>
-              <div><input type="search"></input></div>
-              <div>검색버튼</div>
+              <FlexBox>
+                <div><input type="search"></input></div>
+                <div>검색버튼</div>
+              </FlexBox>
+              <div><Link to="/login">Login</Link></div>
+              <div><Link to="/">장바구니</Link></div>
             </FlexBox>
-            <div><Link to="/login">Login</Link></div>
-            <div><Link to="/">장바구니</Link></div>
-          </div>
-
+          </FlexBoxSB>
         </HeaderFlexBox>
       </HeaderWrap>
     </Container>

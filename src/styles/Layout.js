@@ -12,6 +12,12 @@ export const FlexBox = styled.div`
   display: flex;
 `
 
+export const FlexBoxCol = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+`
+
 export const FlexBoxSB = styled.div`
   position: relative;
   display: flex;
