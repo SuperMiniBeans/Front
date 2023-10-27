@@ -1,19 +1,23 @@
 import styled from "styled-components";
 // import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useCookies } from "react-cookie";
-import { FlexBox, FlexBoxSB } from "../styles/Layout";
+import { FlexBox, FlexBoxSB, FlexBoxCol } from "../styles/Layout";
 import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
 
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
-  const [emailMessage, setEmailMessage] = useState("");
+  const [IdMessage, SetIdMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
+
+  const [idMsgColor, setIdMsgColor] = useState({color: "red"});
+  const [pswMsgColor, setPswMsgColor] = useState({color: "red"});
+  
 
   /* 쿠키에 저장할 값 */
   const [cookies, setCookie, removeCookie] = useCookies(["rememberUserId"]);
@@ -21,36 +25,40 @@ function Login() {
 
   const navigate = useNavigate();
 
-  /* 아이디 유효성 검사 */
-  const userEmail = e => {
-    setEmail(e.target.value);
-    
-    const emailReg = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
+  // 사용자 아이디 받기
+  const userId = e => {
+    setId(e.target.value);
 
-    if (!emailReg.test(e.target.value)) {
-      setEmailMessage("잘못된 이메일 형식입니다");
+    const idReg = /^[A-Za-z0-9]{2,10}$/;
+    if (!idReg.test(e.target.value)) {
+      SetIdMessage("잘못된 아이디 형식입니다");
+      setIdMsgColor({color: '#F82A2A'});
+
     } else {
-      setEmailMessage("올바른 이메일 형식입니다");
+      SetIdMessage("올바른 아이디 형식입니다");
+      setIdMsgColor({color: '#84D270'});
+
     }
   }
 
-  /* 비밀번호 유효성 검사 */
+ // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
-    setPassword(e.target.value);
+  setPassword(e.target.value);
+  const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
-    const passwordReg = /^[A-Za-z0-9]{4,8}$/;
-
-    if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("잘못된 비밀번호 형식입니다");
-    } else {
-      setPasswordMessage("올바른 비밀번호 형식입니다");
-    }
+  if (!passwordReg.test(e.target.value)) {
+    setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
+    setPswMsgColor({color: '#F82A2A'});
+  } else {
+    setPasswordMessage("올바른 비밀번호 형식입니다");
+    setPswMsgColor({color: '#84D270'});
   }
+}
 
   // 아이디 저장 쿠키 설정
   useEffect(() => {
     if(cookies.rememberUserId !== undefined) {
-      setEmail(cookies.rememberUserId);
+      setId(cookies.rememberUserId);
       setrememberId(true);
     }
   }, []);
@@ -70,15 +78,15 @@ function Login() {
   // 로그인 버튼 클릭시 실행될 작업
   function SignIn() {
     axios.post('/login', {
-      userEmail: email,
+      userId: id,
       userPassword: password
     })
       .then(response => {
         alert(response.status + "로그인이 완료되었습니다.");
-        console.log(email, password);
+        console.log(id, password);
         navigate('/');
       }).catch(error => {
-        console.log(email, password);
+        console.log(id, password);
         alert(error);
       });
   }
@@ -89,23 +97,25 @@ function Login() {
 
       <FormWrap action="/login" method="POST">
         <ItemWrap>
+          <LabelWrap>
+            <label>아이디</label>
+          </LabelWrap>
           <div>
-            <label>이메일</label>
-          </div>
-          <div className="inputWrap">
-            <Input type="text" value={email} placeholder="이메일을 입력해주세요" onChange={userEmail}></Input>
-            <p>{emailMessage}</p>
+            <FlexBox>
+              <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
+            </FlexBox>
+            <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
           </div>
         </ItemWrap>
 
         <ItemWrap>
-          <div>
+          <LabelWrap>
             <label>비밀번호</label>
-          </div>
+          </LabelWrap>
           <div>
             <Input
-              type="password" value={password} placeholder="비밀번호를 입력해주세요" maxLength={8} onChange={userPassword}></Input>
-            <p>{passwordMessage}</p>
+              type="password" name="userPassword" value={password} placeholder="4~8자의 영문 대소문자와 숫자로만 입력해주세요" maxLength={8} onChange={userPassword} ></Input>
+            <div><ErrMsg style={pswMsgColor}>{passwordMessage}</ErrMsg></div>
           </div>
         </ItemWrap>
 
@@ -113,15 +123,17 @@ function Login() {
           <div>
             <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장
           </div>
-          <FlexBox style={{'color': 'grey'}}>
-            <div><p>아이디 찾기</p></div>
+          <FlexBox>
+            <div onClick={() => navigate('/search/id')}><p><Link to='search/id'>아이디 찾기</Link></p></div>
             <div><span>&nbsp;|&nbsp;</span></div>
-            <div><p>비밀번호 재설정</p></div>
+            <div onClick={() => navigate('/search/pw/check')}><p><Link to='search/pw/check'>비밀번호 재설정</Link></p></div>
           </FlexBox>
         </FlexBoxSB>
 
-        <BtnBg type="submit" onClick={SignIn}>로그인</BtnBg>
-        <BtnBorder type="submit" onClick={goJoin}>회원가입</BtnBorder>
+        <FlexBoxCol>
+          <BtnBg type="submit" onClick={SignIn}>로그인</BtnBg>
+          <BtnBorder type="submit" onClick={goJoin}>회원가입</BtnBorder>
+        </FlexBoxCol>
       </FormWrap>
 
 
@@ -151,11 +163,20 @@ const ItemWrap = styled.div`
   height: 88px;
 `
 
+const LabelWrap = styled.div`
+  margin-bottom: 4px;
+  font-weight: 600;
+`
+
 const Input = styled.input`
   width: 100%;
   height: 40px;
   padding-left: 10px;
   border: 1px solid #aaa;
+`
+
+const ErrMsg = styled.span`
+  font-size: 14px;
 `
 
 export default Login;
