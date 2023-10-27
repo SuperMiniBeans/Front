@@ -4,6 +4,10 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Join from './pages/Join';
 import GlobalStyle from './styles/GlobalStyle';
+import JoinComplete from './pages/JoinComplete';
+import SearchId from './pages/SearchId';
+import ResetPwChk from './pages/ResetPwChk';
+import ResetPw from './pages/ResetPw';
 
 
 function App() {
@@ -21,6 +25,12 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/join' element={<Join />} />
+        <Route path='/join/joincomplete' element={<JoinComplete />} />
+        <Route path='/search/id' element={<SearchId />} />
+        <Route path='/search/pw' element={<ResetPw />} />
+        <Route path='/search/pw/check' element={<ResetPwChk />} />
+
+
       </Routes>
     </div>
   );
