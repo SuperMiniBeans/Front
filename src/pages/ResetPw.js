@@ -39,7 +39,6 @@ function ResetPw() {
     } else {
       setPasswordConfirmMessage("올바르게 입력되었습니다");
       setPswConfirmMsgColor({color: '#84D270'});
-
     }
   }
 
@@ -50,7 +49,7 @@ function ResetPw() {
       <div>비밀번호 재설정</div>
       <ItemWrap>
           <LabelWrap>
-            <label>비밀번호</label>
+            <label>새로운 비밀번호 입력</label>
           </LabelWrap>
           <div>
             <Input

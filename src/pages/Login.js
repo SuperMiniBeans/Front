@@ -1,9 +1,9 @@
 import styled from "styled-components";
 // import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useCookies } from "react-cookie";
+// import { useCookies } from "react-cookie";
 import { FlexBox, FlexBoxSB, FlexBoxCol } from "../styles/Layout";
 import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
 
@@ -20,8 +20,8 @@ function Login() {
   
 
   /* 쿠키에 저장할 값 */
-  const [cookies, setCookie, removeCookie] = useCookies(["rememberUserId"]);
-  const [rememberId, setrememberId] = useState(false);
+  // const [cookies, setCookie, removeCookie] = useCookies(["rememberUserId"]);
+  // const [rememberId, setrememberId] = useState(false);
 
   const navigate = useNavigate();
 
@@ -56,19 +56,19 @@ function Login() {
 }
 
   // 아이디 저장 쿠키 설정
-  useEffect(() => {
-    if(cookies.rememberUserId !== undefined) {
-      setId(cookies.rememberUserId);
-      setrememberId(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if(cookies.rememberUserId !== undefined) {
+  //     setId(cookies.rememberUserId);
+  //     setrememberId(true);
+  //   }
+  // }, []);
 
-  const handleOnCheck = e => {
-    setrememberId(e.target.checked);
-    if(!e.target.checked) {
-      removeCookie("rememberUserId");
-    }
-  }
+  // const handleOnCheck = e => {
+  //   setrememberId(e.target.checked);
+  //   if(!e.target.checked) {
+  //     removeCookie("rememberUserId");
+  //   }
+  // }
 
   /* 회원가입 페이지로 이동 */
   function goJoin() {
@@ -77,19 +77,20 @@ function Login() {
 
   // 로그인 버튼 클릭시 실행될 작업
   function SignIn() {
-    axios.post('/login', {
+    const userData = {
       userId: id,
       userPassword: password
-    })
+    }
+    axios.post('/login', userData)
       .then(response => {
         if(response.data.userId === id && response.data.userPassword === password) {
           console.log(response.data.msg);
           console.log(id, password);
           alert(response.status + "로그인이 완료되었습니다.");
-          navigate('/');
         }
+        navigate('/');
       }).catch(error => {
-        console.log(id, password);
+        console.log(id, password, '로그인 실패');
         alert(error);
       });
   }
@@ -124,7 +125,9 @@ function Login() {
 
         <FlexBoxSB>
           <div>
-            <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장
+            <input type="checkbox" name="saveId"></input> 아이디 저장
+            {/* <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장 */}
+            
           </div>
           <FlexBox>
             <div onClick={() => navigate('/search/id')}><p><Link to='search/id'>아이디 찾기</Link></p></div>

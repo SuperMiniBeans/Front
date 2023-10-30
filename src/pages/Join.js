@@ -169,7 +169,7 @@ function Join() {
         userAddress1: enroll_company.address1,
         userAddress2: address2,
         userAddress3: enroll_company.address3,
-        // userPhoneNumber: phoneNumber,
+        userPhoneNumber: phoneNumber,
       })
         .then(response => {
           alert(response.status + " 회원가입이 완료되었습니다.");
