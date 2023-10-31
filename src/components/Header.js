@@ -14,12 +14,33 @@ function Header() {
           <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
 
           <GnbUserWrap>
-            <nav className="mainmenu">
+            <nav className="gnb">
               <Gnb>
-                <li><Link to="/">OUTER</Link></li>
-                <li><Link to="/">TOP</Link></li>
-                <li><Link to="/">BOTTOM</Link></li>
-                <li><Link to="/">ACC</Link></li>
+                <MouseOver>
+                  <Link to="/">OUTER</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>COAT</Link></LnbLi>
+                    <LnbLi><Link to='/'>JACKET</Link></LnbLi>
+                    <LnbLi><Link to='/'>BLAZERS</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver>
+                  <Link to="/">TOP</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>T-SHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>SHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>HOODIES/<br />SWEATSHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>KNITWEAR</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver>
+                  <Link to="/">BOTTOM</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>PANTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>JEANS</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver><Link to="/">ACC</Link></MouseOver>
                 {/* <li><Link to="/">관리자</Link></li> */}
               </Gnb>
             </nav>
@@ -46,6 +67,7 @@ const HeaderWrap = styled.div`
   width: 100%;
   height: 100px;
   margin-bottom: 100px;
+  // background-color: skyblue;
 `
 
 const HeaderFlexBox = styled(FlexBox)`
@@ -57,22 +79,64 @@ const HeaderFlexBox = styled(FlexBox)`
 `
 
 const H1Wrap = styled.div`
-  margin-right: 40px;
+  margin-right: 64px;
 `
 
 const GnbUserWrap = styled.div`
   position: relative;
   width: 100%;
-  // min-width: 720px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `
 
 const Gnb = styled.ul`
-  width: 248px;
+  position: relative;
+  width: 360px;
   display: flex;
   justify-content: space-between;
+`
+
+const MouseOver = styled.li`
+  position: relative;
+
+  &:hover {
+    font-weight: 600;
+  }
+
+  &:hover .lnb {
+    display: block;
+  }
+`
+/* 디자인.. 최선인가? */
+const Lnb = styled.ul `
+  display: none;
+  position: absolute;
+  // padding-top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 400;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
+`
+
+const LnbLi = styled.li`
+  width: 120px;
+  padding: 12px 10px;
+  align-items: center;
+  font-size: 14px;
+  word-break: break-all;
+  // border-bottom: 1px solid #000;
+
+
+  &:hover {
+    font-weight: 600;
+  }
+
+  // &:last-child {
+  //   border-bottom: none;
+  // }
 `
 
 const UserWrap = styled.div`
@@ -84,7 +148,6 @@ const SearchWrap = styled.div`
   position: relative;
   display: flex;
   margin: 0 20px ; 
-
   align-items: center;
 
   input {
