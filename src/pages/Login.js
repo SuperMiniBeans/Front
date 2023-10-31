@@ -85,14 +85,17 @@ function Login() {
     } else {
       axios.post('/login', {
         userId: id,
-        userPassword: password
+        userPassword: password,
       })
         .then(response => {
-          if(response.data.userId === id && response.data.userPassword === password) {
-            // console.log(id, password);
-            alert(response.status + "로그인이 완료되었습니다.");
-            navigate('/');
-          }
+          alert(response.status + "로그인이 완료되었습니다.");
+          console.log(response.data.userNumber);
+          // if(response.data.userId === id && response.data.userPassword === password) {
+          //   // console.log(id, password);
+          //   alert(response.status + "로그인이 완료되었습니다.");
+          //   navigate('/');
+          // }
+          // navigate('/');
         }).catch(error => {
           console.log(error.response, id, password, "로그인 실패");
           alert(error);
