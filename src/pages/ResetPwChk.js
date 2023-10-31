@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FlexBox } from "../styles/Layout";
+import axios from "axios";
+import { BtnBg } from "../styles/ButtonStyle";
 
 function ResetPwChk() {
   const [name, setName] = useState("");
@@ -24,7 +26,7 @@ function ResetPwChk() {
   const userId = e => {
     setId(e.target.value);
 
-    const idReg = /^[A-Za-z0-9]{2,10}$/;
+    const idReg = /^[A-Za-z0-9]{4,10}$/;
     if (!idReg.test(e.target.value)) {
       SetIdMessage("잘못된 아이디 형식입니다");
       setIdMsgColor({color: '#F82A2A'});
@@ -50,10 +52,38 @@ function ResetPwChk() {
     }
   }
 
-  return(
-    <SearchIdWrapper>
-      <div>비밀번호 재설정 - 회원 정보 확인</div>
+  // 비밀번호 재설정 - 회원정보 확인
+  function checkUserInfo() {
+    axios.post('/searchPw', {
+      userName: name,
+      userId: id,
+      userPhoneNumber: phoneNumber
+    })
+      .then(response => {
+        if(
+          response.data.userName === name && 
+          response.data.userId === id && 
+          response.data.userPhoneNumber === phoneNumber
+        ) {
+          navigate('/search/check/pw');
+        }
+      }).catch(error => {
+        alert(error);
+        alert("입력한 정보를 다시 확인해주세요.");
+      })
+  }
 
+  return(
+    <ResetPwChkWrapper>
+      <TitleWrap>
+        <h2>비밀번호 재설정</h2>
+        <ResetPwStep>
+          <div>회원 정보 확인</div>
+          <div>{">"}</div>
+          <div>비밀번호 재설정</div>
+        </ResetPwStep>
+      </TitleWrap>
+      
       <ItemWrap>
         <LabelWrap>
           <label>이름</label>
@@ -64,17 +94,16 @@ function ResetPwChk() {
       </ItemWrap>
 
       <ItemWrap>
-          <LabelWrap>
-            <label>아이디</label>
-          </LabelWrap>
-          <div>
-            <FlexBox>
-              <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
-            </FlexBox>
-            <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
-          </div>
-        </ItemWrap>
-
+        <LabelWrap>
+          <label>아이디</label>
+        </LabelWrap>
+        <div>
+          <FlexBox>
+            <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
+          </FlexBox>
+          <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
+        </div>
+      </ItemWrap>
 
       <ItemWrap>
         <LabelWrap>
@@ -86,24 +115,58 @@ function ResetPwChk() {
         </div>
       </ItemWrap>
 
-
-
-      <div>
-        <div><button type="submit" onClick={() => navigate('/search/pw')}>확인</button></div>
-      </div>
-
-
-    </SearchIdWrapper>
+      <BtnBg type="submit" onClick={checkUserInfo}>확인</BtnBg>
+    </ResetPwChkWrapper>
   )
 }
 
-const SearchIdWrapper = styled.div`
+const ResetPwChkWrapper = styled.div`
   width: 400px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
 `;
+
+const TitleWrap = styled.div`
+  margin-bottom: 30px;
+  text-align: center;
+`
+
+const ResetPwStep = styled.div`
+  positon: relative;
+  margin-top: 24px; 
+  display: flex;
+  justify-content: center; 
+  text-align: center;
+  // background-color: pink;
+
+  div:first-child {
+    font-weight: 600;
+  }
+
+  div:nth-child(2) {
+    width: 20px; 
+    height: 20px;
+    color: #aaa;
+  }
+
+  // div:nth-child(2)::after {
+  //   position: absolute;
+  //   left: 50%; top: 50%;
+  //   content: '';
+  //   width: 10px; /* 사이즈 */
+  //   height: 10px; /* 사이즈 */
+  //   border-top: 2px solid #aaa; /* 선 두께 */
+  //   border-right: 2px solid #aaa; /* 선 두께 */
+  //   transform: rotate(45deg); /* 각도 */
+  //   background-color: red;
+  // }
+
+  div:last-child {
+    color: #aaa;
+  }
+`
 
 const LabelWrap = styled.div`
   margin-bottom: 4px;

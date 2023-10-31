@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FlexBox } from "../styles/Layout";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
+import { BtnBg } from "../styles/ButtonStyle";
 
 function ResetPw() {
   const [password, setPassword] = useState("");
@@ -12,7 +13,7 @@ function ResetPw() {
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
   const [pswConfirmMsgColor, setPswConfirmMsgColor] = useState({color: "#F82A2A"});
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
@@ -42,11 +43,32 @@ function ResetPw() {
     }
   }
 
-
+    // 비밀번호 재설정 - 새로운 비밀번호 입력
+    // function updatePw() {
+    //   axios.post('/searchPw', {
+    //     userPassword: password,
+    //   })
+    //     .then(response => {
+    //       if( ) {
+    //         alert("비밀번호 변경이 완료되었습니다.");
+    //       }
+    //     }).catch(error => {
+    //       alert(error);
+    //       alert("입력한 정보를 다시 확인해주세요.");
+    //     })
+    // }
 
   return(
-    <SearchIdWrapper>
-      <div>비밀번호 재설정</div>
+    <ResetPwWrapper>
+      <TitleWrap>
+        <h2>비밀번호 재설정</h2>
+        <ResetPwStep>
+          <div>회원 정보 확인</div>
+          <div>{">"}</div>
+          <div>비밀번호 재설정</div>
+        </ResetPwStep>
+      </TitleWrap>
+
       <ItemWrap>
           <LabelWrap>
             <label>새로운 비밀번호 입력</label>
@@ -69,23 +91,58 @@ function ResetPw() {
           </div>
         </ItemWrap>
 
-
-      <div>
-        <div><button type="submit">확인</button></div>
-      </div>
-
-
-    </SearchIdWrapper>
+        <BtnBg type="submit">확인</BtnBg>
+    </ResetPwWrapper>
   )
 }
 
-const SearchIdWrapper = styled.div`
+const ResetPwWrapper = styled.div`
   width: 400px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   flex-direction: column;
 `;
+
+const TitleWrap = styled.div`
+  margin-bottom: 30px;
+  text-align: center;
+`
+
+const ResetPwStep = styled.div`
+  positon: relative;
+  margin-top: 24px; 
+  display: flex;
+  justify-content: center; 
+  text-align: center;
+  // background-color: pink;
+
+  div:first-child {
+    color: #aaa;
+  }
+
+  div:nth-child(2) {
+    width: 20px; 
+    height: 20px;
+    color: #aaa;
+  }
+
+  // div:nth-child(2)::after {
+  //   position: absolute;
+  //   left: 50%; top: 50%;
+  //   content: '';
+  //   width: 10px; /* 사이즈 */
+  //   height: 10px; /* 사이즈 */
+  //   border-top: 2px solid #aaa; /* 선 두께 */
+  //   border-right: 2px solid #aaa; /* 선 두께 */
+  //   transform: rotate(45deg); /* 각도 */
+  //   background-color: red;
+  // }
+
+  div:last-child {
+    font-weight: 600;
+  }
+`
 
 const LabelWrap = styled.div`
   margin-bottom: 4px;
