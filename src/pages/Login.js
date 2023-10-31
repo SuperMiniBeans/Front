@@ -90,7 +90,7 @@ function Login() {
         .then(response => {
           if(response.data.userId === id && response.data.userPassword === password) {
             // console.log(id, password);
-            // alert(response.status + "로그인이 완료되었습니다.");
+            alert(response.status + "로그인이 완료되었습니다.");
             navigate('/');
           }
         }).catch(error => {

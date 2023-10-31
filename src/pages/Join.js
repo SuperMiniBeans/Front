@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useId, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BtnBg } from "../styles/ButtonStyle";
@@ -208,14 +208,13 @@ function Join() {
         userPhoneNumber: phoneNumber,
       })
         .then(response => {
-          alert(response.status + " 회원가입이 완료되었습니다.");
           console.log('성공', response.data.userNumber);
           console.log(isName, isId, isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
-          // navigate('/join/joincomplete');
+          alert(response.status + "회원가입이 완료되었습니다.");
+          navigate('/join/joincomplete');
         }).catch(error => {
           alert(error);
-          console.log('실패');
-          console.log(isName, isId, isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
+          console.log('실패', isName, isId, isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
         });
     }
   }
