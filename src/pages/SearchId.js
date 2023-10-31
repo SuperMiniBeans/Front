@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
 
 function SearchId() {
   const [name, setName] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
 
   const [phoneNumMessage, setphoneNumMessage] = useState("");
-  const [phoneNumMsgColor, setPhoneNumMsgColor] = useState({color: "F82A2A"});
+  const [phoneNumMsgColor, setPhoneNumMsgColor] = useState({color: "#F82A2A"});
 
   const navigate = useNavigate();
 
@@ -32,17 +33,26 @@ function SearchId() {
     }
   }
 
+  // 비밀번호 재설정 페이지로 이동
+  function goResetPwChk() {
+    navigate('/search/check');
+  }
+
+  // 아이디 찾기 버튼 클릭시 실행될 작업
   function onSearchId() {
-    axios.post('/login', {
+    axios.post('/searchId', {
       userName: name,
       userPhoneNumber: phoneNumber
     })
       .then(response => {
-        alert(response.status + "로그인이 완료되었습니다.");
-        console.log(name, phoneNumber);
-        navigate('/');
+        if(
+          response.data.userName === name && 
+          response.data.userPhoneNumber === phoneNumber
+        ) {
+          alert(response.data.userId);
+        }
       }).catch(error => {
-        console.log(name, phoneNumber);
+        console.log(error, name, phoneNumber);
         alert(error);
         alert("일치하는 회원 정보가 없습니다.");
       });
@@ -50,7 +60,7 @@ function SearchId() {
 
   return(
     <SearchIdWrapper>
-      <div>아이디 찾기</div>
+      <TitleWrap><h2>아이디 찾기</h2></TitleWrap>
 
       <ItemWrap>
         <LabelWrap>
@@ -60,7 +70,6 @@ function SearchId() {
           <Input type="text" name="userName" value={name} placeholder="이름을 입력하세요" onChange={userName}></Input>
         </div>
       </ItemWrap>
-
 
       <ItemWrap>
         <LabelWrap>
@@ -72,11 +81,10 @@ function SearchId() {
         </div>
       </ItemWrap>
 
-      <div>
-        <div><button type="submit" onClick={onSearchId}>확인</button></div>
-        <div><button type="submit" onClick={() => navigate('/search/pw/check')}>비밀번호 재설정</button></div>
-      </div>
-
+      <SbmtBtnWrap>
+        <BtnBg type="submit" onClick={onSearchId}>확인</BtnBg>
+        <BtnBorder type="submit" onClick={goResetPwChk}>비밀번호 재설정</BtnBorder>
+      </SbmtBtnWrap>
 
     </SearchIdWrapper>
   )
@@ -89,6 +97,11 @@ const SearchIdWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+const TitleWrap = styled.div`
+  margin-bottom: 30px;
+  text-align: center;
+`
 
 const LabelWrap = styled.div`
   margin-bottom: 4px;
@@ -109,5 +122,13 @@ const ItemWrap = styled.div`
 const ErrMsg = styled.span`
   font-size: 14px;
 `
+
+const SbmtBtnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90px;
+  margin-top: 6px;
+` 
 
 export default SearchId;

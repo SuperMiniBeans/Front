@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
+import { Container, FlexBox } from "../styles/Layout";
+import { GoSearch } from "react-icons/go"
+import { SlBag } from "react-icons/sl"
 
 function Header() {
 
@@ -11,7 +13,7 @@ function Header() {
         <HeaderFlexBox>
           <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
 
-          <GnbUserMenuWrap>
+          <GnbUserWrap>
             <nav className="mainmenu">
               <Gnb>
                 <li><Link to="/">OUTER</Link></li>
@@ -22,28 +24,28 @@ function Header() {
               </Gnb>
             </nav>
 
-            <FlexBox style={{alignItems: 'center'}}>
-              <FlexBox style={{alignItems: 'center'}}>
-                <div><SearchInput type="search"></SearchInput></div>
-                <div>검색버튼</div>
-              </FlexBox>
+            <UserWrap>
+              <SearchWrap>
+                <div><input type="search"></input></div>
+                <div><button type="submit"><GoSearch /></button></div>
+              </SearchWrap>
               <div><Link to="/login">Login</Link></div>
-              <div><Link to="/">장바구니</Link></div>
-            </FlexBox>
-          </GnbUserMenuWrap>
+              <ShoppingBag><Link to="/"><SlBag /></Link></ShoppingBag>
+            </UserWrap>
+          </GnbUserWrap>
+
         </HeaderFlexBox>
       </HeaderWrap>
     </Container>
   ) 
 }
 
-
-
+/* 스타일 */
 const HeaderWrap = styled.div`
   positoin: relative;
   width: 100%;
   height: 100px;
-  background-color: gray;
+  margin-bottom: 100px;
 `
 
 const HeaderFlexBox = styled(FlexBox)`
@@ -52,48 +54,86 @@ const HeaderFlexBox = styled(FlexBox)`
   transform: translateY(-50%);
   height: 60px;
   align-items: center;
-  background-color: pink;
 `
 
 const H1Wrap = styled.div`
   margin-right: 40px;
 `
 
-// const MainMenu = styled.nav`
-
-  
-
-// `
-
-const GnbUserMenuWrap = styled.div`
+const GnbUserWrap = styled.div`
   position: relative;
   width: 100%;
-  min-width: 720px;
+  // min-width: 720px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // background-color: blue;
 `
 
 const Gnb = styled.ul`
   width: 248px;
   display: flex;
   justify-content: space-between;
-  background-color: skyblue;
 `
 
-const SearchInput = styled.input`
-  width: 280px;
-  height: 32px;
-  padding-left: 20px;
-  font-size: 16px;
-  border-radius: 20px;
-  border: none;
-  background-color: #eee;
-
+const UserWrap = styled.div`
+  display: flex;
+  align-items: center;
 `
 
+const SearchWrap = styled.div`
+  position: relative;
+  display: flex;
+  margin: 0 20px ; 
 
+  align-items: center;
 
+  input {
+    width: 280px;
+    height: 32px;
+    padding: 0 40px 0 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: #eee;
+    &:focus {
+      outline: none;
+    }
+    &::-ms-clear,
+    &::-ms-reveal {
+      display:none;
+    }
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-results-button,
+    &::-webkit-search-results-decoration {
+      display: none;
+    }
+  }
+
+  button {
+    position: absolute;
+    right: 10px;
+    top:50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* 검색 버튼 아이콘 */
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`
+
+/* 장바구니 아이콘 */
+const ShoppingBag = styled.div`
+  svg {
+    width: 20px;
+    height: 32px;
+    margin-left: 20px;
+  }
+`
 
 export default Header;
