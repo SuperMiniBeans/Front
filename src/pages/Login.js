@@ -1,12 +1,9 @@
 import styled from "styled-components";
-// import axios from "axios";
+import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-// import { useCookies } from "react-cookie";
-import { FlexBox, FlexBoxSB, FlexBoxCol } from "../styles/Layout";
+import { FlexBox, FlexBoxSB } from "../styles/Layout";
 import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
-
 
 function Login() {
   const [id, setId] = useState("");
@@ -19,8 +16,7 @@ function Login() {
   const [pswMsgColor, setPswMsgColor] = useState({color: "red"});
   
 
-  /* 쿠키에 저장할 값 */
-  // const [cookies, setCookie, removeCookie] = useCookies(["rememberUserId"]);
+  // session storage에 저장할 값 (구현중)
   // const [rememberId, setrememberId] = useState(false);
 
   const navigate = useNavigate();
@@ -29,15 +25,12 @@ function Login() {
   const userId = e => {
     setId(e.target.value);
 
-    const idReg = /^[A-Za-z0-9]{2,10}$/;
+    const idReg = /^[a-z0-9]{4,10}$/;
     if (!idReg.test(e.target.value)) {
-      SetIdMessage("잘못된 아이디 형식입니다");
+      SetIdMessage("아이디는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
       setIdMsgColor({color: '#F82A2A'});
-
     } else {
-      SetIdMessage("올바른 아이디 형식입니다");
-      setIdMsgColor({color: '#84D270'});
-
+      SetIdMessage("");
     }
   }
 
@@ -47,15 +40,15 @@ function Login() {
   const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
   if (!passwordReg.test(e.target.value)) {
-    setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
+    setPasswordMessage("비밀번호는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
     setPswMsgColor({color: '#F82A2A'});
   } else {
-    setPasswordMessage("올바른 비밀번호 형식입니다");
+    setPasswordMessage("");
     setPswMsgColor({color: '#84D270'});
   }
 }
 
-  // 아이디 저장 쿠키 설정
+  // 아이디 저장 (구현중)
   // useEffect(() => {
   //   if(cookies.rememberUserId !== undefined) {
   //     setId(cookies.rememberUserId);
@@ -70,79 +63,81 @@ function Login() {
   //   }
   // }
 
-  /* 회원가입 페이지로 이동 */
+  // 회원가입 페이지로 이동
   function goJoin() {
     navigate('/join');
   }
 
+  // 아이디 찾기 페이지로 이동
+  function goSearchId() {
+    navigate('/search/id');
+  }
+
+  // 비밀번호 재설정 페이지로 이동
+  function goResetPwChk() {
+    navigate('/search/check');
+  }
+
   // 로그인 버튼 클릭시 실행될 작업
   function SignIn() {
-    const userData = {
-      userId: id,
-      userPassword: password
+    if(id === "" || password === "") {
+      alert("아이디와 비밀번호를 모두 입력해주세요");
+    } else {
+      axios.post('/login', {
+        userId: id,
+        userPassword: password
+      })
+        .then(response => {
+          if(response.data.userId === id && response.data.userPassword === password) {
+            // console.log(id, password);
+            // alert(response.status + "로그인이 완료되었습니다.");
+            navigate('/');
+          }
+        }).catch(error => {
+          console.log(error.response, id, password, "로그인 실패");
+          alert(error);
+          alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+        });
     }
-    axios.post('/login', userData)
-      .then(response => {
-        if(response.data.userId === id && response.data.userPassword === password) {
-          console.log(response.data.msg);
-          console.log(id, password);
-          alert(response.status + "로그인이 완료되었습니다.");
-        }
-        navigate('/');
-      }).catch(error => {
-        console.log(id, password, '로그인 실패');
-        alert(error);
-      });
   }
 
   return(
     <LoginWrapper>
-      <TitleCenter><h2>로그인</h2></TitleCenter>
-
+      <TitleWrap><h2>로그인</h2></TitleWrap>
       <FormWrap action="/login" method="POST">
-        <ItemWrap>
-          <LabelWrap>
-            <label>아이디</label>
-          </LabelWrap>
-          <div>
-            <FlexBox>
-              <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
-            </FlexBox>
-            <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
-          </div>
-        </ItemWrap>
+        <InputWrap>
+          <FlexBox>
+            <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
+          </FlexBox>
+        </InputWrap>
 
-        <ItemWrap>
-          <LabelWrap>
-            <label>비밀번호</label>
-          </LabelWrap>
-          <div>
-            <Input
-              type="password" name="userPassword" value={password} placeholder="4~8자의 영문 대소문자와 숫자로만 입력해주세요" maxLength={8} onChange={userPassword} ></Input>
-            <div><ErrMsg style={pswMsgColor}>{passwordMessage}</ErrMsg></div>
-          </div>
-        </ItemWrap>
+        <InputWrap>
+          <Input
+            type="password" name="userPassword" value={password} placeholder="비밀번호를 입력하세요" maxLength={8} onChange={userPassword} ></Input>
+        </InputWrap>
 
         <FlexBoxSB>
           <div>
             <input type="checkbox" name="saveId"></input> 아이디 저장
             {/* <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장 */}
-            
           </div>
           <FlexBox>
-            <div onClick={() => navigate('/search/id')}><p><Link to='search/id'>아이디 찾기</Link></p></div>
+            <div onClick={goSearchId}><p><Link to='search/id'>아이디 찾기</Link></p></div>
             <div><span>&nbsp;|&nbsp;</span></div>
-            <div onClick={() => navigate('/search/pw/check')}><p><Link to='search/pw/check'>비밀번호 재설정</Link></p></div>
+            <div onClick={goResetPwChk}><p><Link to='/search/check'>비밀번호 재설정</Link></p></div>
           </FlexBox>
         </FlexBoxSB>
 
-        <FlexBoxCol>
+        <ErrMsgWrap>
+          <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
+          <div><ErrMsg style={pswMsgColor}>{passwordMessage}</ErrMsg></div>
+        </ErrMsgWrap>
+
+        <SbmtBtnWrap>
           <BtnBg type="submit" onClick={SignIn}>로그인</BtnBg>
           <BtnBorder type="submit" onClick={goJoin}>회원가입</BtnBorder>
-        </FlexBoxCol>
+        </SbmtBtnWrap>
       </FormWrap>
-
-
     </LoginWrapper>
   )
 }
@@ -155,7 +150,7 @@ const LoginWrapper = styled.div`
   flex-direction: column;
 `;
 
-const TitleCenter = styled.div`
+const TitleWrap = styled.div`
   margin-bottom: 30px;
   text-align: center;
 `
@@ -165,13 +160,8 @@ const FormWrap = styled.div`
   flex-direction: column;
 `;
 
-const ItemWrap = styled.div`
-  height: 88px;
-`
-
-const LabelWrap = styled.div`
-  margin-bottom: 4px;
-  font-weight: 600;
+const InputWrap = styled.div`
+  height: 48px;
 `
 
 const Input = styled.input`
@@ -184,5 +174,17 @@ const Input = styled.input`
 const ErrMsg = styled.span`
   font-size: 14px;
 `
+
+const ErrMsgWrap = styled.div`
+  margin-top: 10px;
+`
+
+const SbmtBtnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 90px;
+  margin-top: 6px;
+` 
 
 export default Login;
