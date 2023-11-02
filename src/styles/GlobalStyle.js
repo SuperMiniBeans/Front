@@ -43,7 +43,9 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 600;
   }
 
-
+  h3 {
+    font-size: 16px;
+  }
 
   p {
     font-size: 14px;
