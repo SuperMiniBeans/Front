@@ -2,8 +2,10 @@ import styled from "styled-components"
 
 export const Container = styled.div`
   position: relative;
+  width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 10px;
+  // background-color: pink;
 `
 
 export const FlexBox = styled.div`
