@@ -1,6 +1,5 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Join from './pages/Join';
 import GlobalStyle from './styles/GlobalStyle';
@@ -8,6 +7,8 @@ import JoinComplete from './pages/JoinComplete';
 import SearchId from './pages/SearchId';
 import ResetPwChk from './pages/ResetPwChk';
 import ResetPw from './pages/ResetPw';
+// import ProductDetail from './components/ProductDetail';
+import Main from './components/Main';
 
 
 function App() {
@@ -16,9 +17,9 @@ function App() {
     <div>
       <GlobalStyle />
       <Header />
+      <Main />
 
       <Routes>
-        <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/join' element={<Join />} />
         <Route path='/join/joincomplete' element={<JoinComplete />} />
