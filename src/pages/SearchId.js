@@ -13,7 +13,6 @@ function SearchId() {
 
   const navigate = useNavigate();
 
-
   // 사용자 이름 받기
   const userName = e => {
     setName(e.target.value);
@@ -40,22 +39,19 @@ function SearchId() {
 
   // 아이디 찾기 버튼 클릭시 실행될 작업
   function onSearchId() {
+    //  axios를 사용하여 서버로 요청 보내기(보내는 데이터: userName, nserPhonNumber)
     axios.post('/searchId', {
       userName: name,
       userPhoneNumber: phoneNumber
     })
-      .then(response => {
-        if(
-          response.data.userName === name && 
-          response.data.userPhoneNumber === phoneNumber
-        ) {
-          alert(response.data.userId);
-        }
-      }).catch(error => {
-        console.log(error, name, phoneNumber);
-        alert(error);
-        alert("일치하는 회원 정보가 없습니다.");
-      });
+    .then(response => { // 요청이 성공하면 아래의 코드를 실행
+      // 서버의 응답을 화면에 표시(alert는 브라우저에서 제공하는 알림창)
+      alert(`${name}님의 아이디 입니다. 확인을 누르면 로그인 페이지로 이동합니다. \n ID: ` + response.data);
+      navigate('/login');
+    }).catch(error => { // 요청이 실패하면 아래의 코드를 실행(에러 표시)
+      console.log(error, name, phoneNumber);
+      alert("일치하는 회원 정보가 없습니다.");
+    });
   }
 
   return(
