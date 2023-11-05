@@ -10,9 +10,9 @@ function Join() {
   // 사용자 정보
   const [name, setName] = useState("");
   const [id, setId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const [email, setEmail] = useState("");
   const [enroll_company, setEnroll_company] = useState({
     postcode: '',
     address1: '',
@@ -22,11 +22,14 @@ function Join() {
   const [phoneNumber, setphoneNumber] = useState("");
 
   // 에러 메세지
-  const [IdMessage, SetIdMessage] = useState("");
+  const [nameMessage, SetNameMessage] = useState("");
+  const [idMessage, SetIdMessage] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
   const [phoneNumMessage, setphoneNumMessage] = useState("");
+  // 에러 메세지 색상
+  const [nameMsgColor, setNameMsgColor] = useState({color: "#F82A2A"});
   const [idMsgColor, setIdMsgColor] = useState({color: "#F82A2A"});
   const [emailMsgColor, setEmailMsgColor] = useState({color: "#F82A2A"});
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
@@ -34,90 +37,99 @@ function Join() {
   const [phoneNumMsgColor, setPhoneNumMsgColor] = useState({color: "#F82A2A"});
 
   // 유효성 검사
-  const [isName, setIsName] = useState("false");
-  const [isId, setIsId] = useState("false");
-  const [isUsingId, setIsUsingId] = useState("false")
-  const [isPassword, setIsPassword] = useState("false");
-  const [isPasswordConfirm, setIsPasswordConfirm] = useState("false");
-  const [isEmail, setIsEmail] = useState("false");
-  const [isPhoneNumber, setIsphoneNumber] = useState("false"); 
-
-
+  const [isName, setIsName] = useState(false);
+  const [isId, setIsId] = useState(false);
+  const [isUsingId, setIsUsingId] = useState(false)
+  const [isEmail, setIsEmail] = useState(false);
+  const [isPassword, setIsPassword] = useState(false);
+  const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
+  const [isPhoneNumber, setIsphoneNumber] = useState(false); 
 
   // 주소 검색창 팝업
   const [popup, setPopup] = useState(false);
 
   const navigate = useNavigate();
 
+  //문자열에 공백이 있는 경우
+  let blankReg = /[\s]/g;
+
   // 사용자 이름 받기
   const userName = e => {
     setName(e.target.value);
-    setIsName("true");
+    const nameReg = /^[가-힣]{2,5}$/;
+
+    if(!nameReg.test(e.target.value)) {
+      SetNameMessage("한글을 사용하여 입력해 주세요(자음 불가능).");
+      setNameMsgColor({color: '#F82A2A'});
+      setIsName(false);
+      if(blankReg.test(e.target.value) === true) {
+        SetNameMessage("공백 없이 입력해 주세요.");
+        setNameMsgColor({color: '#F82A2A'});
+        setIsName(false);
+      }
+    } else {
+      SetNameMessage("");
+      setIsName(true);
+    }
   }
 
   // 사용자 아이디 받기
+  const idReg = /^[a-z0-9]{4,10}$/;
+
   const userId = e => {
     setId(e.target.value);
 
-    const idReg = /^[A-Za-z0-9]{4,10}$/;
-    if (!idReg.test(e.target.value)) {
-      SetIdMessage("잘못된 아이디 형식입니다.");
+    if(!idReg.test(e.target.value)) {
+      SetIdMessage("4~10자의 영문 소문자, 숫자를 사용해 주세요.");
       setIdMsgColor({color: '#F82A2A'});
-      setIsId("false");
-    } else {
-      SetIdMessage("올바른 아이디 형식입니다.");
-      setIdMsgColor({color: '#84D270'});
-      setIsId("true");
+      setIsId(false);
+      if(blankReg.test(e.target.value) === true) {
+        SetIdMessage("공백 없이 입력해 주세요.");
+        setIdMsgColor({color: '#F82A2A'});
+        setIsId(false);
+      }
+    } 
+    else {
+      SetIdMessage("")
+      setIsId(true);
     }
   }
 
-  // 아이디 중복 체크
+  // 아이디 중복 확인
   function checkId() {
-    axios.post('/checkId', {
-      userId: id
-    })
-      .then(response => {
-        if(response.data === 0) {
-          alert('이미 사용중인 아이디입니다');
-          console.log(response);
-          setIsUsingId("false");
-        } else {
-          alert('사용 가능한 아이디입니다');
-          console.log(response);
-          setIsUsingId("true");
-        }
-      }).catch(error => {
-        alert(error);
-      })
-  }
-  
-  // 사용자 비밀번호 받기, 유효성 검사
-  const userPassword = e => {
-    setPassword(e.target.value);
-    const passwordReg = /^[A-Za-z0-9]{4,8}$/;
+    if(id === "") {
+      alert("아이디를 입력해주세요.");
+      setIsUsingId(false);
+    } else if(!idReg.test(id)) {
+      alert("4~10자의 영문 소문자, 숫자를 사용해 주세요.");
+      setIsId(false);
+      setIsUsingId(false);
 
-    if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
-      setPswMsgColor({color: '#F82A2A'});
-      setIsPassword("false");
-    } else {
-      setPasswordMessage("올바른 비밀번호 형식입니다");
-      setPswMsgColor({color: '#84D270'});
-      setIsPassword("true");
+      if(blankReg.test(id) === true) {
+        alert("공백 없이 입력해 주세요.");
+        setIdMsgColor({color: '#F82A2A'});
+        setIsId(false);
+        setIsUsingId(false);
+      }
     }
-  }
-  // 사용자 비밀번호 확인
-  const userPasswordConfirm = e => {
-    setPasswordConfirm(e.target.value);
-
-    if(password !== e.target.value) {
-      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다");
-      setPswConfirmMsgColor({color: '#F82A2A'});
-      setIsPasswordConfirm("false");
-    } else {
-      setPasswordConfirmMessage("올바르게 입력되었습니다");
-      setPswConfirmMsgColor({color: '#84D270'});
-      setIsPasswordConfirm("true");
+    else {
+      axios.post('/checkId', {
+        userId: id
+      })
+        .then(response => {
+          if(response.data === 1) {
+            console.log(response.data);
+            alert("이미 사용중인 아이디입니다.");
+            setIsUsingId(false);
+          } 
+          else {
+            alert("사용 가능한 아이디입니다.");
+            console.log(response.data);
+            setIsUsingId(true);
+          }
+        }).catch(error => {
+          alert(error);
+        })
     }
   }
 
@@ -129,11 +141,50 @@ function Join() {
     if (!emailReg.test(e.target.value)) {
       setEmailMessage("잘못된 이메일 형식입니다");
       setEmailMsgColor({color: '#F82A2A'});
-      setIsEmail("false");
+      setIsEmail(false);
+      if(blankReg.test(e.target.value) === true) {
+        setEmailMessage("공백 없이 입력해 주세요.");
+        setEmailMsgColor({color: '#F82A2A'});
+        setIsEmail(false);
+      }
     } else {
-      setEmailMessage("올바른 이메일 형식입니다");
-      setEmailMsgColor({color: '#84D270'});
-      setIsEmail("true");
+      setEmailMessage("");
+      setIsEmail(true);
+    }
+  }
+  
+  // 사용자 비밀번호 받기, 유효성 검사
+  const userPassword = e => {
+    setPassword(e.target.value);
+    const passwordReg = /^[A-Za-z0-9]{4,8}$/;
+
+    if (!passwordReg.test(e.target.value)) {
+      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
+      setPswMsgColor({color: '#F82A2A'});
+      setIsPassword(false);
+      if(blankReg.test(e.target.value) === true) {
+        setPasswordMessage("공백 없이 입력해 주세요.");
+        setPswMsgColor({color: '#F82A2A'});
+        setIsPassword(false);
+      }
+    } 
+    else {
+      setPasswordMessage("");
+      setIsPassword(true);
+    }
+  }
+
+  // 사용자 비밀번호 확인
+  const userPasswordConfirm = e => {
+    setPasswordConfirm(e.target.value);
+
+    if(password !== e.target.value) {
+      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다");
+      setPswConfirmMsgColor({color: '#F82A2A'});
+      setIsPasswordConfirm(false);
+    } else {
+      setPasswordConfirmMessage("");
+      setIsPasswordConfirm(true);
     }
   }
     
@@ -162,38 +213,39 @@ function Join() {
     if (!phonNumReg.test(e.target.value)) {
       setphoneNumMessage("올바른 형식이 아닙니다");
       setPhoneNumMsgColor({color: '#F82A2A'});
-      setIsphoneNumber("false");
+      setIsphoneNumber(false);
     } else {
-      setphoneNumMessage("올바르게 입력되었습니다");
-      setPhoneNumMsgColor({color: '#84D270'});
-      setIsphoneNumber("true");
+      setphoneNumMessage("");
+      setIsphoneNumber(true);
     }
   }
 
   // 유효성 all true
-  let allTrue =  isName && isId && isEmail && isPassword && isPasswordConfirm && isPhoneNumber;
+  let allTrue = isName && isId && isUsingId && isEmail && isPassword && isPasswordConfirm && isPhoneNumber === true;
 
   // 회원가입 버튼 클릭시 실행될 작업
   function SignUp() {
+
     if (
-      //입력칸 공백 확인
+      //미입력 확인
       name === "" ||
+      id === "" ||
       email === "" ||
       password === "" ||
       passwordConfirm === "" ||
       enroll_company.postcode === "" ||
       enroll_company.address1 === "" ||
       address2 === "" ||
-      phoneNumber === "" 
+      phoneNumber === ""
     ) {
       alert("빠진 정보를 입력해주세요.");
-    } 
-    if (!allTrue) {
-      alert("정보를 올바르게 입력해주세요.");
+    }
+    if(!isUsingId) {
+      alert("아이디 중복 검사를 해주세요.");
+    }
+    if(!allTrue) {
+      alert("입력한 정보를 다시 확인 해주세요.");
       console.log(isName, isId, isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
-    } 
-    if (isUsingId !== true) {
-      alert("아이디 중복확인을 해주세요.");
     }
     else {
       axios.post('/join', {
@@ -208,8 +260,8 @@ function Join() {
         userPhoneNumber: phoneNumber,
       })
         .then(response => {
-          console.log('성공', response.data.userNumber);
-          console.log(isName, isId, isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
+          console.log(allTrue);
+          console.log('성공',response, response.data, isName, isId, `아이디 중복:`+isUsingId, isEmail, isPassword, isPasswordConfirm, isPhoneNumber);
           alert(response.status + "회원가입이 완료되었습니다.");
           navigate('/join/joincomplete');
         }).catch(error => {
@@ -229,7 +281,8 @@ function Join() {
             <label>이름</label>
           </LabelWrap>
           <div>
-            <Input type="text" name="userName" value={name} placeholder="이름을 입력하세요" onChange={userName}></Input>
+            <Input type="text" name="userName" value={name} placeholder="이름을 입력하세요" maxLength={6} onChange={userName}></Input>
+            <div><ErrMsg style={nameMsgColor}>{nameMessage}</ErrMsg></div>
           </div>
         </ItemWrap>
 
@@ -242,7 +295,7 @@ function Join() {
               <IdInput type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></IdInput>
               <IdChkBtn onClick={checkId}>중복확인</IdChkBtn>
             </FlexBox>
-            <div><ErrMsg style={idMsgColor}>{IdMessage}</ErrMsg></div>
+            <div><ErrMsg style={idMsgColor}>{idMessage}</ErrMsg></div>
           </div>
         </ItemWrap>
 
@@ -370,7 +423,7 @@ const Input = styled.input`
 `
 
 const ErrMsg = styled.span`
-  font-size: 14px;
+  font-size: 12px;
 `
 
 const IdInput = styled.input`
