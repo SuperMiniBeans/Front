@@ -6,18 +6,18 @@ import { FlexBox, FlexBoxSB } from "../styles/Layout";
 import { BtnBg, BtnBorder } from "../styles/ButtonStyle";
 
 function Login() {
+  // 상태값
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
   const [IdMessage, SetIdMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
 
-  const [idMsgColor, setIdMsgColor] = useState({color: "red"});
-  const [pswMsgColor, setPswMsgColor] = useState({color: "red"});
+  const [idMsgColor, setIdMsgColor] = useState({color: "#F82A2A"});
+  const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
   
-
-  // session storage에 저장할 값 (구현중)
-  // const [rememberId, setrememberId] = useState(false);
+  // session storage에 저장할 값
+  const [rememberId, setRememberId] = useState(false);
 
   const navigate = useNavigate();
 
@@ -27,41 +27,30 @@ function Login() {
 
     const idReg = /^[a-z0-9]{4,10}$/;
     if (!idReg.test(e.target.value)) {
-      SetIdMessage("아이디는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
+      SetIdMessage("아이디는 4~10자의 영문 소문자, 숫자를 사용해 주세요.");
       setIdMsgColor({color: '#F82A2A'});
     } else {
       SetIdMessage("");
     }
   }
 
- // 사용자 비밀번호 받기, 유효성 검사
+ // 사용자 비밀번호 받기
   const userPassword = e => {
-  setPassword(e.target.value);
-  const passwordReg = /^[A-Za-z0-9]{4,8}$/;
+    setPassword(e.target.value);
+    const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
-  if (!passwordReg.test(e.target.value)) {
-    setPasswordMessage("비밀번호는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
-    setPswMsgColor({color: '#F82A2A'});
-  } else {
-    setPasswordMessage("");
-    setPswMsgColor({color: '#84D270'});
+    if (!passwordReg.test(e.target.value)) {
+      setPasswordMessage("비밀번호는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
+      setPswMsgColor({color: '#F82A2A'});
+    } else {
+      setPasswordMessage("");
+    }
   }
-}
 
-  // 아이디 저장 (구현중)
-  // useEffect(() => {
-  //   if(cookies.rememberUserId !== undefined) {
-  //     setId(cookies.rememberUserId);
-  //     setrememberId(true);
-  //   }
-  // }, []);
-
-  // const handleOnCheck = e => {
-  //   setrememberId(e.target.checked);
-  //   if(!e.target.checked) {
-  //     removeCookie("rememberUserId");
-  //   }
-  // }
+  // 아이디 저장 체크 이벤트
+  const handleOnCheck = e => {
+    setRememberId(e.target.checked);
+  }
 
   // 회원가입 페이지로 이동
   function goJoin() {
@@ -79,7 +68,7 @@ function Login() {
   }
 
   // 로그인 버튼 클릭시 실행될 작업
-  function SignIn() {
+  function SignIn(e) {
     if(id === "" || password === "") {
       alert("아이디와 비밀번호를 모두 입력해주세요");
     } else {
@@ -89,16 +78,19 @@ function Login() {
       })
         .then(response => {
           alert(response.status + "로그인이 완료되었습니다.");
-          console.log(response.data.userNumber);
-          // if(response.data.userId === id && response.data.userPassword === password) {
-          //   // console.log(id, password);
-          //   alert(response.status + "로그인이 완료되었습니다.");
-          //   navigate('/');
-          // }
-          // navigate('/');
+          console.log(response.data.userNumber, id, password);
+          navigate('/');
+
+          // 로그인 성공했을 때, 아이디 저장 체크true이면,세션스토리지에 아이디 저장
+          setRememberId(e.target.checked);
+          if(rememberId === true) {
+            sessionStorage.setItem("아이디", id);
+            navigate('/');
+          } else {
+            sessionStorage.clear("rememberUserId");
+          }
         }).catch(error => {
           console.log(error.response, id, password, "로그인 실패");
-          alert(error);
           alert("아이디 또는 비밀번호가 일치하지 않습니다.");
         });
     }
@@ -121,8 +113,7 @@ function Login() {
 
         <FlexBoxSB>
           <div>
-            <input type="checkbox" name="saveId"></input> 아이디 저장
-            {/* <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장 */}
+            <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장
           </div>
           <FlexBox>
             <div onClick={goSearchId}><p><Link to='search/id'>아이디 찾기</Link></p></div>
@@ -175,7 +166,7 @@ const Input = styled.input`
 `
 
 const ErrMsg = styled.span`
-  font-size: 14px;
+  font-size: 12px;
 `
 
 const ErrMsgWrap = styled.div`
