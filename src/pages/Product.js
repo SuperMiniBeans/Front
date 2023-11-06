@@ -1,10 +1,13 @@
+// import { Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import ProductList from "../components/ProductList";
+// import ProductDetail from "../components/ProductDetail";
+
 
 function Product({ products }) {
-  // console.log(products);
-  /* 12개 다 보이면 데이터 불러오기 - 스크롤 이벤트 */
+  console.log(products);
+  /* 스크롤 했을 때 12개 목록 끝나면 데이터 불러오기 - 스크롤 이벤트 */
 
   return(
     <Container>
@@ -23,7 +26,6 @@ function Product({ products }) {
           return <ProductList products={products} key={i}/>
         })}
       </ProductListGrid>
-      
 
     </Container>
   )

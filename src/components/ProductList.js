@@ -7,13 +7,15 @@ function ProductList({ products }) {
   /* 상품명, 가격은 데이터를 받아오기 이미지도? */
   const { productNum, title, price, dscntRate, dscntPrice } = products;
 
+  // console.log(products);
+
   return(
     <ProductListWrap>
       <FlexBoxCol>
         <ImgWrap>
-          <Link to={'/'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
+          <Link to={'/productlist/productdetail'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
         </ImgWrap>
-        <Title><Link to={'/'}><h3>{title}</h3></Link></Title>
+        <Title><Link to={'/productlist/productdetail'}><h3>{title}</h3></Link></Title>
         <PriceWrap>
           <span className="dscnt_rate">{dscntRate}</span>
           <span className="dscnt_price">{dscntPrice}</span>
