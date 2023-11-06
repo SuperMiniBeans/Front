@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { BtnBg } from "../styles/ButtonStyle";
 
 function ResetPw() {
@@ -13,7 +13,7 @@ function ResetPw() {
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
   const [pswConfirmMsgColor, setPswConfirmMsgColor] = useState({color: "#F82A2A"});
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
@@ -44,19 +44,22 @@ function ResetPw() {
   }
 
     // 비밀번호 재설정 - 새로운 비밀번호 입력
-    // function updatePw() {
-    //   axios.post('/searchPw', {
-    //     userPassword: password,
-    //   })
-    //     .then(response => {
-    //       if( ) {
-    //         alert("비밀번호 변경이 완료되었습니다.");
-    //       }
-    //     }).catch(error => {
-    //       alert(error);
-    //       alert("입력한 정보를 다시 확인해주세요.");
-    //     })
-    // }
+    function updatePw() {
+      axios.post('/modifyPw', {
+        userPassword: password,
+      })
+        .then(response => {
+          if(password === passwordConfirm) {
+            alert("비밀번호 변경이 완료되었습니다.");
+            console.log(response.data);
+            // navigate('/');
+
+          }
+        }).catch(error => {
+          alert(error);
+          alert("입력한 정보를 다시 확인해주세요.");
+        })
+    }
 
   return(
     <ResetPwWrapper>
@@ -91,7 +94,7 @@ function ResetPw() {
           </div>
         </ItemWrap>
 
-        <BtnBg type="submit">확인</BtnBg>
+        <BtnBg type="submit" onClick={updatePw}>확인</BtnBg>
     </ResetPwWrapper>
   )
 }

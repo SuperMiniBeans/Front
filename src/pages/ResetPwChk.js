@@ -60,7 +60,9 @@ function ResetPwChk() {
       userPhoneNumber: phoneNumber
     })
       .then(response => {
-        if(response.data === 1) {
+        if(response.data !== null ) {
+          sessionStorage.setItem("user number", response.data);
+          console.log(response.data);
           navigate('/search/check/pw');
         }
       }).catch(error => {
