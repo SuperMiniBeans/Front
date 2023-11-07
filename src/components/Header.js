@@ -4,13 +4,20 @@ import { FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
 
-function Header() {
-  // 로그인 상태 확인 여부
-  // const [isLogin, setIsLogin] = useState();
-  /* 로그인 되면 마이페이지 메뉴 보이게, 로그아웃은 마이페이지 옆에 보이게 ?? */
+function Header({isLogin, isAdmin}) {
 
   /* 카테고리 Link to에도 쿼리스트링으로 지정?! 아니면 라우터로 설정? */
   /* OUTER클릭하면 OUTER에 속한 모든 제품 보이게 하기 */
+
+  console.log({isLogin});
+  console.log({isAdmin});
+
+  // 로그아웃 클릭하면 실행될 코드
+  const onLogout = () => {
+    sessionStorage.removeItem("아이디");
+    sessionStorage.removeItem("비밀번호");
+    document.location.href = '/';
+  }
 
   return(
     <HeaderWrap>
@@ -21,7 +28,7 @@ function Header() {
           <nav className="gnb">
             <Gnb>
               <MouseOver>
-                <Link to="/productlist">OUTER</Link>
+                <Link to="/product">OUTER</Link>
                 <Lnb className="lnb">
                   <LnbLi><Link to='/'>COAT</Link></LnbLi>
                   <LnbLi><Link to='/'>JACKET</Link></LnbLi>
@@ -45,7 +52,12 @@ function Header() {
                 </Lnb>
               </MouseOver>
               <MouseOver><Link to="/">ACC</Link></MouseOver>
-              {/* <li><Link to="/">관리자</Link></li> */}
+              {
+              isAdmin ? 
+              <MouseOver><Link to="/">관리자</Link></MouseOver>
+              :
+              <></>
+              }
             </Gnb>
           </nav>
 
@@ -54,7 +66,17 @@ function Header() {
               <div><input type="search"></input></div>
               <div><button type="submit"><GoSearch /></button></div>
             </SearchWrap>
-            <div><Link to="/login">Login</Link></div>
+
+            {
+            isLogin ? 
+              <>
+                <LogoutLi onClick={onLogout}>Logout</LogoutLi>
+                <MyPageLi><Link to="/mypage">MyPage</Link></MyPageLi>
+              </>
+              : 
+              <LoginLi><Link to="/login">Login</Link></LoginLi>
+            }
+
             <ShoppingBag><Link to="/"><SlBag /></Link></ShoppingBag>
           </UserWrap>
         </GnbUserWrap>
@@ -97,9 +119,13 @@ const GnbUserWrap = styled.div`
 
 const Gnb = styled.ul`
   position: relative;
-  width: 360px;
   display: flex;
   justify-content: space-between;
+
+  li {
+    min-width: 90px;
+    text-align: center;
+  }
 `
 
 const MouseOver = styled.li`
@@ -144,12 +170,12 @@ const LnbLi = styled.li`
   // }
 `
 
-const UserWrap = styled.div`
+const UserWrap = styled.ul`
   display: flex;
   align-items: center;
 `
 
-const SearchWrap = styled.div`
+const SearchWrap = styled.li`
   position: relative;
   display: flex;
   margin: 0 20px ; 
@@ -194,13 +220,27 @@ const SearchWrap = styled.div`
     height: 18px;
   }
 `
+const LoginLi = styled.li`
+  margin-right: 20px;
+`
+
+const LogoutLi = styled.li`
+  width: 100%;
+  cursor: pointer;
+`
+
+const MyPageLi = styled.li`
+  width: 100%;
+  margin: 0 20px;
+  cursor: pointer;
+`
 
 /* 장바구니 아이콘 */
-const ShoppingBag = styled.div`
+const ShoppingBag = styled.li`
   svg {
     width: 20px;
     height: 32px;
-    margin-left: 20px;
+    
   }
 `
 
