@@ -1,23 +1,30 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
-import Product from "../pages/Product";
-import productMockData from "../data/prductMockdata";
-import ProductDetail from "./ProductDetail";
+import Login from "../pages/Login";
+import ResetPwChk from "../pages/ResetPwChk";
+import ResetPw from "../pages/ResetPw";
+import SearchId from "../pages/SearchId";
+import Join from "../pages/Join";
+import JoinComplete from "../pages/JoinComplete";
+import MyPage from "../pages/MyPage";
+// import Product from "../pages/Product";
 
 function Main() {
-  const [products] = useState(productMockData);
 
   return (
     <div>
       <Routes>
+        <Route path='/mypage' element={<MyPage />} />
+        {/* <Route path='/product/*' element={<Product />} /> */}
+        <Route path='/join/joincomplete' element={<JoinComplete />} />
+        <Route path='/join' element={<Join />} />
+        <Route path='/search/id' element={<SearchId />} />
+        <Route path='/search/check/pw' element={<ResetPw />} />
+        <Route path='/search/check' element={<ResetPwChk />} />
+        <Route path='/login' element={<Login />} />
         <Route path='/' element={<Home />} />
-        <Route path="/productlist/*" element={<Product products={products} />} />
-        <Route path="/productlist/productdetail" element={<ProductDetail products={products} />} />
       </Routes>
-
-
-
     </div>
   );
 }
