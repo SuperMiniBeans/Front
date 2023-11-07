@@ -71,7 +71,7 @@ function Header({isLogin, isAdmin}) {
             isLogin ? 
               <>
                 <LogoutLi onClick={onLogout}>Logout</LogoutLi>
-                <MyPageLi><Link to="/mypage">MyPage</Link></MyPageLi>
+                <MyPageLi><Link to="/myPage">MyPage</Link></MyPageLi>
               </>
               : 
               <LoginLi><Link to="/login">Login</Link></LoginLi>

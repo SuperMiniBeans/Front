@@ -15,7 +15,7 @@ function Main() {
   return (
     <div>
       <Routes>
-        <Route path='/mypage' element={<MyPage />} />
+        <Route path='/myPage' element={<MyPage />} />
         {/* <Route path='/product/*' element={<Product />} /> */}
         <Route path='/join/joincomplete' element={<JoinComplete />} />
         <Route path='/join' element={<Join />} />
