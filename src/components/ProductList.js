@@ -13,9 +13,9 @@ function ProductList({ products }) {
     <ProductListWrap>
       <FlexBoxCol>
         <ImgWrap>
-          <Link to={'/productlist/productdetail'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
+          <Link to={'list/detail'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
         </ImgWrap>
-        <Title><Link to={'/productlist/productdetail'}><h3>{title}</h3></Link></Title>
+        <Title><Link to={'list/detail'}><h3>{title}</h3></Link></Title>
         <PriceWrap>
           <span className="dscnt_rate">{dscntRate}</span>
           <span className="dscnt_price">{dscntPrice}</span>

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 function ProductDetail({ products }) {
-  const { productNum, title, price, dscntRate, dscntPrice, productExplanation } = products;
+  const { title, price, dscntRate, dscntPrice, productExplanation } = products;
 
   console.log(products);
   // console.log({productNum, title, price, dscntRate, dscntPrice, productExplanation})

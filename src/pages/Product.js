@@ -1,11 +1,16 @@
-// import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import ProductList from "../components/ProductList";
-// import ProductDetail from "../components/ProductDetail";
+import ProductDetail from "../components/ProductDetail";
+import productMockData from "../data/prductMockdata";
 
 
-function Product({ products }) {
+
+function Product() {
+  const [products] = useState(productMockData);
+
   console.log(products);
   /* 스크롤 했을 때 12개 목록 끝나면 데이터 불러오기 - 스크롤 이벤트 */
 
@@ -26,6 +31,15 @@ function Product({ products }) {
           return <ProductList products={products} key={i}/>
         })}
       </ProductListGrid>
+
+      <ProductDetail />
+      
+      <Routes>
+        <Route path="list/*" element={<Product products={products} />} />
+        <Route path="list/detail" element={<ProductDetail products={products} />} />
+      </Routes>
+
+
 
     </Container>
   )
