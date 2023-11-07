@@ -15,9 +15,12 @@ function Login() {
 
   const [idMsgColor, setIdMsgColor] = useState({color: "#F82A2A"});
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
+
+  // const [isLogin, setIsLogin] = useState(false);
   
   // session storage에 저장할 값
   const [rememberId, setRememberId] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -75,42 +78,27 @@ function Login() {
       axios.post('/login', {
         userId: id,
         userPassword: password,
-        // userNumber:'',
       })
         .then(response => {
           alert(response.status + "로그인이 완료되었습니다.");
           console.log(response.data, id, password);
-          navigate('/');
+          sessionStorage.setItem("아이디", id);
+          sessionStorage.setItem("비밀번호", password);
+          document.location.href = '/';
 
           // 로그인 성공했을 때, 아이디 저장 체크true이면,세션스토리지에 아이디 저장
           setRememberId(e.target.checked);
           if(rememberId === true) {
             sessionStorage.setItem("아이디", id);
             sessionStorage.setItem("user numuber", response.data.userNumber);
-
-            // sessionStorage.setItem("유저 넘버", id;
-
-            navigate('/');
-          } else {
-            sessionStorage.clear("rememberUserId");
+            document.location.href = '/';
           }
         }).catch(error => {
           console.log(error.response, id, password, "로그인 실패");
           alert("아이디 또는 비밀번호가 일치하지 않습니다.");
         });
-
-        // axios.get('/login', {
-        //   userNumber: '',
-        // })
-        //   .then(response => {
-        //     console.log(response.data.userNumber);
-        //   }).catch(error => {
-        //     alert(error);
-        //   });
-
-        
     }
-  }
+  } // SignIn()
 
   return(
     <LoginWrapper>
