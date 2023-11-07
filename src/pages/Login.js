@@ -84,14 +84,14 @@ function Login() {
           console.log(response.data, id, password);
           sessionStorage.setItem("아이디", id);
           sessionStorage.setItem("비밀번호", password);
-          sessionStorage.setItem("user numuber", response.data.userNumber);
+          sessionStorage.setItem("userNumber", response.data.userNumber);
           document.location.href = '/';
 
           // 로그인 성공했을 때, 아이디 저장 체크true이면,세션스토리지에 아이디 저장
           setRememberId(e.target.checked);
           if(rememberId === true) {
             sessionStorage.setItem("아이디", id);
-            sessionStorage.setItem("user numuber", response.data.userNumber);
+            sessionStorage.setItem("userNumber", response.data.userNumber);
             document.location.href = '/';
           }
         }).catch(error => {

@@ -16,6 +16,7 @@ function Header({isLogin, isAdmin}) {
   const onLogout = () => {
     sessionStorage.removeItem("아이디");
     sessionStorage.removeItem("비밀번호");
+    sessionStorage.removeItem("userNumber");
     document.location.href = '/';
   }
 

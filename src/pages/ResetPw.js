@@ -47,7 +47,7 @@ function ResetPw() {
     function updatePw() {
       axios.post('/modifyPw', {
         userPassword: password,
-        userNumber: sessionStorage.getItem("user number"),
+        userNumber: sessionStorage.getItem("user numuber"),
       })
         .then(response => {
           if(password === passwordConfirm) {
