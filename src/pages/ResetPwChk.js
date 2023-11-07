@@ -57,7 +57,8 @@ function ResetPwChk() {
     axios.post('/searchPw', {
       userName: name,
       userId: id,
-      userPhoneNumber: phoneNumber
+      userPhoneNumber: phoneNumber,
+      userNumber: sessionStorage.getItem('userNumber')
     })
       .then(response => {
         if(response.data !== null ) {

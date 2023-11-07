@@ -47,12 +47,14 @@ function ResetPw() {
     function updatePw() {
       axios.post('/modifyPw', {
         userPassword: password,
+        userNumber: sessionStorage.getItem("user number"),
       })
         .then(response => {
           if(password === passwordConfirm) {
             alert("비밀번호 변경이 완료되었습니다.");
+            
             console.log(response.data);
-            // navigate('/');
+            navigate('/');
 
           }
         }).catch(error => {
