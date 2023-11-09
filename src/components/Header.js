@@ -88,9 +88,10 @@ function Header({isLogin, isAdmin}) {
 }
 
 /* 스타일 */
-const HeaderWrap = styled.div`
-  positoin: relative;
+const HeaderWrap = styled.header`
+  position: relative;
   width: 100%;
+  min-width: 1200px;
   height: 100px;
   margin-bottom: 100px;
   border-bottom: 1px solid #000;
@@ -98,12 +99,14 @@ const HeaderWrap = styled.div`
 `
 
 const HeaderWrapFlex = styled(FlexBox)`
-  positoin: relative;
-  top:50%;
+  position: relative;
+  top: 50%;
   transform: translateY(-50%);
   height: 60px;
   padding: 0 10px;
   align-items: center;
+  // background-color: skyblue;
+
 `
 
 const H1Wrap = styled.div`
