@@ -36,6 +36,7 @@ const GlobalStyle = createGlobalStyle`
 
   h1 {
     font-size: 40px;
+    font-family: 'Noto Serif Display', serif;
   }
 
   h2 {
