@@ -54,11 +54,10 @@ const FooterWrap = styled.footer`
 
 const InfoWrap = styled.div`
   position: relative;
-  top: 50%;
-  transform: translateY(50%);
+  top: 180px;
+  transform: translateY(-86px);
   width: 100%;
   height: 172px;
-  padding: 0 100px;
   font-size: 14px;
   color: #eee;
   // background-color: green;

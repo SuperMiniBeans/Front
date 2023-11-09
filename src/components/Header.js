@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { FlexBox } from "../styles/Layout";
+import { Container, FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
 
@@ -22,67 +22,70 @@ function Header({isLogin, isAdmin}) {
 
   return(
     <HeaderWrap>
-      <HeaderWrapFlex>
-        <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
+      <Container>
+        <HeaderWrapFlex>
+          <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
 
-        <GnbUserWrap>
-          <nav className="gnb">
-            <Gnb>
-              <MouseOver>
-                <Link to="/product">OUTER</Link>
-                <Lnb className="lnb">
-                  <LnbLi><Link to='/'>COAT</Link></LnbLi>
-                  <LnbLi><Link to='/'>JACKET</Link></LnbLi>
-                  <LnbLi><Link to='/'>BLAZERS</Link></LnbLi>
-                </Lnb>
-              </MouseOver>
-              <MouseOver>
-                <Link to="/">TOP</Link>
-                <Lnb className="lnb">
-                  <LnbLi><Link to='/'>T-SHIRTS</Link></LnbLi>
-                  <LnbLi><Link to='/'>SHIRTS</Link></LnbLi>
-                  <LnbLi><Link to='/'>HOODIES/<br />SWEATSHIRTS</Link></LnbLi>
-                  <LnbLi><Link to='/'>KNITWEAR</Link></LnbLi>
-                </Lnb>
-              </MouseOver>
-              <MouseOver>
-                <Link to="/">BOTTOM</Link>
-                <Lnb className="lnb">
-                  <LnbLi><Link to='/'>PANTS</Link></LnbLi>
-                  <LnbLi><Link to='/'>JEANS</Link></LnbLi>
-                </Lnb>
-              </MouseOver>
-              <MouseOver><Link to="/">ACC</Link></MouseOver>
+          <GnbUserWrap>
+            <nav className="gnb">
+              <Gnb>
+                <MouseOver>
+                  <Link to="/product">OUTER</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>COAT</Link></LnbLi>
+                    <LnbLi><Link to='/'>JACKET</Link></LnbLi>
+                    <LnbLi><Link to='/'>BLAZERS</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver>
+                  <Link to="/">TOP</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>T-SHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>SHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>HOODIES/<br />SWEATSHIRTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>KNITWEAR</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver>
+                  <Link to="/">BOTTOM</Link>
+                  <Lnb className="lnb">
+                    <LnbLi><Link to='/'>PANTS</Link></LnbLi>
+                    <LnbLi><Link to='/'>JEANS</Link></LnbLi>
+                  </Lnb>
+                </MouseOver>
+                <MouseOver><Link to="/">ACC</Link></MouseOver>
+                {
+                isAdmin ? 
+                <MouseOver><Link to="/">관리자</Link></MouseOver>
+                :
+                <></>
+                }
+              </Gnb>
+            </nav>
+
+            <UserWrap>
+              <SearchWrap>
+                <div><input type="search"></input></div>
+                <div><button type="submit"><GoSearch /></button></div>
+              </SearchWrap>
+
               {
-              isAdmin ? 
-              <MouseOver><Link to="/">관리자</Link></MouseOver>
-              :
-              <></>
+              isLogin ? 
+                <>
+                  <LogoutLi onClick={onLogout}>Logout</LogoutLi>
+                  <MyPageLi><Link to="/myPage">MyPage</Link></MyPageLi>
+                </>
+                : 
+                <LoginLi><Link to="/login">Login</Link></LoginLi>
               }
-            </Gnb>
-          </nav>
 
-          <UserWrap>
-            <SearchWrap>
-              <div><input type="search"></input></div>
-              <div><button type="submit"><GoSearch /></button></div>
-            </SearchWrap>
+              <ShoppingBag><Link to="/"><SlBag /></Link></ShoppingBag>
+            </UserWrap>
+          </GnbUserWrap>
 
-            {
-            isLogin ? 
-              <>
-                <LogoutLi onClick={onLogout}>Logout</LogoutLi>
-                <MyPageLi><Link to="/myPage">MyPage</Link></MyPageLi>
-              </>
-              : 
-              <LoginLi><Link to="/login">Login</Link></LoginLi>
-            }
+        </HeaderWrapFlex>
 
-            <ShoppingBag><Link to="/"><SlBag /></Link></ShoppingBag>
-          </UserWrap>
-        </GnbUserWrap>
-
-      </HeaderWrapFlex>
+      </Container>
     </HeaderWrap>
   ) 
 }
@@ -91,7 +94,6 @@ function Header({isLogin, isAdmin}) {
 const HeaderWrap = styled.header`
   position: relative;
   width: 100%;
-  min-width: 1200px;
   height: 100px;
   margin-bottom: 100px;
   border-bottom: 1px solid #000;
@@ -100,13 +102,11 @@ const HeaderWrap = styled.header`
 
 const HeaderWrapFlex = styled(FlexBox)`
   position: relative;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 50px;
+  transform: translateY(-30px);
   height: 60px;
-  padding: 0 10px;
   align-items: center;
   // background-color: skyblue;
-
 `
 
 const H1Wrap = styled.div`
