@@ -13,7 +13,13 @@ function ResetPw() {
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
   const [pswConfirmMsgColor, setPswConfirmMsgColor] = useState({color: "#F82A2A"});
 
+  const [isPassword, setIsPassword] = useState(false);
+  const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
+
   const navigate = useNavigate();
+
+  //문자열에 공백이 있는 경우
+  let blankReg = /[\s]/g;
 
   // 사용자 비밀번호 받기, 유효성 검사
   const userPassword = e => {
@@ -21,11 +27,16 @@ function ResetPw() {
     const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
     if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
+      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요.");
       setPswMsgColor({color: '#F82A2A'});
-    } else {
-      setPasswordMessage("올바른 비밀번호 형식입니다");
-      setPswMsgColor({color: '#84D270'});
+      if(blankReg.test(e.target.value) === true) {
+        setPasswordMessage("공백 없이 입력해 주세요.");
+        setPswMsgColor({color: '#F82A2A'});
+      }
+    } 
+    else {
+      setPasswordMessage("");
+      setIsPassword(true);
     }
   }
 
@@ -34,34 +45,34 @@ function ResetPw() {
     setPasswordConfirm(e.target.value);
 
     if(password !== e.target.value) {
-      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다");
+      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다.");
       setPswConfirmMsgColor({color: '#F82A2A'});
-
     } else {
-      setPasswordConfirmMessage("올바르게 입력되었습니다");
-      setPswConfirmMsgColor({color: '#84D270'});
+      setPasswordConfirmMessage("");
+      setIsPasswordConfirm(true);
     }
   }
 
-    // 비밀번호 재설정 - 새로운 비밀번호 입력
-    function updatePw() {
-      axios.post('/modifyPw', {
-        userPassword: password,
-        userNumber: sessionStorage.getItem("user numuber"),
-      })
-        .then(response => {
-          if(password === passwordConfirm) {
-            alert("비밀번호 변경이 완료되었습니다.");
-            
-            console.log(response.data);
-            navigate('/');
-
-          }
-        }).catch(error => {
-          alert(error);
-          alert("입력한 정보를 다시 확인해주세요.");
-        })
+  // 비밀번호 재설정 - 새로운 비밀번호 입력
+  function updatePw() {
+    if(isPassword && isPasswordConfirm !== true) {
+      alert("입력한 정보를 다시 확인 해주세요.");
     }
+    axios.post('/modifyPw', {
+      userPassword: password,
+      userNumber: sessionStorage.getItem("userNumber"),
+    })
+      .then(response => {
+        if(password === passwordConfirm) {
+          alert("비밀번호 변경이 완료되었습니다. 확인을 누르면 로그인 페이지로 이동합니다.");
+          console.log(response.data);
+          navigate('/login');
+        }
+      }).catch(error => {
+        alert(error);
+        alert("입력한 정보를 다시 확인해주세요.");
+      })
+  }
 
   return(
     <ResetPwWrapper>

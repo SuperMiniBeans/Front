@@ -74,13 +74,13 @@ function Join() {
   }
 
   // 사용자 아이디 받기
-  const idReg = /^[a-z0-9]{4,10}$/;
+  const idReg = /^[a-z0-9]{2,10}$/;
 
   const userId = e => {
     setId(e.target.value);
 
     if(!idReg.test(e.target.value)) {
-      SetIdMessage("4~10자의 영문 소문자, 숫자를 사용해 주세요.");
+      SetIdMessage("2~10자의 영문 소문자, 숫자를 사용해 주세요.");
       setIdMsgColor({color: '#F82A2A'});
       setIsId(false);
       if(blankReg.test(e.target.value) === true) {
@@ -101,7 +101,7 @@ function Join() {
       alert("아이디를 입력해주세요.");
       setIsUsingId(false);
     } else if(!idReg.test(id)) {
-      alert("4~10자의 영문 소문자, 숫자를 사용해 주세요.");
+      alert("2~10자의 영문 소문자, 숫자를 사용해 주세요.");
       setIsId(false);
       setIsUsingId(false);
 
@@ -119,11 +119,11 @@ function Join() {
         .then(response => {
           if(response.data === 1) {
             console.log(response.data);
-            alert("이미 사용중인 아이디입니다.");
+            alert("이미 사용중인 아이디 입니다.");
             setIsUsingId(false);
           } 
           else {
-            alert("사용 가능한 아이디입니다.");
+            alert("사용 가능한 아이디 입니다.");
             console.log(response.data);
             setIsUsingId(true);
           }
@@ -139,7 +139,7 @@ function Join() {
     const emailReg = /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/;
 
     if (!emailReg.test(e.target.value)) {
-      setEmailMessage("잘못된 이메일 형식입니다");
+      setEmailMessage("잘못된 이메일 형식입니다.");
       setEmailMsgColor({color: '#F82A2A'});
       setIsEmail(false);
       if(blankReg.test(e.target.value) === true) {
@@ -159,7 +159,7 @@ function Join() {
     const passwordReg = /^[A-Za-z0-9]{4,8}$/;
 
     if (!passwordReg.test(e.target.value)) {
-      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요");
+      setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요.");
       setPswMsgColor({color: '#F82A2A'});
       setIsPassword(false);
       if(blankReg.test(e.target.value) === true) {
@@ -179,7 +179,7 @@ function Join() {
     setPasswordConfirm(e.target.value);
 
     if(password !== e.target.value) {
-      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다");
+      setPasswordConfirmMessage("입력한 비밀번호와 다릅니다.");
       setPswConfirmMsgColor({color: '#F82A2A'});
       setIsPasswordConfirm(false);
     } else {
@@ -211,7 +211,7 @@ function Join() {
     const phonNumReg = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;
 
     if (!phonNumReg.test(e.target.value)) {
-      setphoneNumMessage("올바른 형식이 아닙니다");
+      setphoneNumMessage("올바른 형식이 아닙니다.");
       setPhoneNumMsgColor({color: '#F82A2A'});
       setIsphoneNumber(false);
     } else {

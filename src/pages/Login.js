@@ -16,24 +16,33 @@ function Login() {
   const [idMsgColor, setIdMsgColor] = useState({color: "#F82A2A"});
   const [pswMsgColor, setPswMsgColor] = useState({color: "#F82A2A"});
 
-  // const [isLogin, setIsLogin] = useState(false);
-  
-  // session storage에 저장할 값
+  const [isId, setIsId] = useState(false);
+  const [isPassword, setIsPassword] = useState(false);
+
+  // 아이디 저장 체크박스 checked 관리
   const [rememberId, setRememberId] = useState(false);
 
-
   const navigate = useNavigate();
+
+  //문자열에 공백이 있는 경우
+  let blankReg = /[\s]/g;
 
   // 사용자 아이디 받기
   const userId = e => {
     setId(e.target.value);
 
-    const idReg = /^[a-z0-9]{4,10}$/;
+    const idReg = /^[a-z0-9]{2,10}$/;
     if (!idReg.test(e.target.value)) {
-      SetIdMessage("아이디는 4~10자의 영문 소문자, 숫자를 사용해 주세요.");
+      SetIdMessage("아이디는 2~10자의 영문 소문자, 숫자를 사용해 주세요.");
       setIdMsgColor({color: '#F82A2A'});
+      if(blankReg.test(e.target.value) === true) {
+        SetIdMessage("공백 없이 입력해 주세요.");
+        setIdMsgColor({color: '#F82A2A'});
+        setIsId(false);
+      }
     } else {
       SetIdMessage("");
+      setIsId(true);
     }
   }
 
@@ -45,8 +54,14 @@ function Login() {
     if (!passwordReg.test(e.target.value)) {
       setPasswordMessage("비밀번호는 4~8자의 영문 대/소문자, 숫자를 사용해 주세요.");
       setPswMsgColor({color: '#F82A2A'});
+      if(blankReg.test(e.target.value) === true) {
+        setPasswordMessage("공백 없이 입력해 주세요.");
+        setPswMsgColor({color: '#F82A2A'});
+        setIsPassword(false);
+      }
     } else {
       setPasswordMessage("");
+      setIsPassword(true);
     }
   }
 
@@ -74,7 +89,11 @@ function Login() {
   function SignIn(e) {
     if(id === "" || password === "") {
       alert("아이디와 비밀번호를 모두 입력해주세요");
-    } else {
+    } 
+    if(isId && isPassword !== true) {
+      alert("입력한 정보를 다시 확인 해주세요.");
+    }
+    else {
       axios.post('/login', {
         userId: id,
         userPassword: password,
@@ -120,7 +139,7 @@ function Login() {
           <div>
             <input type="checkbox" name="saveId" onChange={e => handleOnCheck(e)} checked={rememberId}></input> 아이디 저장
           </div>
-          <FlexBox>
+          <FlexBox className="find_user_info">
             <div onClick={goSearchId}><p><Link to='search/id'>아이디 찾기</Link></p></div>
             <div><span>&nbsp;|&nbsp;</span></div>
             <div onClick={goResetPwChk}><p><Link to='/search/check'>비밀번호 재설정</Link></p></div>
@@ -157,6 +176,10 @@ const TitleWrap = styled.div`
 const FormWrap = styled.div`
   display: flex;
   flex-direction: column;
+
+  .find_user_info {
+    color: #aaa;
+  }
 `;
 
 const InputWrap = styled.div`

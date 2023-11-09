@@ -8,14 +8,37 @@ function SearchId() {
   const [name, setName] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
 
+  const [nameMessage, SetNameMessage] = useState("");
   const [phoneNumMessage, setphoneNumMessage] = useState("");
+  const [nameMsgColor, setNameMsgColor] = useState({color: "#F82A2A"});
   const [phoneNumMsgColor, setPhoneNumMsgColor] = useState({color: "#F82A2A"});
 
+  const [isName, setIsName] = useState(false);
+  const [isPhoneNumber, setIsPhoneNumber] = useState(false);
+
   const navigate = useNavigate();
+
+  //문자열에 공백이 있는 경우
+  let blankReg = /[\s]/g;
 
   // 사용자 이름 받기
   const userName = e => {
     setName(e.target.value);
+    const nameReg = /^[가-힣]{2,5}$/;
+
+    if(!nameReg.test(e.target.value)) {
+      SetNameMessage("한글을 사용하여 입력해 주세요(자음 불가능).");
+      setNameMsgColor({color: '#F82A2A'});
+      setIsName(false);
+      if(blankReg.test(e.target.value) === true) {
+        SetNameMessage("공백 없이 입력해 주세요.");
+        setNameMsgColor({color: '#F82A2A'});
+        setIsName(false);
+      }
+    } else {
+      SetNameMessage("");
+      setIsName(true);
+    }
   }
 
   // 사용자 연락처 받기
@@ -26,9 +49,13 @@ function SearchId() {
     if (!phonNumReg.test(e.target.value)) {
       setphoneNumMessage("올바른 형식이 아닙니다");
       setPhoneNumMsgColor({color: '#F82A2A'});
+      if(blankReg.test(e.target.value) === true) {
+        setphoneNumMessage("공백 없이 입력해 주세요.");
+        setPhoneNumMsgColor({color: '#F82A2A'});
+      }
     } else {
-      setphoneNumMessage("올바르게 입력되었습니다");
-      setPhoneNumMsgColor({color: '#84D270'});
+      setphoneNumMessage("");
+      setIsPhoneNumber(true);
     }
   }
 
@@ -39,16 +66,17 @@ function SearchId() {
 
   // 아이디 찾기 버튼 클릭시 실행될 작업
   function onSearchId() {
-    //  axios를 사용하여 서버로 요청 보내기(보내는 데이터: userName, nserPhonNumber)
+    if(isName && isPhoneNumber !== true) {
+      alert("입력한 정보를 다시 확인해주세요.");
+    }
     axios.post('/searchId', {
       userName: name,
-      userPhoneNumber: phoneNumber
+      userPhoneNumber: phoneNumber,
     })
-    .then(response => { // 요청이 성공하면 아래의 코드를 실행
-      // 서버의 응답을 화면에 표시(alert는 브라우저에서 제공하는 알림창)
+    .then(response => {
       alert(`${name}님의 아이디 입니다. 확인을 누르면 로그인 페이지로 이동합니다. \n ID: ` + response.data);
       navigate('/login');
-    }).catch(error => { // 요청이 실패하면 아래의 코드를 실행(에러 표시)
+    }).catch(error => {
       console.log(error, name, phoneNumber);
       alert("일치하는 회원 정보가 없습니다.");
     });
@@ -64,6 +92,7 @@ function SearchId() {
         </LabelWrap>
         <div>
           <Input type="text" name="userName" value={name} placeholder="이름을 입력하세요" onChange={userName}></Input>
+          <div><ErrMsg style={nameMsgColor}>{nameMessage}</ErrMsg></div>
         </div>
       </ItemWrap>
 
@@ -116,7 +145,7 @@ const ItemWrap = styled.div`
 `
 
 const ErrMsg = styled.span`
-  font-size: 14px;
+  font-size: 12px;
 `
 
 const SbmtBtnWrap = styled.div`
