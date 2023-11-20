@@ -27,7 +27,7 @@ const GlobalStyle = createGlobalStyle`
   a {
     display: block;
     text-decoration: none;
-    color: #000
+    color: #333;
   }
 
   strong {

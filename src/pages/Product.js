@@ -1,12 +1,8 @@
-import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import ProductList from "../components/ProductList";
-import ProductDetail from "../components/ProductDetail";
 import productMockData from "../data/prductMockdata";
-
-
 
 function Product() {
   const [products] = useState(productMockData);
@@ -31,16 +27,6 @@ function Product() {
           return <ProductList products={products} key={i}/>
         })}
       </ProductListGrid>
-
-      <ProductDetail />
-      
-      <Routes>
-        <Route path="list/*" element={<Product products={products} />} />
-        <Route path="list/detail" element={<ProductDetail products={products} />} />
-      </Routes>
-
-
-
     </Container>
   )
 }
@@ -74,7 +60,6 @@ const CtgryWrap = styled.div`
     margin: 8px 0 20px;
   }
 `
-
 
 const ProductListGrid = styled.div`
   display: grid;
