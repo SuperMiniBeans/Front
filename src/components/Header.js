@@ -30,7 +30,7 @@ function Header({isLogin, isAdmin}) {
             <nav className="gnb">
               <Gnb>
                 <MouseOver>
-                  <Link to="/product">OUTER</Link>
+                  <Link to="/product/list">OUTER</Link>
                   <Lnb className="lnb">
                     <LnbLi><Link to='/'>COAT</Link></LnbLi>
                     <LnbLi><Link to='/'>JACKET</Link></LnbLi>
@@ -54,6 +54,8 @@ function Header({isLogin, isAdmin}) {
                   </Lnb>
                 </MouseOver>
                 <MouseOver><Link to="/">ACC</Link></MouseOver>
+                <MouseOver><Link to="/admin/*">관리자</Link></MouseOver>
+
                 {
                 isAdmin ? 
                 <MouseOver><Link to="/">관리자</Link></MouseOver>
@@ -94,10 +96,11 @@ function Header({isLogin, isAdmin}) {
 const HeaderWrap = styled.header`
   position: relative;
   width: 100%;
+  min-width: 1200px;
   height: 100px;
   margin-bottom: 100px;
   border-bottom: 1px solid #000;
-  // background-color: skyblue;
+  // background-color: yellow;
 `
 
 const HeaderWrapFlex = styled(FlexBox)`
