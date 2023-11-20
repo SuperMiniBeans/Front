@@ -1,27 +1,33 @@
 import styled from "styled-components";
 import { FlexBoxCol } from "../styles/Layout";
-import { Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import ProductDetail from "./ProductDetail";
 
 function ProductList({ products }) {
   /* 상품명, 이미지에 productDetail로 이동할 수 있는 라우터 설정 */
   /* 상품명, 가격은 데이터를 받아오기 이미지도? */
-  const { productNum, title, price, dscntRate, dscntPrice } = products;
+  const { productNum, title, price, dscntRate, dscntPrice } = products || {};
 
-  // console.log(products);
+  console.log(products);
 
   return(
     <ProductListWrap>
       <FlexBoxCol>
         <ImgWrap>
-          <Link to={'list/detail'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
+          <Link to={'/product/list/detail'}><img src={require(`../img/outer${productNum}.jpg`)} alt="outer"></img></Link>
         </ImgWrap>
-        <Title><Link to={'list/detail'}><h3>{title}</h3></Link></Title>
+        <Title><Link to={'/product/list/detail'}><h3>{title}</h3></Link></Title>
         <PriceWrap>
           <span className="dscnt_rate">{dscntRate}</span>
           <span className="dscnt_price">{dscntPrice}</span>
           <span className="price">{price}</span>
         </PriceWrap>
       </FlexBoxCol>
+
+      <Routes>
+        <Route path="/product/list/detail" element={<ProductDetail />} />
+      </Routes>
     </ProductListWrap>
   )
 }
