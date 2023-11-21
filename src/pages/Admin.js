@@ -12,9 +12,24 @@ function Admin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // 상품 등록 페이지로 이동(버튼에 연결)
+  const goAddProduct = () => {
+    navigate('/admin/add');
+  }
+
+  // 생성한 state 불러오기 
   const products = useSelector(state => state.products.products);
   console.log(`등록된 상품:`, products);
-  
+
+  // 글 작성 날짜 나타내기
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+  let today = year + "-" + month + "-" + day;
+  console.log(today);
+
+  // DB에 저장된 게시글 불러와서 보여주기
   useEffect(() => {
     axios.get(`/registerProduct`)
       .then(response => {
@@ -30,11 +45,22 @@ function Admin() {
       })
   }, [dispatch]);
 
+  // useEffect(() => {
+  //   axios.post(`/`, {
 
-  // 상품 등록 페이지로 이동(버튼에 연결)
-  const goAddProduct = () => {
-    navigate('/admin/add');
-  }
+  //   })
+  //     .then(response => {
+  //       // console.log('데이터', response.data);
+  //       console.log('응답 데이터');
+  //       dispatch(setProductList(response.data));
+  //       if(products === undefined) {
+  //         dispatch(setProductList([]));
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }, [dispatch]);
 
   return(
     <AdminWrap>
@@ -69,7 +95,14 @@ function Admin() {
 
           {/* map으로 돌리기 + 데이터 바인딩 (----------여기부터) */}
           {products === undefined ? (
-            <div>등록된 상품이 없습니다.</div>
+            // <tbody>
+            //   <td colSpan={7}>
+            //     등록된 상품이 없습니다.
+            //   </td>
+            // </tbody>
+            <>
+              {window.alert("등록된 상품이 없습니다.")}
+            </>
           ) : (
             products.map((products, index) => (
               <tbody key={index}>
@@ -79,7 +112,7 @@ function Admin() {
                   <td>썸네일</td>
                   <td><Link to='/product/list/detail'>{products.productName}</Link></td>
                   <td>admin</td>
-                  <td>2023.11.09</td>
+                  <td>{today}</td>
                   <td><button>삭제</button></td>
                 </tr>
               </tbody>
@@ -130,7 +163,7 @@ const AdminWrap = styled.main`
   tbody {
     height: 80px;
     align-items: center;
-    background-color: yellow;
+    // background-color: yellow;
 
     .tbody_content {
       align-items: center;
@@ -143,7 +176,7 @@ const AdminWrap = styled.main`
   #admin_list_chk,
   #admin_list_num {
     width: 56px;
-    background-color: red;
+    // background-color: red;
   }
 
   #admin_list_thumbnail {
