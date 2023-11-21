@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addProductList } from "../store";
 import axios from "axios";
+import { BtnBg } from "../styles/ButtonStyle";
 
 
 function AddProduct() {
@@ -13,21 +14,30 @@ function AddProduct() {
 
   // 입력값 관리
   const [add, setAdd] = useState({
-    productName: "",
-    discount: "",
+    productName: '',
+    discount: false,
     productPrice: 0,
     discountRate: 0,
     discountPrice: 0,
-    productSize: "",
-    productColor: "",
+    productSize: '',
+    productColor: '',
     productQuantity: 0,
-    productExplanation: "",
+    productExplanation: '',
   });
   /* true, false값을 같이 저장할까?? productName 안에 valu: "", regi: false 로 배열에 저장?? 함 알아보기( ) */
 
   const [dscntChked, setDscntChked] = useState(false);
+  // let [dscntPrice, setDscntPrice] = useState('');
   
   // const { productName, productPrice } = add || {}
+
+  // 글 작성 날짜 나타내기
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+  let today = year + "-" + month + "-" + day;
+  console.log(today);
 
   // 사용자 입력값 받기
   const onChangeValue = e => {
@@ -41,18 +51,18 @@ function AddProduct() {
   }
 
   // 할인가 계산하기(작성중)
-  let discountPrice = Number(add.productPrice * add.discountRate/100) ;
-  const calcDscntPrice = () => {
-    setAdd(discountPrice);
-  }
+  // const calcDscntPrice = () => {
+  //   setDscntPrice(add.productPrice *(add.discountRate/100));
+  //   console.log('할인가', dscntPrice);
+  // }
 
   // 등록하기 버튼 누르면 실행
   const onAddSubmit = () => {
-    /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기 */
+    /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
     console.log('전송');
-    navigate('/admin');
 
     axios.post('/registerProduct', {
+      productNumber: 0,
       productName: add.productName,
       // discount: add.discount,
       productPrice: add.productPrice,
@@ -62,11 +72,13 @@ function AddProduct() {
       productColor: add.productColor,
       productQuantity: add.productQuantity,
       productExplanation: add.productExplanation,
+      productRegisterDate: today,
     })
       .then(response => {
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
         setAdd('');
+        navigate('/admin');
       })
       .catch(error => {
         console.log(error);
@@ -99,7 +111,7 @@ function AddProduct() {
               <AddINputWrap>
                 <label>가격</label>
                 <div className="input_box">
-                  <AddINput type="number" name="productPrice" value={add.productPrice} onChange={onChangeValue} />
+                  <AddINput type="text" name="productPrice" value={add.productPrice} onChange={onChangeValue} />
                 </div>
               </AddINputWrap>
 
@@ -107,16 +119,16 @@ function AddProduct() {
                 <AddINputWrap>
                   <label>할인율</label>
                   <div className="input_box">
-                    <AddINput type="number" name="discountRate" disabled={dscntChked ? false : true} />
+                    <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} />
                   </div>
                 </AddINputWrap>
 
-                <AddINputWrap>
+                {/* <AddINputWrap>
                   <label>할인가</label>
                   <div className="input_box">
-                    <AddINput type="number" name="discountPrice" value={dscntChked ? discountPrice : 0} disabled={dscntChked ? false : true} onChange={calcDscntPrice} />
+                    <AddINput type="text" name="discountPrice" value={dscntChked ? dscntPrice : 0} disabled={dscntChked ? false : true} onChange={calcDscntPrice} />
                   </div>
-                </AddINputWrap>
+                </AddINputWrap> */}
               </FlexBox>
             </div> {/* p_price_box */}
             
@@ -166,7 +178,7 @@ function AddProduct() {
             </AddINputWrap>
 
             <div>
-              <button type="submit" onClick={onAddSubmit}>등록</button>
+              <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>
             </div>
           </form>
         </div> {/* align_center */}
@@ -199,7 +211,6 @@ const AddProductWrap = styled.div`
     margin-bottom: 40px;
   }
 `
-
 
 const AddINputWrap = styled.div`
   display: flex;
@@ -250,6 +261,13 @@ const AddTextArea = styled.textarea`
   &::-webkit-scrollbar-track {
     background-color: #eee;
   }
+`
+
+const AddProductBtn = styled(BtnBg)`
+  width: 120px;
+  font-size: 16px;
+
+  // background-color: pink;
 `
 
 export default AddProduct;

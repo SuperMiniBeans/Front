@@ -7,6 +7,7 @@ import AddProduct from "../components/AddProduct"
 import { useSelector, useDispatch } from "react-redux";
 import { setProductList } from "../store";
 import axios from "axios";
+import { BtnBg } from "../styles/ButtonStyle";
 
 function Admin() {
   const navigate = useNavigate();
@@ -20,14 +21,6 @@ function Admin() {
   // 생성한 state 불러오기 
   const products = useSelector(state => state.products.products);
   console.log(`등록된 상품:`, products);
-
-  // 글 작성 날짜 나타내기
-  let date = new Date();
-  let year = date.getFullYear();
-  let month = date.getMonth();
-  let day = date.getDate();
-  let today = year + "-" + month + "-" + day;
-  console.log(today);
 
   // DB에 저장된 게시글 불러와서 보여주기
   useEffect(() => {
@@ -62,12 +55,15 @@ function Admin() {
   //     })
   // }, [dispatch]);
 
+  // 체크한 상품 삭제하기
+  
+
   return(
     <AdminWrap>
       <Container>
         <h2>상품 관리</h2>
 
-        <div><button onClick={goAddProduct}>상품 등록</button></div>
+        <div><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
 
         <table>
           <caption>등록한 상품 목록</caption>
@@ -95,14 +91,14 @@ function Admin() {
 
           {/* map으로 돌리기 + 데이터 바인딩 (----------여기부터) */}
           {products === undefined ? (
-            // <tbody>
-            //   <td colSpan={7}>
-            //     등록된 상품이 없습니다.
-            //   </td>
-            // </tbody>
-            <>
-              {window.alert("등록된 상품이 없습니다.")}
-            </>
+            <tbody>
+              <td colSpan={7}>
+                등록된 상품이 없습니다.
+              </td>
+            </tbody>
+            // <>
+            //   {window.alert("등록된 상품이 없습니다.")}
+            // </>
           ) : (
             products.map((products, index) => (
               <tbody key={index}>
@@ -112,7 +108,7 @@ function Admin() {
                   <td>썸네일</td>
                   <td><Link to='/product/list/detail'>{products.productName}</Link></td>
                   <td>admin</td>
-                  <td>{today}</td>
+                  <td>{products.today}</td>
                   <td><button>삭제</button></td>
                 </tr>
               </tbody>
@@ -121,7 +117,7 @@ function Admin() {
           {/* map으로 돌리기 (여기까지-----------)*/}
         </table>
 
-        <div><button type="submit">삭제</button></div>
+        <div><DeleteProductBtn type="submit">삭제</DeleteProductBtn></div>
       </Container>
 
       <Routes>
@@ -195,5 +191,20 @@ const AdminWrap = styled.main`
     width: 100px;
   }
 `
+
+const GoAddProductBtn = styled(BtnBg)`
+  width: 120px;
+  font-size: 16px;
+
+  // background-color: pink;
+`
+
+const DeleteProductBtn = styled(BtnBg)`
+  width: 120px;
+  font-size: 16px;
+
+  // background-color: pink;
+`
+
 
 export default Admin;
