@@ -36,7 +36,7 @@ function Admin() {
       .catch(error => {
         console.log(error);
       })
-  }, [dispatch]);
+  }, []);
 
   // useEffect(() => {
   //   axios.post(`/`, {

@@ -7,15 +7,15 @@ import { addProductList } from "../store";
 import axios from "axios";
 import { BtnBg } from "../styles/ButtonStyle";
 
+// 카테고리
 
 function AddProduct() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // 입력값 관리
-  const [add, setAdd] = useState({
+  const initialValue = {
     productName: '',
-    discount: false,
     productPrice: 0,
     discountRate: 0,
     discountPrice: 0,
@@ -23,26 +23,21 @@ function AddProduct() {
     productColor: '',
     productQuantity: 0,
     productExplanation: '',
-  });
-  /* true, false값을 같이 저장할까?? productName 안에 valu: "", regi: false 로 배열에 저장?? 함 알아보기( ) */
+  }
 
+  // 할인 적용 체크 여부
   const [dscntChked, setDscntChked] = useState(false);
-  // let [dscntPrice, setDscntPrice] = useState('');
-  
-  // const { productName, productPrice } = add || {}
-
-  // 글 작성 날짜 나타내기
-  let date = new Date();
-  let year = date.getFullYear();
-  let month = date.getMonth();
-  let day = date.getDate();
-  let today = year + "-" + month + "-" + day;
-  console.log(today);
 
   // 사용자 입력값 받기
+  const [inputValues, setInputValues] = useState(initialValue);
+
+  const {productName, productPrice, discountRate,
+  discountPrice, productSize, productColor, productQuantity, productExplanation} = inputValues;
+
   const onChangeValue = e => {
-    setAdd(e.target.value);
-    console.log(`${e.target.name}`,":", e.target.value);
+    const {value, name: inputName} = e.target;
+    setInputValues({...inputValues, [inputName]: value});
+    console.log(inputValues);
   }
 
   // 할인 적용 체크
@@ -56,29 +51,35 @@ function AddProduct() {
   //   console.log('할인가', dscntPrice);
   // }
 
+  // 글 작성 날짜 나타내기
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+  let today = year + "-" + month + "-" + day;
+  // console.log(today);
+
   // 등록하기 버튼 누르면 실행
   const onAddSubmit = () => {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
-    console.log('전송');
 
     axios.post('/registerProduct', {
-      productNumber: 0,
-      productName: add.productName,
-      // discount: add.discount,
-      productPrice: add.productPrice,
-      discountRate: add.discountRate,
-      discountPrice: add.discountPrice,
-      productSize: add.productSize,
-      productColor: add.productColor,
-      productQuantity: add.productQuantity,
-      productExplanation: add.productExplanation,
+      categoryMinorCode: 0,
+      productNumber: '',
+      productName: productName,
+      productPrice: productPrice,
+      discountRate: discountRate,
+      discountPrice: discountPrice,
+      productSize: productSize,
+      productColor: productColor,
+      productQuantity: productQuantity,
+      // productExplanation: productExplanation,
       productRegisterDate: today,
     })
       .then(response => {
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
-        setAdd('');
-        navigate('/admin');
+        // navigate('/admin');
       })
       .catch(error => {
         console.log(error);
@@ -97,7 +98,7 @@ function AddProduct() {
               <AddINputWrap>
                 <label>상품명</label>
                 <div className="input_box">
-                  <AddINput type="text" name="productName" value={add.productName} onChange={onChangeValue}/>
+                  <AddINput type="text" name="productName" value={productName} onChange={onChangeValue}/>
                 </div>
               </AddINputWrap>
             </div> {/* p_name_box */}
@@ -111,7 +112,7 @@ function AddProduct() {
               <AddINputWrap>
                 <label>가격</label>
                 <div className="input_box">
-                  <AddINput type="text" name="productPrice" value={add.productPrice} onChange={onChangeValue} />
+                  <AddINput type="text" name="productPrice" value={productPrice} onChange={onChangeValue} />
                 </div>
               </AddINputWrap>
 
@@ -119,7 +120,7 @@ function AddProduct() {
                 <AddINputWrap>
                   <label>할인율</label>
                   <div className="input_box">
-                    <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} />
+                    <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} value={discountRate}/>
                   </div>
                 </AddINputWrap>
 
@@ -137,21 +138,21 @@ function AddProduct() {
               <AddINputWrap>
                 <label>사이즈</label>
                 <div  className="input_box">
-                  <AddINput type="text" name="productSize" value={add.productSize} onChange={onChangeValue}/>
+                  <AddINput type="text" name="productSize" value={productSize} onChange={onChangeValue}/>
                 </div>
               </AddINputWrap>
 
               <AddINputWrap>
                 <label>색상</label>
                 <div className="input_box">
-                  <AddINput type="text" name="productColor" value={add.productColor} onChange={onChangeValue} />
+                  <AddINput type="text" name="productColor" value={productColor} onChange={onChangeValue} />
                 </div>
               </AddINputWrap>
 
               <AddINputWrap>
                 <label>재고 수량</label>
                 <div className="input_box">
-                  <AddINput type="text" name="productQuantity" value={add.productQuantity} onChange={onChangeValue} />
+                  <AddINput type="text" name="productQuantity" value={productQuantity} onChange={onChangeValue} />
                 </div>
               </AddINputWrap>
             </div> {/* p_info_box */}
@@ -159,7 +160,7 @@ function AddProduct() {
             <AddINputWrap>
               <label>상품 설명</label>
               <div className="input_box">
-                <AddTextArea type="text" name="productExplanation" id="explanation" value={add.productExplanation} onChange={onChangeValue} />
+                <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={onChangeValue} />
               </div>
             </AddINputWrap>
 
