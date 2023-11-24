@@ -1,13 +1,13 @@
 import styled from "styled-components";
-import { Container } from "../styles/Layout";
 import { useEffect, useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import AddProduct from "../components/AddProduct"
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setProductList } from "../store";
 import axios from "axios";
+
+import { Container } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
+import { setProductList } from "../store";
+import AddProduct from "../components/AddProduct"
 
 function Admin() {
   const navigate = useNavigate();
@@ -23,37 +23,29 @@ function Admin() {
   console.log(`등록된 상품:`, products);
 
   // DB에 저장된 게시글 불러와서 보여주기
-  useEffect(() => {
-    axios.get(`/registerProduct`)
+
+  useEffect(() => { 
+    axios.post('/fileList', {
+      userId: sessionStorage.getItem("아이디"),
+    })
       .then(response => {
-        // console.log('데이터', response.data);
-        console.log('응답 데이터');
+        console.log('데이터', response.data);
+        console.log(sessionStorage.getItem("아이디"));
         dispatch(setProductList(response.data));
-        if(products === undefined) {
-          dispatch(setProductList([]));
-        }
+        // if(products.length === 0) {
+        //   dispatch(setProductList([]));
+        //   console.log('데이터 없음');
+        // }
       })
       .catch(error => {
         console.log(error);
+        console.log(sessionStorage.getItem("아이디"));
+        if(products.length === 0) {
+          // dispatch(setProductList([]));
+          console.log('데이터 없음');
+        }
       })
-  }, []);
-
-  // useEffect(() => {
-  //   axios.post(`/`, {
-
-  //   })
-  //     .then(response => {
-  //       // console.log('데이터', response.data);
-  //       console.log('응답 데이터');
-  //       dispatch(setProductList(response.data));
-  //       if(products === undefined) {
-  //         dispatch(setProductList([]));
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }, [dispatch]);
+  }, [dispatch]);
 
   // 체크한 상품 삭제하기
   
