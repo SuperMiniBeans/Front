@@ -10,9 +10,11 @@ import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory
 
 
 
-// *********파일 첨부 만들기 ( )*********** -> 찾아보기 
+// *********파일 첨부 만들기 ( )*********** -> 찾아보기 ( )
 // 파일 받을 ui, 여러개 파일을 받아야 함, 
 // 사이즈는 free로 통일
+// 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
+
 
 
 
@@ -73,7 +75,7 @@ function AddProduct() {
     axios.post('/registerProduct', {
       userId: sessionStorage.getItem("아이디"),
       categoryMajorCode: selectedMajorCategory,
-      categoryMinorCode: selectedMajorCategory, selectedMinorCategory,
+      categoryMinorCode: selectedMinorCategory,
       productNumber: '',
       productName: productName,
       productPrice: productPrice,
@@ -86,16 +88,14 @@ function AddProduct() {
       productRegisterDate: today,
     })
       .then(response => {
-        
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
-        console.log('성공');
+        window.alert("상품 등록이 완료 되었습니다.")
         navigate('/admin');
       })
       .catch(error => {
         console.log(error);
         console.log('실패!');
-
       });
   }
 
@@ -112,7 +112,7 @@ function AddProduct() {
               <label>카테고리</label>
               <select 
                 name="categoryMajorCode"
-                value={selectedMajorCategory ? majorCategories.value : ''}
+                value={selectedMajorCategory || ''}
                 onChange={handleMajorValue}
               >
                 <option>대분류</option>
