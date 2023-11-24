@@ -39,12 +39,11 @@ const productSlice = createSlice({
   reducers: {
     addProductList: (state, action) => {
       state.products.push(action.payload);
-      console.log('addProductList액션', action);
     },
     setProductList: (state, action) => {
       state.products = action.payload;
-      // console.log('setProductList 액션' , action);
-      console.log('리스트페이로드', action.payload);
+      state.products.sort((a, b) => b.productNumber - a.productNumber); // 최근 등록한 항목이 위로 올라오도록 정렬
+      // console.log('리스트페이로드', action.payload);
     },
   },
 });
@@ -84,11 +83,11 @@ const categorySlice = createSlice({
     selectMajorCategory: (state, action) => {
       state.selectedMajorCategory = action.payload;
       state.selectedMinorCategory = null; // 대분류 바뀌면 소분류 초기화
-      console.log('메이저', action.payload);
+      // console.log('메이저', action.payload);
     },
     selectMinorCategory: (state, action) => {
       state.selectedMinorCategory = action.payload;
-      console.log('마이너', action.payload);
+      // console.log('마이너', action.payload);
     },
   },
 });
