@@ -9,9 +9,6 @@ function Header({isLogin, isAdmin}) {
   /* 카테고리 Link to에도 쿼리스트링으로 지정?! 아니면 라우터로 설정? */
   /* OUTER클릭하면 OUTER에 속한 모든 제품 보이게 하기 */
 
-  console.log({isLogin});
-  console.log({isAdmin});
-
   // 로그아웃 클릭하면 실행될 코드
   const onLogout = () => {
     sessionStorage.removeItem("아이디");
@@ -54,11 +51,10 @@ function Header({isLogin, isAdmin}) {
                   </Lnb>
                 </MouseOver>
                 <MouseOver><Link to="/">ACC</Link></MouseOver>
-                <MouseOver><Link to="/admin/*">관리자</Link></MouseOver>
 
                 {
                 isAdmin ? 
-                <MouseOver><Link to="/">관리자</Link></MouseOver>
+                <MouseOver><Link to="/admin/*">관리자</Link></MouseOver>
                 :
                 <></>
                 }

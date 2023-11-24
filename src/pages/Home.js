@@ -1,9 +1,11 @@
+import { Container } from "../styles/Layout";
+
 function Home() {
   return(
-    <div>
+    <Container>
       <br /><br />
       홈입니다
-    </div>
+    </Container>
   )
 }
 
