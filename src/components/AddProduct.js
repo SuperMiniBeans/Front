@@ -10,8 +10,9 @@ import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory
 
 
 
-// *********파일 첨부 만들기 ( )***********
-
+// *********파일 첨부 만들기 ( )*********** -> 찾아보기 
+// 파일 받을 ui, 여러개 파일을 받아야 함, 
+// 사이즈는 free로 통일
 
 
 
@@ -70,8 +71,9 @@ function AddProduct() {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
 
     axios.post('/registerProduct', {
+      userId: sessionStorage.getItem("아이디"),
       categoryMajorCode: selectedMajorCategory,
-      categoryMinorCode: selectedMinorCategory,
+      categoryMinorCode: selectedMajorCategory, selectedMinorCategory,
       productNumber: '',
       productName: productName,
       productPrice: productPrice,
@@ -84,6 +86,7 @@ function AddProduct() {
       productRegisterDate: today,
     })
       .then(response => {
+        
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
         console.log('성공');
@@ -104,128 +107,126 @@ function AddProduct() {
         <div className="align_center">
           <div>날짜: {today}</div>
 
-          <form>
-            <div id="p_cate_box">
-              <AddINputWrap>
-                <label>카테고리</label>
+          <div id="p_cate_box">
+            <AddINputWrap>
+              <label>카테고리</label>
+              <select 
+                name="categoryMajorCode"
+                value={selectedMajorCategory ? majorCategories.value : ''}
+                onChange={handleMajorValue}
+              >
+                <option>대분류</option>
+                {majorCategories.map((category) => (
+                  <option key={category.id} value={category.value}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+
+              {selectedMajorCategory && (
                 <select 
-                  name="categoryMajorCode"
-                  value={selectedMajorCategory ? majorCategories.value : ''}
-                  onChange={handleMajorValue}
+                  name="categoryMinorCode"
+                  value={selectedMinorCategory || ''}
+                  onChange={handleMinorValue}
                 >
-                  <option>대분류</option>
-                  {majorCategories.map((category) => (
-                    <option key={category.id} value={category.value}>
-                      {category.name}
+                  <option>소분류</option>
+                  {minorCategories[selectedMajorCategory].map((cate) => (
+                    <option key={cate.id} value={cate.value}>
+                      {cate.name}
                     </option>
                   ))}
                 </select>
+              )}
+            </AddINputWrap>
+          </div>
 
-                {selectedMajorCategory && (
-                  <select 
-                    name="categoryMinorCode"
-                    value={selectedMinorCategory || ''}
-                    onChange={handleMinorValue}
-                  >
-                    <option>소분류</option>
-                    {minorCategories[selectedMajorCategory].map((cate) => (
-                      <option key={cate.id} value={cate.value}>
-                        {cate.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </AddINputWrap>
-            </div>
-
-            <div id="p_name_box">
-              <AddINputWrap>
-                <label>상품명</label>
-                <div className="input_box">
-                  <AddINput type="text" name="productName" value={productName} onChange={handleInputChange}/>
-                </div>
-              </AddINputWrap>
-            </div> {/* p_name_box */}
+          <div id="p_name_box">
+            <AddINputWrap>
+              <label>상품명</label>
+              <div className="input_box">
+                <AddINput type="text" name="productName" value={productName} onChange={handleInputChange}/>
+              </div>
+            </AddINputWrap>
+          </div> {/* p_name_box */}
 
 
-            <div id="p_price_box">
-              <DscntChkBox className="dscnt_chkbox">
-                <input type="checkbox" name="discount" onChange={e => handleDscntCheck(e)} checked={dscntChked}/> 할인 적용
-              </DscntChkBox>
-
-              <AddINputWrap>
-                <label>가격</label>
-                <div className="input_box">
-                  <AddINput type="text" name="productPrice" value={productPrice} onChange={handleInputChange} />
-                </div>
-              </AddINputWrap>
-
-              <FlexBox>
-                <AddINputWrap>
-                  <label>할인율</label>
-                  <div className="input_box">
-                    <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} value={discountRate}/>
-                  </div>
-                </AddINputWrap>
-
-                {/* <AddINputWrap>
-                  <label>할인가</label>
-                  <div className="input_box">
-                    <AddINput type="text" name="discountPrice" value={dscntChked ? dscntPrice : 0} disabled={dscntChked ? false : true} onChange={handleInputChange} />
-                  </div>
-                </AddINputWrap> */}
-              </FlexBox>
-            </div> {/* p_price_box */}
-            
-            {/* 옵션 선택 받는 화면 다시 구성하기!! 옵션 개수는 사이즈, 색상 두가지 이며 각각의 아이템??! 종류??는 사용자가 입력해서 추가할 수 있도록 만들기( ) */}
-            <div id="p_info_box">
-              <AddINputWrap>
-                <label>사이즈</label>
-                <div  className="input_box">
-                  <AddINput type="text" name="productSize" value={productSize} onChange={handleInputChange}/>
-                </div>
-              </AddINputWrap>
-
-              <AddINputWrap>
-                <label>색상</label>
-                <div className="input_box">
-                  <AddINput type="text" name="productColor" value={productColor} onChange={handleInputChange} />
-                </div>
-              </AddINputWrap>
-
-              <AddINputWrap>
-                <label>재고 수량</label>
-                <div className="input_box">
-                  <AddINput type="text" name="productQuantity" value={productQuantity} onChange={handleInputChange} />
-                </div>
-              </AddINputWrap>
-            </div> {/* p_info_box */}
+          <div id="p_price_box">
+            <DscntChkBox className="dscnt_chkbox">
+              <input type="checkbox" name="discount" onChange={e => handleDscntCheck(e)} checked={dscntChked}/> 할인 적용
+            </DscntChkBox>
 
             <AddINputWrap>
-              <label>상품 설명</label>
+              <label>가격</label>
               <div className="input_box">
-                <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={handleInputChange} />
+                <AddINput type="text" name="productPrice" value={productPrice} onChange={handleInputChange} />
               </div>
             </AddINputWrap>
 
-            {/* <AddINputWrap>
-              <label>사이즈 안내</label>
-              <div className="input_box">
-                <AddTextArea type="text" name="" id="size_guide" />
-              </div>
-            </AddINputWrap> */}
+            <FlexBox>
+              <AddINputWrap>
+                <label>할인율</label>
+                <div className="input_box">
+                  <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} value={discountRate}/>
+                </div>
+              </AddINputWrap>
 
-            {/* <AddINputWrap>
-              <label>배송 및 <br /> 환불 안내</label>
-              <div className="input_box">
-                <AddTextArea type="text" name="" id="shipping_guide" />
+              {/* <AddINputWrap>
+                <label>할인가</label>
+                <div className="input_box">
+                  <AddINput type="text" name="discountPrice" value={dscntChked ? dscntPrice : 0} disabled={dscntChked ? false : true} onChange={handleInputChange} />
+                </div>
+              </AddINputWrap> */}
+            </FlexBox>
+          </div> {/* p_price_box */}
+          
+          {/* 옵션 선택 받는 화면 다시 구성하기!! 옵션 개수는 사이즈, 색상 두가지 이며 각각의 아이템??! 종류??는 사용자가 입력해서 추가할 수 있도록 만들기( ) */}
+          <div id="p_info_box">
+            <AddINputWrap>
+              <label>사이즈</label>
+              <div  className="input_box">
+                <AddINput type="text" name="productSize" value={productSize} onChange={handleInputChange}/>
               </div>
-            </AddINputWrap> */}
+            </AddINputWrap>
 
-            <div>
-              <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>
+            <AddINputWrap>
+              <label>색상</label>
+              <div className="input_box">
+                <AddINput type="text" name="productColor" value={productColor} onChange={handleInputChange} />
+              </div>
+            </AddINputWrap>
+
+            <AddINputWrap>
+              <label>재고 수량</label>
+              <div className="input_box">
+                <AddINput type="text" name="productQuantity" value={productQuantity} onChange={handleInputChange} />
+              </div>
+            </AddINputWrap>
+          </div> {/* p_info_box */}
+
+          <AddINputWrap>
+            <label>상품 설명</label>
+            <div className="input_box">
+              <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={handleInputChange} />
             </div>
-          </form>
+          </AddINputWrap>
+
+          {/* <AddINputWrap>
+            <label>사이즈 안내</label>
+            <div className="input_box">
+              <AddTextArea type="text" name="" id="size_guide" />
+            </div>
+          </AddINputWrap> */}
+
+          {/* <AddINputWrap>
+            <label>배송 및 <br /> 환불 안내</label>
+            <div className="input_box">
+              <AddTextArea type="text" name="" id="shipping_guide" />
+            </div>
+          </AddINputWrap> */}
+
+          <div>
+            <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>
+          </div>
         </div> {/* align_center */}
         
 
