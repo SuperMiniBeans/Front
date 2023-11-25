@@ -9,18 +9,18 @@ import { BtnBg } from "../styles/ButtonStyle";
 import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory } from "../store";
 
 
-
 // *********파일 첨부 만들기 ( )*********** -> 찾아보기 ( )
 // 파일 받을 ui, 여러개 파일을 받아야 함, 
 // 사이즈는 free로 통일
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
-
-
+// 삭제 구현하기 
 
 
 function AddProduct() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [images, setImages] = useState([]);
 
   // 카테고리 관련 state 불러와서 사용하기
   const cateState = useSelector((state) => state.categories);
@@ -29,11 +29,18 @@ function AddProduct() {
 
   // major카테고리 선택 상태 업데이트
   const handleMajorValue = e => dispatch(selectMajorCategory(e.target.value));
-  console.log('셀렉티드대분류', selectedMajorCategory);
+  // console.log('셀렉티드대분류', selectedMajorCategory);
 
   // minor카테고리 선택 상태 업데이트
   const handleMinorValue = e => dispatch(selectMinorCategory(e.target.value));
-  console.log('셀렉티드소분류', selectedMinorCategory);
+  // console.log('셀렉티드소분류', selectedMinorCategory);
+
+  // 이미지 업로드
+  const handleImageUpload = e => {
+    const files = e.target.files;
+    setImages([...images, ...files]);
+  }
+  console.log('이미지',images);
 
   // input관련 state불러와서 사용하기
   let inputState = useSelector((state) => state.inputValue.inputValues);
@@ -72,26 +79,58 @@ function AddProduct() {
   const onAddSubmit = () => {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
 
-    axios.post('/registerProduct', {
-      userId: sessionStorage.getItem("아이디"),
-      categoryMajorCode: selectedMajorCategory,
-      categoryMinorCode: selectedMinorCategory,
-      productNumber: '',
-      productName: productName,
-      productPrice: productPrice,
-      discountRate: discountRate,
-      discountPrice: discountPrice,
-      productSize: productSize,
-      productColor: productColor,
-      productQuantity: productQuantity,
-      productExplanation: productExplanation,
-      productRegisterDate: today,
-    })
+    const formdata = new FormData();
+
+    for(let i = 0; i<images.length; i++) {
+      formdata.append('fileName', images[i]);
+    }
+    formdata.append('categoryMajorCode', selectedMajorCategory);
+    formdata.append('categoryMinorCode', selectedMinorCategory);
+    formdata.append('productNumber', '');
+    formdata.append('productName', productName);
+    formdata.append('productPrice', productPrice);
+    formdata.append('discountRate', discountRate);
+    // formdata.append('discountPrice', discountPrice);
+    formdata.append('productSize', productSize);
+    formdata.append('productColor', productColor);
+    formdata.append('productQuantity', productQuantity);
+    formdata.append('productExplanation', productExplanation);
+    formdata.append('productRegisterDate', today);
+
+    // 문자열 blob으로 감싸기
+    // const jsonData = JSON.stringify(requestDataObj);    
+    // formdata.append('request', new Blob([jsonData], { type: 'application/json' })); 
+    
+    // formdata 값 확인하기
+    console.log('폼데이터----여기부터');
+    for (const [key, value] of formdata.entries()) {
+      console.log(key, value);
+    }
+    console.log('폼데이터----여기까지');
+
+
+    axios.post('/registerProduct', formdata
+    // {
+    //   userId: sessionStorage.getItem("아이디"),
+    //   categoryMajorCode: selectedMajorCategory,
+    //   categoryMinorCode: selectedMinorCategory,
+    //   productNumber: '',
+    //   productName: productName,
+    //   productPrice: productPrice,
+    //   discountRate: discountRate,
+    //   discountPrice: discountPrice,
+    //   productSize: productSize,
+    //   productColor: productColor,
+    //   productQuantity: productQuantity,
+    //   productExplanation: productExplanation,
+    //   productRegisterDate: today,
+    // }
+    )
       .then(response => {
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
-        window.alert("상품 등록이 완료 되었습니다.")
-        navigate('/admin');
+        window.alert("상품 등록이 완료 되었습니다.");
+        // navigate('/admin');
       })
       .catch(error => {
         console.log(error);
@@ -139,6 +178,15 @@ function AddProduct() {
               )}
             </AddINputWrap>
           </div>
+
+          <div id="p_name_box">
+            <AddINputWrap>
+              <label>상품 이미지</label>
+              <div className="input_box">
+                <input type="file" multiple name="productFiles" onChange={handleImageUpload}/>
+              </div>
+            </AddINputWrap>
+          </div> {/* p_name_box */}
 
           <div id="p_name_box">
             <AddINputWrap>
