@@ -79,37 +79,72 @@ function AddProduct() {
   const onAddSubmit = () => {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
 
-    const formdata = new FormData();
+  //   const inputData = JSON.stringify({
+  //     categoryMajorCode: selectedMajorCategory,
+  //     categoryMinorCode: selectedMinorCategory,
+  //     productNumber: '',
+  //     productName: productName,
+  //     productPrice: productPrice,
+  //     discountRate: discountRate,
+  //     discountPrice: discountPrice,
+  //     productSize: productSize,
+  //     productColor: productColor,
+  //     productQuantity: productQuantity,
+  //     productExplanation: productExplanation,
+  //     productRegisterDate: today,
+  // });
+
+    const formData = new FormData();
 
     for(let i = 0; i<images.length; i++) {
-      formdata.append('fileName', images[i]);
+      formData.append('productFile', images[i]);
     }
-    formdata.append('categoryMajorCode', selectedMajorCategory);
-    formdata.append('categoryMinorCode', selectedMinorCategory);
-    formdata.append('productNumber', '');
-    formdata.append('productName', productName);
-    formdata.append('productPrice', productPrice);
-    formdata.append('discountRate', discountRate);
-    // formdata.append('discountPrice', discountPrice);
-    formdata.append('productSize', productSize);
-    formdata.append('productColor', productColor);
-    formdata.append('productQuantity', productQuantity);
-    formdata.append('productExplanation', productExplanation);
-    formdata.append('productRegisterDate', today);
+    formData.append('categoryMajorCode', selectedMajorCategory);
+    formData.append('categoryMinorCode', selectedMinorCategory);
+    formData.append('productNumber', '');
+    formData.append('productName', productName);
+    formData.append('productPrice', productPrice);
+    formData.append('discountRate', discountRate);
+    // formData.append('discountPrice', discountPrice);
+    formData.append('productSize', productSize);
+    formData.append('productColor', productColor);
+    formData.append('productQuantity', productQuantity);
+    formData.append('productExplanation', productExplanation);
+    formData.append('productRegisterDate', today);
 
     // 문자열 blob으로 감싸기
     // const jsonData = JSON.stringify(requestDataObj);    
     // formdata.append('request', new Blob([jsonData], { type: 'application/json' })); 
     
+    // const productData = {
+    //   userId: sessionStorage.getItem("아이디"),
+    //   categoryMajorCode: selectedMajorCategory,
+    //   categoryMinorCode: selectedMinorCategory,
+    //   productNumber: '',
+    //   productName: productName,
+    //   productPrice: productPrice,
+    //   discountRate: discountRate,
+    //   discountPrice: discountPrice,
+    //   productSize: productSize,
+    //   productColor: productColor,
+    //   productQuantity: productQuantity,
+    //   productExplanation: productExplanation,
+    //   productRegisterDate: today,
+    // };
+    // formdata.append('request', JSON.stringify(productData));
+
     // formdata 값 확인하기
     console.log('폼데이터----여기부터');
-    for (const [key, value] of formdata.entries()) {
+    for (const [key, value] of formData.entries()) {
       console.log(key, value);
     }
     console.log('폼데이터----여기까지');
 
 
-    axios.post('/registerProduct', formdata
+    axios.post('/registerProduct', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+    },
     // {
     //   userId: sessionStorage.getItem("아이디"),
     //   categoryMajorCode: selectedMajorCategory,
@@ -125,7 +160,7 @@ function AddProduct() {
     //   productExplanation: productExplanation,
     //   productRegisterDate: today,
     // }
-    )
+    })
       .then(response => {
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
@@ -227,7 +262,6 @@ function AddProduct() {
             </FlexBox>
           </div> {/* p_price_box */}
           
-          {/* 옵션 선택 받는 화면 다시 구성하기!! 옵션 개수는 사이즈, 색상 두가지 이며 각각의 아이템??! 종류??는 사용자가 입력해서 추가할 수 있도록 만들기( ) */}
           <div id="p_info_box">
             <AddINputWrap>
               <label>사이즈</label>
