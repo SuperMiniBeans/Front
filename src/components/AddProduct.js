@@ -79,21 +79,6 @@ function AddProduct() {
   const onAddSubmit = () => {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
 
-  //   const inputData = JSON.stringify({
-  //     categoryMajorCode: selectedMajorCategory,
-  //     categoryMinorCode: selectedMinorCategory,
-  //     productNumber: '',
-  //     productName: productName,
-  //     productPrice: productPrice,
-  //     discountRate: discountRate,
-  //     discountPrice: discountPrice,
-  //     productSize: productSize,
-  //     productColor: productColor,
-  //     productQuantity: productQuantity,
-  //     productExplanation: productExplanation,
-  //     productRegisterDate: today,
-  // });
-
     const formData = new FormData();
 
     for(let i = 0; i<images.length; i++) {
@@ -113,27 +98,6 @@ function AddProduct() {
     formData.append('productExplanation', productExplanation);
     formData.append('productRegisterDate', today);
 
-    // 문자열 blob으로 감싸기
-    // const jsonData = JSON.stringify(requestDataObj);    
-    // formdata.append('request', new Blob([jsonData], { type: 'application/json' })); 
-    
-    // const productData = {
-    //   userId: sessionStorage.getItem("아이디"),
-    //   categoryMajorCode: selectedMajorCategory,
-    //   categoryMinorCode: selectedMinorCategory,
-    //   productNumber: '',
-    //   productName: productName,
-    //   productPrice: productPrice,
-    //   discountRate: discountRate,
-    //   discountPrice: discountPrice,
-    //   productSize: productSize,
-    //   productColor: productColor,
-    //   productQuantity: productQuantity,
-    //   productExplanation: productExplanation,
-    //   productRegisterDate: today,
-    // };
-    // formdata.append('request', JSON.stringify(productData));
-
     // formdata 값 확인하기
     console.log('폼데이터----여기부터');
     for (const [key, value] of formData.entries()) {
@@ -146,21 +110,6 @@ function AddProduct() {
       headers: {
         "Content-Type": "multipart/form-data",
     },
-    // {
-    //   userId: sessionStorage.getItem("아이디"),
-    //   categoryMajorCode: selectedMajorCategory,
-    //   categoryMinorCode: selectedMinorCategory,
-    //   productNumber: '',
-    //   productName: productName,
-    //   productPrice: productPrice,
-    //   discountRate: discountRate,
-    //   discountPrice: discountPrice,
-    //   productSize: productSize,
-    //   productColor: productColor,
-    //   productQuantity: productQuantity,
-    //   productExplanation: productExplanation,
-    //   productRegisterDate: today,
-    // }
     })
       .then(response => {
         console.log(response.data);
