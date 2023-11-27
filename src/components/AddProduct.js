@@ -97,8 +97,9 @@ function AddProduct() {
     const formData = new FormData();
 
     for(let i = 0; i<images.length; i++) {
-      formData.append('productFile', images[i]);
+      formData.append('uploadfiles', images[i]);
     }
+    formData.append('userId', sessionStorage.getItem("아이디"));
     formData.append('categoryMajorCode', selectedMajorCategory);
     formData.append('categoryMinorCode', selectedMinorCategory);
     formData.append('productNumber', '');
@@ -181,6 +182,7 @@ function AddProduct() {
         <div className="align_center">
           <div>날짜: {today}</div>
 
+        <form>
           <div id="p_cate_box">
             <AddINputWrap>
               <label>카테고리</label>
@@ -305,6 +307,7 @@ function AddProduct() {
               <AddTextArea type="text" name="" id="shipping_guide" />
             </div>
           </AddINputWrap> */}
+        </form>
 
           <div>
             <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>

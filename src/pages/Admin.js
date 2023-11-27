@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
-import { Container } from "../styles/Layout";
+import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
 import { setProductList } from "../store";
 import AddProduct from "../components/AddProduct"
 
@@ -58,7 +58,7 @@ function Admin() {
       <Container>
         <h2>상품 관리</h2>
 
-        <div className="add_btn_box"><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
+        
 
         <table>
           <caption>등록한 상품 목록</caption>
@@ -110,7 +110,10 @@ function Admin() {
           {/* map으로 돌리기 (여기까지-----------)*/}
         </table>
 
-        <div><DeleteChkedBtn type="submit">선택 삭제</DeleteChkedBtn></div>
+        <FlexBoxSB>
+          <div><DeleteChkedBtn type="submit">선택 삭제</DeleteChkedBtn></div>
+          <div className="add_btn_box"><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
+        </FlexBoxSB>
       </Container>
 
       <Routes>
@@ -128,14 +131,6 @@ const AdminWrap = styled.main`
   h2 {
     margin-bottom: 30px;
     text-align: center;
-  }
-
-  // 상품 등록 버튼 영역
-  .add_btn_box {
-    position: relative;
-    height: 40px;
-    margin-bottom: 10px;
-    // background-color: red;
   }
 
   // 테이블 스타일 설정
@@ -207,6 +202,14 @@ const AdminWrap = styled.main`
   #admin_list_del {
     width: 100px;
   }
+
+  // 상품 등록 버튼 영역
+  .add_btn_box {
+    position: relative;
+    height: 40px;
+    margin-top: 10px;
+    // background-color: red;
+  }
 `
 
 const GoAddProductBtn = styled.button`
@@ -215,19 +218,6 @@ const GoAddProductBtn = styled.button`
   height: 32px;
   right: 0;
   font-size: 14px;
-`
-
-const DeleteProductBtn = styled.button`
-  width: 40px;
-  height: 32px;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  background: #F82A2A;
-  cursor: pointer;
-
 `
 
 const DeleteChkedBtn = styled.button`

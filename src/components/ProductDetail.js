@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+
+import { setProductList } from "../store";
+
 
 function ProductDetail() {
 
@@ -10,8 +15,34 @@ function ProductDetail() {
   상품 등록 페이지로 이동하되 데이터는 남아있게????? - 찾아보기 ( ) 
   */
 
+  const dispatch = useDispatch();
 
   // const { productNum, title, price, dscntRate, dscntPrice, productExplanation } = products || {};
+
+  // 생성한 state 불러오기 
+  const products = useSelector(state => state.products.products);
+  console.log(`등록된 상품:`, products);
+
+  // DB에 저장된 게시글 불러와서 보여주기
+  useEffect(() => { 
+    axios.post('/fileList', {
+      userId: sessionStorage.getItem("아이디"),
+    })
+      .then(response => {
+        console.log('데이터', response.data);
+        dispatch(setProductList(response.data));
+        // if(products.length === 0) {
+        //   dispatch(setProductList([]));
+        //   console.log('데이터 없음');
+        // }
+      })
+      .catch(error => {
+        console.log(error);
+        if(products.length === 0) {
+          console.log('데이터 없음');
+        }
+      })
+  }, [dispatch]);
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
