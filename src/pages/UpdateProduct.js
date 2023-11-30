@@ -6,17 +6,12 @@ import axios from "axios";
 
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
-import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory, clearInputValue } from "../store";
+import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory } from "../store";
 
-
-// *********파일 첨부 만들기 ( )*********** -> 찾아보기 ( )
-// 파일 받을 ui, 여러개 파일을 받아야 함, 
-// 사이즈는 free로 통일
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
-// 삭제 구현하기 
 
 
-function AddProduct() {
+function UpdateProduct() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -68,11 +63,11 @@ function AddProduct() {
   // }
 
   // 글 작성 날짜 나타내기
-  // let date = new Date();
-  // let year = date.getFullYear();
-  // let month = date.getMonth() + 1;
-  // let day = date.getDate();
-  // let today = year + "-" + month + "-" + day;
+  let date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let today = year + "-" + month + "-" + day;
   // console.log(today);
 
   // 등록하기 버튼 누르면 실행
@@ -85,18 +80,18 @@ function AddProduct() {
       formData.append('productFile', images[i]);
     }
     formData.append('userId', sessionStorage.getItem("아이디"));
-    formData.append('userNumber', sessionStorage.getItem("userNumber"));
     formData.append('categoryMajorCode', selectedMajorCategory);
     formData.append('categoryMinorCode', selectedMinorCategory);
     formData.append('productName', productName);
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
     // formData.append('discountPrice', discountPrice);
+    formData.append('productNumber', '');
     formData.append('productSize', productSize);
     formData.append('productColor', productColor);
     formData.append('productQuantity', productQuantity);
     formData.append('productExplanation', productExplanation);
-
+    formData.append('productRegisterDate', '');
 
     // formdata 값 확인하기
     console.log('폼데이터----여기부터');
@@ -115,10 +110,7 @@ function AddProduct() {
         console.log(response.data);
         dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
         window.alert("상품 등록이 완료 되었습니다.");
-
         navigate('/admin');
-        dispatch(clearInputValue());
-
       })
       .catch(error => {
         console.log(error);
@@ -132,7 +124,7 @@ function AddProduct() {
         <h2>상품 등록</h2>
 
         <div className="align_center">
-        {/* <div>날짜: {today}</div> */}
+          <div>날짜: {today}</div>
 
         <form>
           <div id="p_cate_box">
@@ -363,4 +355,4 @@ const AddProductBtn = styled(BtnBg)`
   // background-color: pink;
 `
 
-export default AddProduct;
+export default UpdateProduct;

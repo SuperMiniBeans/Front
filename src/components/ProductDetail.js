@@ -11,19 +11,18 @@ function ProductDetail() {
 
   /* 
   1. admin이 isLogin===true이면 [수정]버튼 보이게 하기 ( )
-  2. [수정] 버튼 클릭하면 상품 수정 페이지로 이동...? 상품 등록 페이지로 이동..? 
-  상품 등록 페이지로 이동하되 데이터는 남아있게????? - 찾아보기 ( ) 
+  2. [수정] 버튼 클릭하면 상품 수정 페이지로 이동( )
+  상품 등록 페이지로 이동하되 기존 데이터는 남아있게 (useEffect사용하래 왜?)- 찾아보기 ( ) 
   */
 
   const dispatch = useDispatch();
-
-  // const { productNum, title, price, dscntRate, dscntPrice, productExplanation } = products || {};
 
   // 생성한 state 불러오기 
   const products = useSelector(state => state.products.products);
   console.log(`등록된 상품:`, products);
 
   // DB에 저장된 게시글 불러와서 보여주기
+  /* https://onethejay.tistory.com/194 */
   useEffect(() => { 
     axios.post('/fileList', {
       userId: sessionStorage.getItem("아이디"),

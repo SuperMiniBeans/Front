@@ -1,44 +1,34 @@
 import styled from "styled-components";
+import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useEffect } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Routes, Route, Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import moment from "moment/moment";
 
 import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
-import { setProductList } from "../store";
+import { setProductList, removeProductList } from "../store";
 import AddProduct from "../components/AddProduct"
-
-
-
-// 날짜 처리 어떻게 할지!! 
-// 썸네일 -> 어려우면 패스 (파일 업로드 잘 되면 생각해보기)
-
-
+import ProductDetail from "../components/ProductDetail";
 
 function Admin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // 상품 등록 페이지로 이동(버튼에 연결)
-  const goAddProduct = () => {
-    navigate('/admin/add');
-  }
+  // const params = useParams();
 
   // 생성한 state 불러오기 
   const products = useSelector(state => state.products.products);
   console.log(`등록된 상품:`, products);
 
   // DB에 저장된 게시글 불러와서 보여주기
-  useEffect(() => { 
+  useEffect(() => {
     axios.post('/fileList', {
       userId: sessionStorage.getItem("아이디"),
     })
       .then(response => {
-        console.log('데이터', response.data);
         dispatch(setProductList(response.data));
         // if(products.length === 0) {
-        //   dispatch(setProductList([]));
         //   console.log('데이터 없음');
         // }
       })
@@ -50,15 +40,82 @@ function Admin() {
       })
   }, [dispatch]);
 
-  // 체크한 상품 삭제하기
+  // 체크박스 토글
+  const [checkedProducts, setCheckedProducts] = useState([]);
+  console.log('선택된 항목', checkedProducts);
+  /* 혹시 콘솔 값을 setLanguage 바로 밑에서 체크한것이라면 반영은 제대로 되었을 가능성이 큽니다. 
+  왜냐하면 useState는 값이 바로 변경되지 않고, useState가 들어있는 컴포넌트가 리렌더링 될때 업데이트 되기 때문입니다. 
+  콘솔값을 selectBox 최상단이나, 혹은 이 함수에게 props를 주고있는 부모함수에서 찍어보면 값을 얻을수 있을것 같기는 합니다.  */
+  const handleCheckbox = (pNum) => {
+    if(checkedProducts.includes(pNum)) {
+      setCheckedProducts(checkedProducts.filter(id => id !== pNum));
+    } else {
+      setCheckedProducts([...checkedProducts, pNum]);
+    }
+    console.log('선택된 항목2', checkedProducts);
+  }
+
+  // 전체 선택
+  // const allCheck = () => {
+  //   if(checked) {
+  //     setCheckedProducts()
+  //   }
+  // }
+  
+  // 체크한 상품 삭제하기 
+  const onRemove = (id) => { // 뭘 삭제할지 말 해줘야함 
+    for(let i=0; i<checkedProducts.length; i++){
+      axios.get('/productDelete?productNumber='+checkedProducts[i])
+        .then((response, id) => {
+          console.log(response.data);
+          dispatch(removeProductList(checkedProducts));
+        })
+        .catch(error => {
+          console.log(error);
+          console.log('체크된 항목', checkedProducts)
+        })
+    }
+  }
+
+  const onRemove2 = (e) => { // 뭘 삭제할지 말 해줘야함 
+    axios.post('/productDelete', {
+      productNumber: e.productNumber
+    })
+      .then(response => {
+        console.log(response.data);
+        dispatch(removeProductList(response.data.productNumber));
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  // 대표 이미지 미리보기(작성중)
+  useEffect(() => {
+    axios.post('/fileList')
+      .then(response => {
+        console.log('get이미지', response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }, []) 
+
+  // 상품 등록 페이지로 이동(버튼에 연결)
+  const goAddProduct = () => {
+    navigate('/admin/add');
+  }
+
+  // 상품 수정 페이지로 이동
+  // const goUpdateProduct = () => {
+  //   navigate(`/admin/update/${products.productNumber}`);
+  // }
   
 
   return(
     <AdminWrap>
       <Container>
         <h2>상품 관리</h2>
-
-        
 
         <table>
           <caption>등록한 상품 목록</caption>
@@ -76,10 +133,11 @@ function Admin() {
             <tr>
               <th scope="col" id="admin_list_chk"><input type="checkbox"></input></th>
               <th scope="col" id="admin_list_num">상품 번호</th>
-              {/* <th scope="col" id="admin_list_thumbnail">썸네일</th> */}
+              <th scope="col" id="admin_list_thumbnail">썸네일</th>
               <th scope="col" id="admin_list_title">상품명</th>
               <th scope="col" id="admin_list_writer">작성자</th>
               <th scope="col" id="admin_list_date">날짜</th>
+              <th scope="col" id="admin_list_edit">수정</th>
               <th scope="col" id="admin_list_del">삭제</th>
             </tr>
           </thead>
@@ -95,14 +153,17 @@ function Admin() {
             products.map((products, index) => (
               <tbody key={index}>
                 <tr className="tbody_content">
-                  <td><input type="checkbox"></input></td>
+                  <td><input type="checkbox" onChange={() => handleCheckbox(products.productNumber)}></input></td>
+                  
                   <td>{products.productNumber}</td>
-                  {/* <td>썸네일</td> */}
-                  <td><Link to='/product/list/detail'>{products.productName}</Link></td>
+
+                  <td><img src={`/upload/${products.fileName}`} alt="thumbnail" /></td> {/* 이미지 url넣기 uuid를 가지고 이미지를 조회하는 url을 넣어야함  */}
+                  
+                  <td><Link to={`/product/list/detail/${products.productNumber}`}>{products.productName}</Link></td>
                   <td>{products.userId}</td>
-                  <td>{products.productRegisterDate}</td>
-                  {/* <td>2023-11-24</td> */}
-                  <td className="product_del_icon"><RiDeleteBin6Line /></td>
+                  <td>{moment(products.productRegisterDate).format('YYYY-MM-DD')}</td>
+                  <td className="product_del_icon"><FaRegEdit /></td>
+                  <td className="product_del_icon"><RiDeleteBin6Line onClick={() => onRemove2(products)}/></td>
                 </tr>
               </tbody>
             ))
@@ -111,14 +172,17 @@ function Admin() {
         </table>
 
         <FlexBoxSB>
-          <div><DeleteChkedBtn type="submit">선택 삭제</DeleteChkedBtn></div>
+          <div><DeleteChkedBtn type="submit" onClick={onRemove}>선택 삭제</DeleteChkedBtn></div>
           <div className="add_btn_box"><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
         </FlexBoxSB>
       </Container>
 
       <Routes>
         <Route path="/admin/add" element={<AddProduct />} />
+        <Route path={`/product/list/detail/${products.productNumber}`} element={<ProductDetail />} />
+        {/* <Route path={'/admin/update/:product_number'} element={<ProductDetail />} /> */}
       </Routes>
+      {/* 동적 라우팅 참고 - https://velog.io/@zzangzzong/React-%EB%8F%99%EC%A0%81%EB%9D%BC%EC%9A%B0%ED%8C%85Dynamic-Routing */}
     </AdminWrap>
   )
 }
@@ -196,9 +260,9 @@ const AdminWrap = styled.main`
   
   #admin_list_date {
     width: 160px;
-    background-color: yellowgreen;
   }
 
+  #admin_list_edit,
   #admin_list_del {
     width: 100px;
   }

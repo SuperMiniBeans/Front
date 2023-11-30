@@ -45,6 +45,14 @@ const productSlice = createSlice({
       state.products.sort((a, b) => b.productNumber - a.productNumber); // 최근 등록한 항목이 위로 올라오도록 정렬
       // console.log('리스트페이로드', action.payload);
     },
+    toggleProductList: (state, action) => {
+      state.products.map(state => state.id === action.id ? {...state, checked: !state.checked} : state);
+      console.log('store토글액션', action);
+    },
+    removeProductList: (state, action) => {
+      state.products.filter(product => product.productNumber !== action.productNumber);
+      console.log('store리무브', action.payload);
+    },
   },
 });
 
@@ -93,7 +101,7 @@ const categorySlice = createSlice({
 });
 
 export const { setInputValue, clearInputValue } = inputValueSlice.actions;
-export const { addProductList, setProductList } = productSlice.actions;
+export const { addProductList, setProductList, toggleProductList, removeProductList } = productSlice.actions;
 export const { selectMajorCategory, selectMinorCategory } = categorySlice.actions;
 
 const store = configureStore({
