@@ -11,7 +11,8 @@ import MyPage from "../pages/MyPage";
 import Admin from "../pages/Admin";
 import Product from "../pages/Product";
 import ProductDetail from "./ProductDetail";
-import AddProduct from "./AddProduct";
+import AddProduct from "../pages/AddProduct";
+import UpdateProduct from "../pages/UpdateProduct";
 import styled from "styled-components";
 
 
@@ -21,12 +22,13 @@ function Main() {
     <MainWrap>
       <Routes>
         <Route exact path='/admin/*' element={<Admin />} />
-        <Route path="/admin/add" element={<AddProduct />} />
+        <Route path='/admin/add' element={<AddProduct />} />
+        <Route path={'/admin/products/:id/edit'} element={<UpdateProduct />} />
 
         <Route path='/myPage' element={<MyPage />} />
 
-        <Route path="/product/list/*" element={<Product />} />
-        <Route path="/product/list/detail" element={<ProductDetail />} />
+        <Route path='/product/list/*' element={<Product />} />
+        <Route path='/product/list/detail' element={<ProductDetail />} />
 
         <Route path='/join/joincomplete' element={<JoinComplete />} />
         <Route path='/join' element={<Join />} />
