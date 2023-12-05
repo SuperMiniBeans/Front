@@ -13,9 +13,9 @@ const initialState = {
     productExplanation: '',
     productExplanation1: '',
     productExplanation2: '',
-
   },
   products: [],
+  productsEach: [],
 };
 
 // 상품 등록 페이지 state 관리
@@ -62,11 +62,11 @@ const productSlice = createSlice({
       console.log('store리무브', action.payload);
     },
     setProduct: (state, action) => {
-      state.products = action.payload;
+      state.productsEach = action.payload;
     },
     updateProduct: (state, action) => {
-      state.products = {...state.products, ...action.payload}
-      console.log('updateProduct 리듀서',state.products)
+      state.productsEach = {...state.productsUpdate, ...action.payload}
+      console.log('updateProduct 리듀서',state.productsUpdate)
     }
   },
 });
