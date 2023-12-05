@@ -11,6 +11,9 @@ const initialState = {
     productColor: '',
     productQuantity: 0,
     productExplanation: '',
+    productExplanation1: '',
+    productExplanation2: '',
+
   },
   products: [],
 };
@@ -28,6 +31,11 @@ const inputValueSlice = createSlice({
     clearInputValue: (state, action) => {
       let { name } = action.payload;
       state.inputValues[name] = '';
+      console.log('인풋밸류 클리어', name);
+    },
+    updateInputValue: (state, action) => {
+      state.value = action.payload;
+      return action.payload;
     },
   },
 });
@@ -53,6 +61,13 @@ const productSlice = createSlice({
       state.products.filter(product => product.productNumber !== action.productNumber);
       console.log('store리무브', action.payload);
     },
+    setProduct: (state, action) => {
+      state.products = action.payload;
+    },
+    updateProduct: (state, action) => {
+      state.products = {...state.products, ...action.payload}
+      console.log('updateProduct 리듀서',state.products)
+    }
   },
 });
 
@@ -97,12 +112,18 @@ const categorySlice = createSlice({
       state.selectedMinorCategory = action.payload;
       // console.log('마이너', action.payload);
     },
+    setMajorCategory: (state, action) => {
+      state.majorCategories = action.payload;
+    },
+    setMinorCategory: (state, action) => {
+      state.minorCategories = action.payload;
+    },
   },
 });
 
-export const { setInputValue, clearInputValue } = inputValueSlice.actions;
-export const { addProductList, setProductList, toggleProductList, removeProductList } = productSlice.actions;
-export const { selectMajorCategory, selectMinorCategory } = categorySlice.actions;
+export const { setInputValue, clearInputValue, updateInputValue } = inputValueSlice.actions;
+export const { addProductList, setProductList, toggleProductList, removeProductList, setProduct, updateProduct } = productSlice.actions;
+export const { selectMajorCategory, selectMinorCategory, setMajorCategory, setMinorCategory } = categorySlice.actions;
 
 const store = configureStore({
   reducer: {
