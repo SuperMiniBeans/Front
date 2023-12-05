@@ -23,12 +23,13 @@ function Main() {
       <Routes>
         <Route exact path='/admin/*' element={<Admin />} />
         <Route path='/admin/add' element={<AddProduct />} />
-        <Route path={'/admin/products/:id/edit'} element={<UpdateProduct />} />
+        <Route path='/admin/products/:id/edit' element={<UpdateProduct />} />
 
         <Route path='/myPage' element={<MyPage />} />
 
         <Route path='/product/list/*' element={<Product />} />
-        <Route path='/product/list/detail' element={<ProductDetail />} />
+        <Route path='/product/list/detail/:id' element={<ProductDetail />} />
+
 
         <Route path='/join/joincomplete' element={<JoinComplete />} />
         <Route path='/join' element={<Join />} />
