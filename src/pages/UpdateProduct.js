@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
-import { setInputValue, updateInputValue, selectMajorCategory, selectMinorCategory, setProduct, updateProduct,setMajorCategory, setMinorCategory } from "../store";
+import { selectMajorCategory, selectMinorCategory, setProduct, updateProduct } from "../store";
 
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
 
@@ -17,10 +17,11 @@ function UpdateProduct() {
   const { id } = useParams();
   console.log('아이디파람', id);
 
-  const products = useSelector(state => state.products.products);
+  const products = useSelector(state => state.products.productsEach);
   // let productNumberItem = products.find((data) => {return data.productNumber === Number(id)});
   // console.log('해당 피넘', productNumberItem);
-  console.log('products', products)
+  console.log('productsEach', products);
+
 
   useEffect(() => {
     axios.post('/productView', {
@@ -41,9 +42,6 @@ function UpdateProduct() {
   // 카테고리 관련 state 불러와서 사용하기
   const cateState = useSelector((state) => state.categories);
   const {majorCategories, minorCategories, selectedMajorCategory, selectedMinorCategory} = cateState;
-  console.log('카테고리 스테이트',cateState)
-  console.log('메이저카테고리즈', majorCategories)
-  
 
   // major카테고리 선택 상태 업데이트
   const handleMajorValue = e => {
@@ -72,7 +70,9 @@ function UpdateProduct() {
 
   // input관련 state불러와서 사용하기
   let inputState = useSelector((state) => state.inputValue.inputValues);
-  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = inputState;
+  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = inputState;
+  const { discountRate } = inputState;
+
 
   // input 입력 받은 값 state에저장
   const handleInputChange = e => {
@@ -140,8 +140,6 @@ function UpdateProduct() {
         console.log('실패!');
       });
   }
-
-  console.log(products.productExplanation2);
 
   return(
     <AddProductWrap>
