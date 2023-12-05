@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useState, useEffect, useCallback } from "react";
-import { Routes, Route, Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import moment from "moment/moment";
 
-import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
+import { Container, FlexBoxSB } from "../styles/Layout";
 import { setProductList, removeProductList } from "../store";
 import AddProduct from "./AddProduct"
 import ProductDetail from "../components/ProductDetail";
@@ -16,11 +16,10 @@ import UpdateProduct from "./UpdateProduct";
 function Admin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const params = useParams();
 
   // 생성한 state 불러오기 
   const products = useSelector(state => state.products.products);
-  // console.log(`등록된 상품:`, products);
+  // console.log('등록된 상품', products);
 
   // DB에 저장된 게시글 불러와서 보여주기
   // const [refresh, setRefresh] = useState(1);
@@ -34,11 +33,12 @@ function Admin() {
       .catch(error => {
         console.log(error);
       })
-  }, []);
+  }, [dispatch]);
 
 
   // 체크박스 토글
   const [checkedProducts, setCheckedProducts] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
   console.log('선택된 항목', checkedProducts);
   /* 혹시 콘솔 값을 setLanguage 바로 밑에서 체크한것이라면 반영은 제대로 되었을 가능성이 큽니다. 
   왜냐하면 useState는 값이 바로 변경되지 않고, useState가 들어있는 컴포넌트가 리렌더링 될때 업데이트 되기 때문입니다. 
@@ -46,7 +46,6 @@ function Admin() {
   const handleCheckbox = (checked, pNum) => {
     if(checked) {
       setCheckedProducts([...checkedProducts, pNum]);
-
     } else {
       setCheckedProducts(checkedProducts.filter(id => id !== pNum));
     }
@@ -64,10 +63,28 @@ function Admin() {
   }
   
   // 체크한 상품 삭제하기 
-  const onRemove = () => { // 뭘 삭제할지 말 해줘야함
+  // const onRemove = () => { // 뭘 삭제할지 말 해줘야함
+  //   window.alert("삭제하시겠습니까?");
+  //   for(let i=0; i<checkedProducts.length; i++){
+  //     axios.get('/productDelete?productNumber='+checkedProducts[i])
+  //       .then(response => {
+  //         console.log(response.data);
+  //         dispatch(removeProductList(checkedProducts));
+  //         window.location.reload();
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //         console.log('체크된 항목?', checkedProducts)
+  //       })
+  //   }
+  // }
+
+  const onRemove = () => { // 정현이 코드에 맞춰보기
     window.alert("삭제하시겠습니까?");
     for(let i=0; i<checkedProducts.length; i++){
-      axios.get('/productDelete?productNumber='+checkedProducts[i])
+      axios.post('/productDelete', {
+        productNumber: products.productNumber,
+      })
         .then(response => {
           console.log(response.data);
           dispatch(removeProductList(checkedProducts));
@@ -75,7 +92,7 @@ function Admin() {
         })
         .catch(error => {
           console.log(error);
-          console.log('체크된 항목?', checkedProducts)
+          console.log('체크된 항목', checkedProducts);
         })
     }
   }
@@ -94,6 +111,8 @@ function Admin() {
       })
   }
 
+  
+
   // 대표 이미지 미리보기(작성중)
   // useEffect(() => {
   //   axios.post('/fileList')
@@ -108,13 +127,7 @@ function Admin() {
   // 상품 등록 페이지로 이동(버튼에 연결)
   const goAddProduct = () => {
     navigate('/admin/add');
-  }
-
-  // 상품 수정 페이지로 이동
-  // const goUpdateProduct = () => {
-  //   navigate(`/admin/update/${products.productNumber}`);
-  // }
-  
+  }  
 
   return(
     <AdminWrap>
@@ -186,8 +199,8 @@ function Admin() {
 
       <Routes>
         <Route path="/admin/add" element={<AddProduct />} />
-        <Route path={`/product/list/detail/${products.productNumber}`} element={<ProductDetail />} />
-        <Route path={'/admin/products/:id/edit'} element={<UpdateProduct />} />
+        <Route path='/product/list/detail/:id' element={<ProductDetail />} />
+        <Route path='/admin/products/:id/edit' element={<UpdateProduct />} />
       </Routes>
       {/* 동적 라우팅 참고 - https://velog.io/@zzangzzong/React-%EB%8F%99%EC%A0%81%EB%9D%BC%EC%9A%B0%ED%8C%85Dynamic-Routing */}
     </AdminWrap>
@@ -245,6 +258,7 @@ const AdminWrap = styled.main`
     .product_del_icon {
       svg {
         cursor: pointer;
+        color: #F82A2A;
       }
     }
   }
