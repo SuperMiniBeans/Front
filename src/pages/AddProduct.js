@@ -83,8 +83,8 @@ function AddProduct() {
     formData.append('productColor', productColor);
     formData.append('productQuantity', productQuantity);
     formData.append('productExplanation', productExplanation);
-    formData.append('productExplanation', productExplanation1);
-    formData.append('productExplanation', productExplanation2);
+    formData.append('productExplanation1', productExplanation1);
+    formData.append('productExplanation2', productExplanation2);
 
 
     // formdata 값 확인하기
@@ -235,14 +235,14 @@ function AddProduct() {
           <AddINputWrap>
             <label>사이즈 안내</label>
             <div className="input_box">
-              <AddTextArea type="text" name="productExplanation1" id="size_guide" onChange={handleInputChange} />
+              <AddTextArea type="text" name="productExplanation1" id="size_guide" value={productExplanation1} onChange={handleInputChange} />
             </div>
           </AddINputWrap>
 
           <AddINputWrap>
             <label>배송 및 <br /> 환불 안내</label>
             <div className="input_box">
-              <AddTextArea type="text" name="productExplanation2" id="shipping_guide" onChange={handleInputChange} />
+              <AddTextArea type="text" name="productExplanation2" id="shipping_guide" value={productExplanation2} onChange={handleInputChange} />
             </div>
           </AddINputWrap>
         </form>
