@@ -1,83 +1,122 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
-import { selectMajorCategory, selectMinorCategory, setProduct, updateProduct } from "../store";
+import { selectMajorCategory, selectMinorCategory } from "../store";
 
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
 
 function UpdateProduct() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const { id } = useParams();
-  console.log('아이디파람', id);
+  // console.log('아이디파람', id);
 
-  const products = useSelector(state => state.products.productsEach);
-  // let productNumberItem = products.find((data) => {return data.productNumber === Number(id)});
-  // console.log('해당 피넘', productNumberItem);
-  console.log('productsEach', products);
+  const [product, setProduct] = useState({
+    productName: '',
+    productPrice: 0,
+    discountRate: 0,
+    discountPrice: 0,
+    productSize: '',
+    productColor: '',
+    productQuantity: 0,
+    productExplanation: '',
+    productExplanation1: '',
+    productExplanation2: '',
+  })
+  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
 
+  // 카테고리 설정하기
+  const [majorCategory, setMajorCategory] = useState('');
+  const [minorCategory, setMinorCategory] = useState('');
 
+  const majorCategories = [
+    {id: 1, name: 'OUTER', value: 1},
+    {id: 2, name: 'TOP', value: 2},
+    {id: 3, name: 'BOTTOM', value: 3},
+    {id: 4, name: 'ACC', value: 4},
+  ];
+  const minorCategories = {
+    1: [
+      {id: 11, name: 'COAT', value: 1},
+      {id: 12, name: 'JACKET', value: 2},
+      {id: 13, name: 'BLAZERS', value: 3},
+    ],
+    2: [
+      {id: 21, name: 'T-SHIRTS', value: 4},
+      {id: 22, name: 'SHIRTS', value: 5},
+      {id: 23, name: 'HOODIES/SWEATSHIRTS', value: 6},
+      {id: 24, name: 'KNITWEAR', value: 7},
+    ],
+    3: [
+      {id: 31, name: 'PANTS', value: 8},
+      {id: 32, name: 'JEANS', value: 9},
+    ],
+    4: [ ],
+  };
+
+  // 데이터 불러오기
   useEffect(() => {
     axios.post('/productView', {
       productNumber: id
     })
       .then(response => {
-        console.log('response.data', response.data);
-        dispatch(setProduct(response.data));
-        dispatch(selectMajorCategory(response.data.categoryMajorCode));
-        dispatch(selectMinorCategory(response.data.categoryMinorCode));
+        console.log('response.data', response.data[0]);
+        setProduct(response.data[0]);
+        setMajorCategory(response.data[0].categoryMajorCode);
+        setMinorCategory(response.data[0].categoryMinorCode);
       })
       .catch(error => {
         console.log(error);
       })
-  }, [dispatch, id]);
+  }, [id]);
+  // top, tshirts -> bottom, jeans
+  console.log('response.data[0].categoryMajorCode', majorCategory);
 
-
-  // 카테고리 관련 state 불러와서 사용하기
-  const cateState = useSelector((state) => state.categories);
-  const {majorCategories, minorCategories, selectedMajorCategory, selectedMinorCategory} = cateState;
-
-  // major카테고리 선택 상태 업데이트
+  // major 선택 상태 업데이트
   const handleMajorValue = e => {
-    const selectedMajorCategory = e.target.value;
-    dispatch(selectMajorCategory(selectedMajorCategory));
-    // dispatch(selectMajorCategory(e.target.value));
-    console.log('셀렉티드대분류', selectedMajorCategory);
+    setMajorCategory(e.target.value);
+    setMinorCategory('');
   }
+  console.log('메이저', majorCategory);
 
   // minor카테고리 선택 상태 업데이트
   const handleMinorValue = e => {
-    const selectedMinorCategory = e.target.value;
-    dispatch(selectMinorCategory(selectedMinorCategory));
-    // dispatch(selectMinorCategory(e.target.value));
-    console.log('셀렉티드소분류', selectedMinorCategory);
-  } 
+    setMinorCategory(e.target.value);
+  }
+  console.log('마이너', minorCategory);
+
+  // db의 이미지를 리스트로 저장
+  // src={`/upload/${products.fileUploadPath}/th_${products.fileUuid}_${products.fileName}`} 
+
+  // const [imgPathList, setImgPathList] = useState([{
+  //   fileUploadPath: '',
+  //   fileUuid: '',
+  //   fileName: '',
+  // }]);
+  // const product = useSelector(state => state.products.productsEach);
+  // console.log('productEach모두', product);
+
+  // console.log('이미지 경로 리스트', imgPathList);
 
   // 이미지 업로드
   const [images, setImages] = useState([]);
-
   const handleImageUpload = e => {
     const files = e.target.files;
     setImages([...images, ...files]);
   }
-  console.log('이미지', images);
+  // console.log('이미지', images);
 
-  // input관련 state불러와서 사용하기
-  let inputState = useSelector((state) => state.inputValue.inputValues);
-  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = inputState;
-  const { discountRate } = inputState;
-
-
-  // input 입력 받은 값 state에저장
+  // input입력 받은 값 state에저장
   const handleInputChange = e => {
-    const {name, value} = e.target;
-    dispatch(setProduct({ ...products, [name]: value }));
+    const { name, value } = e.target; // e.target에서 name과 value만 가져오기
+    setProduct({
+      ...product,
+      [name]: value,
+    })
   }
 
   // 할인 적용 체크
@@ -102,20 +141,19 @@ function UpdateProduct() {
       formData.append('productFile', images[i]);
     }
     formData.append('userId', sessionStorage.getItem("아이디"));
-    formData.append('categoryMajorCode', selectedMajorCategory);
-    formData.append('categoryMinorCode', selectedMinorCategory);
-    formData.append('productName', products.productName);
-    formData.append('productPrice', products.productPrice);
-    formData.append('discountRate', products.discountRate);
+    formData.append('categoryMajorCode', majorCategory);
+    formData.append('categoryMinorCode', minorCategory);
+    formData.append('productName', productName);
+    formData.append('productPrice', productPrice);
+    formData.append('discountRate', 1);
     // formData.append('discountPrice', products.discountPrice);
     formData.append('productNumber', id);
-    formData.append('productSize', products.productSize);
-    formData.append('productColor', products.productColor);
-    formData.append('productQuantity', products.productQuantity);
-    formData.append('productExplanation',products.productExplanation);
-    formData.append('productExplanation1', products.productExplanation1);
-    formData.append('productExplanation2', products.productExplanation2);
-
+    formData.append('productSize', productSize);
+    formData.append('productColor', productColor);
+    formData.append('productQuantity', productQuantity);
+    formData.append('productExplanation',productExplanation);
+    formData.append('productExplanation1', productExplanation1);
+    formData.append('productExplanation2', productExplanation2);
 
     // formdata 값 확인하기
     console.log('폼데이터----여기부터');
@@ -131,7 +169,6 @@ function UpdateProduct() {
     })
       .then(response => {
         console.log(response.data);
-        // dispatch(addProductList(response.data));
         window.alert("상품 수정이 완료 되었습니다.");
         navigate('/admin');
       })
@@ -147,15 +184,15 @@ function UpdateProduct() {
         <h2>상품 수정</h2>
 
         <div className="align_center">
-          {/* <div>날짜: {today}</div> */}
 
+        {/* {products ?  */}
         <form>
           <div id="p_cate_box">
             <AddINputWrap>
               <label>카테고리</label>
               <select 
                 name="categoryMajorCode"
-                value={selectedMajorCategory || ''}
+                value={majorCategory || ''}
                 onChange={handleMajorValue}
               >
                 <option>대분류</option>
@@ -166,14 +203,14 @@ function UpdateProduct() {
                 ))}
               </select>
 
-              {selectedMajorCategory && (
+              {majorCategory && (
                 <select 
                   name="categoryMinorCode"
-                  value={selectedMinorCategory || ''}
+                  value={minorCategory || ''}
                   onChange={handleMinorValue}
                 >
                   <option>소분류</option>
-                  {minorCategories[selectedMajorCategory].map((cate) => (
+                  {minorCategories[majorCategory].map((cate) => (
                     <option key={cate.id} value={cate.value}>
                       {cate.name}
                     </option>
@@ -190,17 +227,16 @@ function UpdateProduct() {
                 <input type="file" multiple name="productFile" onChange={handleImageUpload}/>
               </div>
             </AddINputWrap>
-          </div> {/* p_name_box */}
+          </div>
 
           <div id="p_name_box">
             <AddINputWrap>
               <label>상품명</label>
               <div className="input_box">
-                <AddINput type="text" name="productName" value={products.productName} onChange={handleInputChange}/>
+                <AddINput type="text" name="productName" value={productName} onChange={handleInputChange}/>
               </div>
             </AddINputWrap>
-          </div> {/* p_name_box */}
-
+          </div>
 
           <div id="p_price_box">
             <DscntChkBox className="dscnt_chkbox">
@@ -210,7 +246,7 @@ function UpdateProduct() {
             <AddINputWrap>
               <label>가격</label>
               <div className="input_box">
-                <AddINput type="text" name="productPrice" value={products.productPrice} onChange={handleInputChange} />
+                <AddINput type="text" name="productPrice" value={productPrice} onChange={handleInputChange} />
               </div>
             </AddINputWrap>
 
@@ -229,55 +265,58 @@ function UpdateProduct() {
                 </div>
               </AddINputWrap> */}
             </FlexBox>
-          </div> {/* p_price_box */}
-          
+          </div> 
+
           <div id="p_info_box">
             <AddINputWrap>
               <label>사이즈</label>
               <div  className="input_box">
-                <AddINput type="text" name="productSize" value={products.productSize} onChange={handleInputChange}/>
+                <AddINput type="text" name="productSize" value={productSize} onChange={handleInputChange}/>
               </div>
             </AddINputWrap>
 
             <AddINputWrap>
               <label>색상</label>
               <div className="input_box">
-                <AddINput type="text" name="productColor" value={products.productColor} onChange={handleInputChange} />
+                <AddINput type="text" name="productColor" value={productColor} onChange={handleInputChange} />
               </div>
             </AddINputWrap>
 
             <AddINputWrap>
               <label>재고 수량</label>
               <div className="input_box">
-                <AddINput type="text" name="productQuantity" value={products.productQuantity} onChange={handleInputChange} />
+                <AddINput type="text" name="productQuantity" value= {productQuantity} onChange={handleInputChange} />
               </div>
             </AddINputWrap>
-          </div> {/* p_info_box */}
+          </div>
 
           <AddINputWrap>
             <label>상품 설명</label>
             <div className="input_box">
-              <AddTextArea type="text" name="productExplanation" id="explanation" value={products.productExplanation} onChange={handleInputChange} />
+              <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={handleInputChange} />
             </div>
           </AddINputWrap>
 
           <AddINputWrap>
             <label>사이즈 안내</label>
             <div className="input_box">
-              <AddTextArea type="text" name="productExplanation1" id="size_guide" value={products.productExplanation1} onChange={handleInputChange} />
+              <AddTextArea type="text" name="productExplanation1" id="size_guide" value={productExplanation1} onChange={handleInputChange} />
             </div>
           </AddINputWrap>
 
           <AddINputWrap>
             <label>배송 및 <br /> 환불 안내</label>
             <div className="input_box">
-              <AddTextArea type="text" name="productExplanation2" id="shipping_guide" value={products.productExplanation2} onChange={handleInputChange} />
+              <AddTextArea type="text" name="productExplanation2" id="shipping_guide" value={productExplanation2} onChange={handleInputChange} />
             </div>
           </AddINputWrap>
-        </form>
+        </form> 
+        {/* : 
+        <div>데이터가 없습니다.</div>
+        } */}
 
-          <div>
-            <AddProductBtn type="submit" onClick={onUpdateSubmit}>등록</AddProductBtn>
+          <div className="addbtn_box">
+            <AddProductBtn type="submit" onClick={onUpdateSubmit}>수정</AddProductBtn>
           </div>
         </div> {/* align_center */}
       </Container>
@@ -306,6 +345,12 @@ const AddProductWrap = styled.div`
   #p_price_box,
   #p_info_box {
     margin-bottom: 40px;
+  }
+  
+  .addbtn_box {
+    display: flex;
+    justify-content: center;
+    margin-top: 110px;
   }
 `
 

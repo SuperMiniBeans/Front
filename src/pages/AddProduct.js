@@ -1,32 +1,79 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
-import { setInputValue, addProductList, selectMajorCategory, selectMinorCategory, clearInputValue } from "../store";
-
 
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
 // 상품 등록 후 value값 비우기( )
 
 function AddProduct() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  // 카테고리 관련state 불러와서 사용하기
-  const cateState = useSelector((state) => state.categories);
-  const {majorCategories, minorCategories, selectedMajorCategory, selectedMinorCategory} = cateState;
+  const [product, setProduct] = useState({
+    productName: '',
+    productPrice: 0,
+    discountRate: 0,
+    discountPrice: 0,
+    productSize: '',
+    productColor: '',
+    productQuantity: 0,
+    productExplanation: '',
+    productExplanation1: '',
+    productExplanation2: '',
+  })
+  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
 
-  // major카테고리 선택 상태 업데이트
-  const handleMajorValue = e => dispatch(selectMajorCategory(e.target.value));
-  // console.log('셀렉티드대분류', selectedMajorCategory);
+  // input입력 받은 값 state에저장
+  const handleInputChange = e => {
+    const { name, value } = e.target; // e.target에서 name과 value만 가져오기
+    setProduct({
+      ...product,
+      [name]: value,
+    })
+  }
+
+  // 카테고리 설정하기
+  const [majorCategory, setMajorCategory] = useState('');
+  const [minorCategory, setMinorCategory] = useState('');
+
+  const majorCategories = [
+    {id: 1, name: 'OUTER', value: 1},
+    {id: 2, name: 'TOP', value: 2},
+    {id: 3, name: 'BOTTOM', value: 3},
+    {id: 4, name: 'ACC', value: 4},
+  ];
+  const minorCategories = {
+    1: [
+      {id: 11, name: 'COAT', value: 1},
+      {id: 12, name: 'JACKET', value: 2},
+      {id: 13, name: 'BLAZERS', value: 3},
+    ],
+    2: [
+      {id: 21, name: 'T-SHIRTS', value: 4},
+      {id: 22, name: 'SHIRTS', value: 5},
+      {id: 23, name: 'HOODIES/SWEATSHIRTS', value: 6},
+      {id: 24, name: 'KNITWEAR', value: 7},
+    ],
+    3: [
+      {id: 31, name: 'PANTS', value: 8},
+      {id: 32, name: 'JEANS', value: 9},
+    ],
+    4: [ ],
+  };
+
+  // major 선택 상태 업데이트
+  const handleMajorValue = e => {
+    setMajorCategory(e.target.value);
+    setMinorCategory('');
+  }
 
   // minor카테고리 선택 상태 업데이트
-  const handleMinorValue = e => dispatch(selectMinorCategory(e.target.value));
-  // console.log('셀렉티드소분류', selectedMinorCategory);
+  const handleMinorValue = e => {
+    setMinorCategory(e.target.value);
+  }
 
   // 이미지 업로드
   const [images, setImages] = useState([]);
@@ -36,17 +83,6 @@ function AddProduct() {
     setImages([...images, ...files]);
   }
   console.log('이미지',images);
-
-  // input관련 state불러와서 사용하기
-  let inputState = useSelector((state) => state.inputValue.inputValues);
-  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = inputState;
-  // console.log('인풋 스테이트', inputState);
-
-  // input 입력 받은 값 state에저장
-  const handleInputChange = e => {
-    const {name, value} = e.target;
-    dispatch(setInputValue({name, value}));
-  }
 
   // 할인 적용 체크 여부
   const [dscntChked, setDscntChked] = useState(false);
@@ -73,8 +109,8 @@ function AddProduct() {
     }
     formData.append('userId', sessionStorage.getItem("아이디"));
     formData.append('userNumber', sessionStorage.getItem("userNumber"));
-    formData.append('categoryMajorCode', selectedMajorCategory);
-    formData.append('categoryMinorCode', selectedMinorCategory);
+    formData.append('categoryMajorCode', majorCategory);
+    formData.append('categoryMinorCode', minorCategory);
     formData.append('productName', productName);
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
@@ -102,7 +138,6 @@ function AddProduct() {
     })
       .then((response) => {
         console.log(response.data);
-        dispatch(addProductList(response.data)); // redux store에 전송한 데이터 추가
         window.alert("상품 등록이 완료 되었습니다.");
         navigate('/admin');
       })
@@ -126,25 +161,25 @@ function AddProduct() {
               <label>카테고리</label>
               <select 
                 name="categoryMajorCode"
-                value={selectedMajorCategory || ''}
+                value={majorCategory || ''}
                 onChange={handleMajorValue}
               >
                 <option>대분류</option>
-                {majorCategories.map((category) => (
+                {majorCategories.map(category => (
                   <option key={category.id} value={category.value}>
                     {category.name}
                   </option>
                 ))}
               </select>
 
-              {selectedMajorCategory && (
+              {majorCategory && (
                 <select 
                   name="categoryMinorCode"
-                  value={selectedMinorCategory || ''}
+                  value={minorCategory || ''}
                   onChange={handleMinorValue}
                 >
                   <option>소분류</option>
-                  {minorCategories[selectedMajorCategory].map((cate) => (
+                  {minorCategories[majorCategory].map((cate) => (
                     <option key={cate.id} value={cate.value}>
                       {cate.name}
                     </option>
@@ -247,7 +282,7 @@ function AddProduct() {
           </AddINputWrap>
         </form>
 
-          <div>
+          <div className="addbtn_box">
             <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>
           </div>
         </div> {/* align_center */}
@@ -278,6 +313,12 @@ const AddProductWrap = styled.div`
   #p_info_box {
     margin-bottom: 40px;
   }
+
+  .addbtn_box {
+    display: flex;
+    justify-content: center;
+    margin-top: 110px;
+  }
 `
 
 const AddINputWrap = styled.div`
@@ -286,7 +327,6 @@ const AddINputWrap = styled.div`
   margin-bottom: 10px;
   align-items: center;
   // background-color: pink;
-
 
   label {
     width: 140px;
@@ -301,8 +341,6 @@ const AddINputWrap = styled.div`
     input,
     textarea {
       width: calc(780px-140px);
-      // background-color: blue;
-
     }
   }
 `
@@ -345,8 +383,6 @@ const AddTextArea = styled.textarea`
 const AddProductBtn = styled(BtnBg)`
   width: 120px;
   font-size: 16px;
-
-  // background-color: pink;
 `
 
 export default AddProduct;

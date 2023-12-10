@@ -15,7 +15,7 @@ const initialState = {
     productExplanation2: '',
   },
   products: [],
-  productsEach: [],
+  productEach: [],
 };
 
 // 상품 등록 페이지 state 관리
@@ -26,12 +26,12 @@ const inputValueSlice = createSlice({
     setInputValue: (state, action) => {
       let { name, value } = action.payload;
       state.inputValues[name] = value;
-      console.log('페이로드', action.payload);
+      // console.log('setInputValue', action.payload);
     },
     clearInputValue: (state, action) => {
       let { name } = action.payload;
       state.inputValues[name] = '';
-      console.log('인풋밸류 클리어', name);
+      // console.log('clearInputValue', name);
     },
     updateInputValue: (state, action) => {
       state.value = action.payload;
@@ -55,18 +55,19 @@ const productSlice = createSlice({
     },
     toggleProductList: (state, action) => {
       state.products.map(state => state.id === action.id ? {...state, checked: !state.checked} : state);
-      console.log('store토글액션', action);
+      // console.log('store토글액션', action);
     },
     removeProductList: (state, action) => {
       state.products.filter(product => product.productNumber !== action.productNumber);
-      console.log('store리무브', action.payload);
+      // console.log('store리무브', action.payload);
     },
     setProduct: (state, action) => {
-      state.productsEach = action.payload;
+      state.productEach = action.payload;
+      // console.log('setProduct', action.payload);
     },
     updateProduct: (state, action) => {
-      state.productsEach = {...state.productsUpdate, ...action.payload}
-      console.log('updateProduct 리듀서',state.productsUpdate)
+      state.productEach = {...state.productsUpdate, ...action.payload}
+      // console.log('updateProduct 리듀서',state.productsUpdate);
     }
   },
 });

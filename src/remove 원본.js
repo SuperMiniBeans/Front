@@ -17,3 +17,8 @@
   //       console.log('체크된 항목', checkedProducts)
   //     })
   // }
+
+
+  
+  // 객체에서 productNumber와 같은 id 찾아서 데이터 불러오기 ↓
+  // // let productNumberItem = products.find((data) => {return data.productNumber === Number(id)});
