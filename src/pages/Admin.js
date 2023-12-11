@@ -56,45 +56,12 @@ function Admin() {
       setCheckedProducts([]);
     }
   }
-  
-  // 체크한 상품 삭제하기 
-  // const onRemove = () => { // 뭘 삭제할지 말 해줘야함
-  //   window.alert("삭제하시겠습니까?");
-  //   for(let i=0; i<checkedProducts.length; i++){
-  //     axios.get('/productDelete?productNumber='+checkedProducts[i])
-  //       .then(response => {
-  //         console.log(response.data);
-  //         dispatch(removeProductList(checkedProducts));
-  //         window.location.reload();
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //         console.log('체크된 항목?', checkedProducts)
-  //       })
-  //   }
-  // }
 
-  // const onRemove = () => { // 정현이 코드에 맞춰보기
-  //   window.alert("삭제하시겠습니까?");
-  //   for(let i=0; i<checkedProducts.length; i++){
-  //     axios.post('/productDelete', {
-  //       productNumber: productList.productNumber,
-  //     })
-  //       .then(response => {
-  //         console.log(response.data);
-  //         window.location.reload();
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //         console.log('체크된 항목', checkedProducts);
-  //       })
-  //   }
-  // }
-
-  const onRemove3 = () => { // 배열로 보내기
+  // 선택 삭제
+  const onRemove = () => {
     window.alert("삭제하시겠습니까?");
     axios.post('/productDelete', {
-      productNumbers: checkedProducts,
+      productNumber: checkedProducts,
     })
       .then(response => {
         console.log(response.data);
@@ -102,27 +69,30 @@ function Admin() {
       })
       .catch(error => {
         console.log(error);
+        window.alert("실패");
         console.log('체크된 항목', checkedProducts);
       })
   }
 
-
-  /* 
-  상품 목록을 배열로 받아줄 수 있는지! ( ) 
-  */
-
-  // 휴지통 아이콘 클릭 삭제 (작성중)
-  const onRemove2 = () => { // 뭘 삭제할지 말 해줘야함 
+  // 아이콘 클릭하면 삭제
+  const onRemoveClick = (pNum) => {
     window.alert("삭제하시겠습니까?");
-    axios.get('/productDelete?productNumber='+checkedProducts[0])
+    const clickProduct = [...checkedProducts, pNum];
+    setCheckedProducts(clickProduct);
+
+    axios.post('/productDelete', {
+      productNumber: clickProduct,
+    })
       .then(response => {
         console.log(response.data);
         window.location.reload();
       })
       .catch(error => {
         console.log(error);
+        console.log('클릭한 항목', checkedProducts);
+        window.alert("실패");
       })
-  }
+  };
 
   // 상품 등록 페이지로 이동(버튼에 연결)
   const goAddProduct = () => {
@@ -193,7 +163,7 @@ function Admin() {
                   <td>{products.userId}</td>
                   <td>{moment(products.productRegisterDate).format('YYYY-MM-DD')}</td>
                   <td className="product_edit_icon"><Link to={`/admin/products/${products.productNumber}/edit`}><FaRegEdit /></Link></td>
-                  <td className="product_del_icon"><RiDeleteBin6Line onClick={() => onRemove2(products)}/></td>
+                  <td className="product_del_icon"><RiDeleteBin6Line onClick={() => onRemoveClick(products.productNumber)}/></td>
                 </tr>
               </tbody>
             ))
@@ -202,7 +172,7 @@ function Admin() {
         </table>
 
         <FlexBoxSB>
-          <div><DeleteChkedBtn type="submit" onClick={onRemove3}>선택 삭제</DeleteChkedBtn></div>
+          <div><DeleteChkedBtn type="submit" onClick={onRemove}>선택 삭제</DeleteChkedBtn></div>
           <div className="add_btn_box"><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
         </FlexBoxSB>
       </Container>
