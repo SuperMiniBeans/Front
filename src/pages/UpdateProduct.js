@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import axios from "axios";
 
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
-import { selectMajorCategory, selectMinorCategory } from "../store";
 
 // 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
 
@@ -27,7 +25,9 @@ function UpdateProduct() {
     productExplanation1: '',
     productExplanation2: '',
   })
-  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
+  const { productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2 } = product;
+
+
 
   // 카테고리 설정하기
   const [majorCategory, setMajorCategory] = useState('');
@@ -58,23 +58,56 @@ function UpdateProduct() {
     4: [ ],
   };
 
+
+  const [imgData, setImgData] = useState([]);
+
   // 데이터 불러오기
+  // useEffect(() => {
+  //   axios.post('/productView', {
+  //     productNumber: id
+  //   })
+  //     .then(response => {
+  //       console.log('response.data', response.data[0]);
+  //       setProduct(response.data[0]);
+  //       setMajorCategory(response.data[0].categoryMajorCode);
+  //       setMinorCategory(response.data[0].categoryMinorCode);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }, [id]);
+  // console.log('response.data[0].categoryMajorCode', majorCategory);
+
+
+  // 데이터 불러오기(비동기)
   useEffect(() => {
-    axios.post('/productView', {
-      productNumber: id
-    })
-      .then(response => {
-        console.log('response.data', response.data[0]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('/productView', {
+        productNumber: id
+        })
+        setImgData(response.data);
         setProduct(response.data[0]);
         setMajorCategory(response.data[0].categoryMajorCode);
         setMinorCategory(response.data[0].categoryMinorCode);
-      })
-      .catch(error => {
-        console.log(error);
-      })
+      }
+      catch(error) {
+        console.log(error)
+      }
+    }
+    fetchData();
   }, [id]);
-  // top, tshirts -> bottom, jeans
-  console.log('response.data[0].categoryMajorCode', majorCategory);
+
+  // 이미지 경로 배열에 담기
+  const [imgPathList, setImgPathList] = useState([]);
+  useEffect(() => {
+    const newImgPathList = imgData.map(item => 
+      `/upload/${item.fileUploadPath}/th_${item.fileUuid}_${item.fileName}`
+    );
+    setImgPathList(newImgPathList);
+  }, [imgData]); 
+
+  console.log('imgPathList', imgPathList);
 
   // major 선택 상태 업데이트
   const handleMajorValue = e => {
@@ -89,16 +122,9 @@ function UpdateProduct() {
   }
   console.log('마이너', minorCategory);
 
-  // db의 이미지를 리스트로 저장
-  // src={`/upload/${products.fileUploadPath}/th_${products.fileUuid}_${products.fileName}`} 
 
-  // const [imgPathList, setImgPathList] = useState([{
-  //   fileUploadPath: '',
-  //   fileUuid: '',
-  //   fileName: '',
-  // }]);
-  // const product = useSelector(state => state.products.productsEach);
-  // console.log('productEach모두', product);
+
+
 
   // console.log('이미지 경로 리스트', imgPathList);
 
@@ -227,6 +253,12 @@ function UpdateProduct() {
                 <input type="file" multiple name="productFile" onChange={handleImageUpload}/>
               </div>
             </AddINputWrap>
+            <div>선택된 이미지</div>
+            <div>
+              {imgPathList.map(img => (
+                <img src={`${img}`} alt="등록한 이미지"/>
+              ))}
+            </div>
           </div>
 
           <div id="p_name_box">
