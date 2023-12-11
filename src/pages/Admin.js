@@ -3,39 +3,18 @@ import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import moment from "moment/moment";
 
 import { Container, FlexBoxSB } from "../styles/Layout";
-import { setProductList, removeProductList } from "../store";
 import AddProduct from "./AddProduct"
 import ProductDetail from "../components/ProductDetail";
 import UpdateProduct from "./UpdateProduct";
 
 function Admin() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  // 생성한 state 불러오기 
-  // const products = useSelector(state => state.products.products);
-  // console.log('등록된 상품', products);
-
-  // const [product, setProduct] = useState({
-  //   productName: '',
-  //   productPrice: 0,
-  //   discountRate: 0,
-  //   discountPrice: 0,
-  //   productSize: '',
-  //   productColor: '',
-  //   productQuantity: 0,
-  //   productExplanation: '',
-  //   productExplanation1: '',
-  //   productExplanation2: '',
-  // })
-  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
-
-  const [product, setProduct] = useState([]);
+  const [productList, setProductList] = useState([]);
 
   // DB에 저장된 게시글 불러와서 보여주기
   // const [refresh, setRefresh] = useState(1);
@@ -44,7 +23,7 @@ function Admin() {
       userId: sessionStorage.getItem("아이디"),
     })
       .then(response => {
-        setProduct(response.data);
+        setProductList(response.data);
         console.log('admin-response.data', response.data);
       })
       .catch(error => {
@@ -55,7 +34,6 @@ function Admin() {
 
   // 체크박스 토글
   const [checkedProducts, setCheckedProducts] = useState([]);
-  const [isChecked, setIsChecked] = useState(false);
   console.log('선택된 항목', checkedProducts);
   /* 혹시 콘솔 값을 setLanguage 바로 밑에서 체크한것이라면 반영은 제대로 되었을 가능성이 큽니다. 
   왜냐하면 useState는 값이 바로 변경되지 않고, useState가 들어있는 컴포넌트가 리렌더링 될때 업데이트 되기 때문입니다. 
@@ -72,7 +50,7 @@ function Admin() {
   const handleAllCheck = (checked) => {
     if(checked) {
       const pNumArray = [];
-      product.forEach((id) => pNumArray.push(id.productNumber));
+      productList.forEach((id) => pNumArray.push(id.productNumber));
       setCheckedProducts(pNumArray);
     } else {
       setCheckedProducts([]);
@@ -96,23 +74,42 @@ function Admin() {
   //   }
   // }
 
-  const onRemove = () => { // 정현이 코드에 맞춰보기
+  // const onRemove = () => { // 정현이 코드에 맞춰보기
+  //   window.alert("삭제하시겠습니까?");
+  //   for(let i=0; i<checkedProducts.length; i++){
+  //     axios.post('/productDelete', {
+  //       productNumber: productList.productNumber,
+  //     })
+  //       .then(response => {
+  //         console.log(response.data);
+  //         window.location.reload();
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //         console.log('체크된 항목', checkedProducts);
+  //       })
+  //   }
+  // }
+
+  const onRemove3 = () => { // 배열로 보내기
     window.alert("삭제하시겠습니까?");
-    for(let i=0; i<checkedProducts.length; i++){
-      axios.post('/productDelete', {
-        productNumber: product.productNumber,
+    axios.post('/productDelete', {
+      productNumbers: checkedProducts,
+    })
+      .then(response => {
+        console.log(response.data);
+        window.location.reload();
       })
-        .then(response => {
-          console.log(response.data);
-          dispatch(removeProductList(checkedProducts));
-          window.location.reload();
-        })
-        .catch(error => {
-          console.log(error);
-          console.log('체크된 항목', checkedProducts);
-        })
-    }
+      .catch(error => {
+        console.log(error);
+        console.log('체크된 항목', checkedProducts);
+      })
   }
+
+
+  /* 
+  상품 목록을 배열로 받아줄 수 있는지! ( ) 
+  */
 
   // 휴지통 아이콘 클릭 삭제 (작성중)
   const onRemove2 = () => { // 뭘 삭제할지 말 해줘야함 
@@ -120,26 +117,12 @@ function Admin() {
     axios.get('/productDelete?productNumber='+checkedProducts[0])
       .then(response => {
         console.log(response.data);
-        dispatch(removeProductList(checkedProducts));
         window.location.reload();
       })
       .catch(error => {
         console.log(error);
       })
   }
-
-  
-
-  // 대표 이미지 미리보기(작성중)
-  // useEffect(() => {
-  //   axios.post('/fileList')
-  //     .then(response => {
-  //       console.log('get이미지', response.data);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }, []) 
 
   // 상품 등록 페이지로 이동(버튼에 연결)
   const goAddProduct = () => {
@@ -165,7 +148,12 @@ function Admin() {
 
           <thead>
             <tr>
-              <th scope="col" id="admin_list_chk"><input type="checkbox" onChange={e => handleAllCheck(e.target.checked)} /></th>
+              <th scope="col" id="admin_list_chk">
+                <input type="checkbox" 
+                        onChange={e => handleAllCheck(e.target.checked)} 
+                        checked={checkedProducts.length === productList.length ? true : false}
+                />
+              </th>
               <th scope="col" id="admin_list_num">상품 번호</th>
               <th scope="col" id="admin_list_thumbnail">이미지</th>
               <th scope="col" id="admin_list_title">상품명</th>
@@ -177,7 +165,7 @@ function Admin() {
           </thead>
 
           {/* map으로 돌리기 + 데이터 바인딩 (----------여기부터) */}
-          {product.length === 0 ? (
+          {productList.length === 0 ? (
             <tbody>
               <tr>
                 <td colSpan={8}>
@@ -186,10 +174,15 @@ function Admin() {
               </tr>
             </tbody>
           ) : (
-            product.map((products, index) => (
+            productList.map((products, index) => (
               <tbody key={index}>
                 <tr className="tbody_content">
-                  <td><input type="checkbox" onChange={e => handleCheckbox(e.target.checked, products.productNumber)}></input></td>
+                  <td>
+                    <input type="checkbox" 
+                          onChange={e => handleCheckbox(e.target.checked, products.productNumber)}
+                          checked={checkedProducts.includes(products.productNumber) ? true : false}
+                    />
+                  </td>
                   <td>{products.productNumber}</td>
                   <td>
                     <div id="admin_thumb_box">
@@ -209,7 +202,7 @@ function Admin() {
         </table>
 
         <FlexBoxSB>
-          <div><DeleteChkedBtn type="submit" onClick={onRemove}>선택 삭제</DeleteChkedBtn></div>
+          <div><DeleteChkedBtn type="submit" onClick={onRemove3}>선택 삭제</DeleteChkedBtn></div>
           <div className="add_btn_box"><GoAddProductBtn onClick={goAddProduct}>상품 등록</GoAddProductBtn></div>
         </FlexBoxSB>
       </Container>

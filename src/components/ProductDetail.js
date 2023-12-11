@@ -78,11 +78,10 @@ function ProductDetail() {
   const [imgPathList, setImgPathList] = useState([]);
   useEffect(() => {
     const newImgPathList = imgData.map(item => 
-      `/upload/${item.fileUploadPath}/th_${item.fileUuid}_${item.fileName}`
+      `/upload/${item.fileUploadPath}/${item.fileUuid}_${item.fileName}`
     );
     setImgPathList(newImgPathList);
   }, [imgData]); 
-
   console.log('imgPathList', imgPathList);
 
 
@@ -91,6 +90,10 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
 
+  /* 선택 옵션 -> 서버에서 받은 데이터 바인딩하기( )
+    sizes -> map돌리기, colors는... 하나만??? ( ) 
+    사용자가 옵션 추가할 수 있는 체크박스 만들 수 있는지!! 알아보기( )
+   */
   const mockData = {
     sizes: ["XS", "S", "M", "L"],
     colors: ["red", "black", "gray", "white"],
