@@ -23,7 +23,7 @@ function AddProduct() {
     productExplanation: '',
     productExplanation1: '',
     productExplanation2: '',
-  })
+  });
   const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
 
   // input입력 받은 값 state에저장

@@ -18,8 +18,24 @@ function Admin() {
   const dispatch = useDispatch();
 
   // 생성한 state 불러오기 
-  const products = useSelector(state => state.products.products);
+  // const products = useSelector(state => state.products.products);
   // console.log('등록된 상품', products);
+
+  // const [product, setProduct] = useState({
+  //   productName: '',
+  //   productPrice: 0,
+  //   discountRate: 0,
+  //   discountPrice: 0,
+  //   productSize: '',
+  //   productColor: '',
+  //   productQuantity: 0,
+  //   productExplanation: '',
+  //   productExplanation1: '',
+  //   productExplanation2: '',
+  // })
+  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
+
+  const [product, setProduct] = useState([]);
 
   // DB에 저장된 게시글 불러와서 보여주기
   // const [refresh, setRefresh] = useState(1);
@@ -28,12 +44,13 @@ function Admin() {
       userId: sessionStorage.getItem("아이디"),
     })
       .then(response => {
-        dispatch(setProductList(response.data));
+        setProduct(response.data);
+        console.log('admin-response.data', response.data);
       })
       .catch(error => {
         console.log(error);
       })
-  }, [dispatch]);
+  }, []);
 
 
   // 체크박스 토글
@@ -55,7 +72,7 @@ function Admin() {
   const handleAllCheck = (checked) => {
     if(checked) {
       const pNumArray = [];
-      products.forEach((id) => pNumArray.push(id.productNumber));
+      product.forEach((id) => pNumArray.push(id.productNumber));
       setCheckedProducts(pNumArray);
     } else {
       setCheckedProducts([]);
@@ -83,7 +100,7 @@ function Admin() {
     window.alert("삭제하시겠습니까?");
     for(let i=0; i<checkedProducts.length; i++){
       axios.post('/productDelete', {
-        productNumber: products.productNumber,
+        productNumber: product.productNumber,
       })
         .then(response => {
           console.log(response.data);
@@ -160,7 +177,7 @@ function Admin() {
           </thead>
 
           {/* map으로 돌리기 + 데이터 바인딩 (----------여기부터) */}
-          {products.length === 0 ? (
+          {product.length === 0 ? (
             <tbody>
               <tr>
                 <td colSpan={8}>
@@ -169,7 +186,7 @@ function Admin() {
               </tr>
             </tbody>
           ) : (
-            products.map((products, index) => (
+            product.map((products, index) => (
               <tbody key={index}>
                 <tr className="tbody_content">
                   <td><input type="checkbox" onChange={e => handleCheckbox(e.target.checked, products.productNumber)}></input></td>
