@@ -2,7 +2,8 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
-import ResetPwChk from "../pages/ResetPwChk";
+import ResetPwIdChk from "../pages/ResetPwIdChk";
+import ResetPwEmailChk from "../pages/ResetPwEmailChk";
 import ResetPw from "../pages/ResetPw";
 import SearchId from "../pages/SearchId";
 import Join from "../pages/Join";
@@ -36,7 +37,8 @@ function Main() {
 
         <Route path='/search/id' element={<SearchId />} />
         <Route path='/search/check/pw' element={<ResetPw />} />
-        <Route path='/search/check' element={<ResetPwChk />} />
+        <Route path='/search/check/email' element={<ResetPwEmailChk />} />
+        <Route path='/search/check/id' element={<ResetPwIdChk />} />
         <Route path='/login' element={<Login />} />
 
         <Route exact path='/' element={<Home />} />
