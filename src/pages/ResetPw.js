@@ -28,10 +28,8 @@ function ResetPw() {
 
     if (!passwordReg.test(e.target.value)) {
       setPasswordMessage("비밀번호는 4~8자의 영문 대소문자와 숫자로만 입력해주세요.");
-      setPswMsgColor({color: '#F82A2A'});
       if(blankReg.test(e.target.value) === true) {
         setPasswordMessage("공백 없이 입력해 주세요.");
-        setPswMsgColor({color: '#F82A2A'});
       }
     } 
     else {
@@ -46,7 +44,9 @@ function ResetPw() {
 
     if(password !== e.target.value) {
       setPasswordConfirmMessage("입력한 비밀번호와 다릅니다.");
-      setPswConfirmMsgColor({color: '#F82A2A'});
+      if(blankReg.test(e.target.value) === true) {
+        setPasswordConfirmMessage("공백 없이 입력해 주세요.");
+      }
     } else {
       setPasswordConfirmMessage("");
       setIsPasswordConfirm(true);
@@ -79,8 +79,10 @@ function ResetPw() {
       <TitleWrap>
         <h2>비밀번호 재설정</h2>
         <ResetPwStep>
-          <div>회원 정보 확인</div>
-          <div>{">"}</div>
+          <div>아이디 입력</div>
+          <span></span>
+          <div>본인 확인</div>
+          <span></span>
           <div>비밀번호 재설정</div>
         </ResetPwStep>
       </TitleWrap>
@@ -131,32 +133,33 @@ const ResetPwStep = styled.div`
   display: flex;
   justify-content: center; 
   text-align: center;
-  // background-color: pink;
+  line-height: 20px;
 
-  div:first-child {
-    color: #aaa;
+  div:nth-of-type(3) {
+    font-weight: 600;
   }
 
-  div:nth-child(2) {
+  span {
+    position: relative;
     width: 20px; 
     height: 20px;
-    color: #aaa;
   }
 
-  // div:nth-child(2)::after {
-  //   position: absolute;
-  //   left: 50%; top: 50%;
-  //   content: '';
-  //   width: 10px; /* 사이즈 */
-  //   height: 10px; /* 사이즈 */
-  //   border-top: 2px solid #aaa; /* 선 두께 */
-  //   border-right: 2px solid #aaa; /* 선 두께 */
-  //   transform: rotate(45deg); /* 각도 */
-  //   background-color: red;
-  // }
+  span::after {
+    position: absolute;
+    left: 24%; top: 32%;
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-top: 2px solid #aaa; 
+    border-right: 2px solid #aaa; 
+    transform: rotate(45deg); 
+    // background-color: red;
+  }
 
-  div:last-child {
-    font-weight: 600;
+  div:nth-of-type(1),
+  div:nth-of-type(2) {
+    color: #aaa;
   }
 `
 
