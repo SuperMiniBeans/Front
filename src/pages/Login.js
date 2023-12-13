@@ -82,11 +82,12 @@ function Login() {
 
   // 비밀번호 재설정 페이지로 이동
   function goResetPwChk() {
-    navigate('/search/check');
+    navigate('/search/check/id');
   }
 
   // 로그인 버튼 클릭시 실행될 작업
   function SignIn(e) {
+
     if(id === "" || password === "") {
       alert("아이디와 비밀번호를 모두 입력해주세요");
     } 
@@ -120,19 +121,26 @@ function Login() {
     }
   } // SignIn()
 
+  // 엔터키 누르면 로그인 실행(id, pw input에 둘 다 연결)
+  const onEnterPress = e => {
+    if(e.key === 'Enter') {
+      SignIn(e);
+    }
+  }
+
   return(
     <LoginWrapper>
       <TitleWrap><h2>로그인</h2></TitleWrap>
       <FormWrap action="/login" method="POST">
         <InputWrap>
           <FlexBox>
-            <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId}></Input>
+            <Input type="text" name="userId" value={id} placeholder="아이디를 입력하세요" maxLength={8} onChange={userId} onKeyDown={onEnterPress}></Input>
           </FlexBox>
         </InputWrap>
 
         <InputWrap>
           <Input
-            type="password" name="userPassword" value={password} placeholder="비밀번호를 입력하세요" maxLength={8} onChange={userPassword} ></Input>
+            type="password" name="userPassword" value={password} placeholder="비밀번호를 입력하세요" maxLength={8} onChange={userPassword} onKeyDown={onEnterPress}></Input>
         </InputWrap>
 
         <FlexBoxSB>
@@ -142,7 +150,7 @@ function Login() {
           <FlexBox className="find_user_info">
             <div onClick={goSearchId}><p><Link to='search/id'>아이디 찾기</Link></p></div>
             <div><span>&nbsp;|&nbsp;</span></div>
-            <div onClick={goResetPwChk}><p><Link to='/search/check'>비밀번호 재설정</Link></p></div>
+            <div onClick={goResetPwChk}><p><Link to='/search/check/id'>비밀번호 재설정</Link></p></div>
           </FlexBox>
         </FlexBoxSB>
 
@@ -152,7 +160,7 @@ function Login() {
         </ErrMsgWrap>
 
         <SbmtBtnWrap>
-          <BtnBg type="submit" onClick={SignIn}>로그인</BtnBg>
+          <BtnBg type="submit" onClick={SignIn} id="login-submit-btn">로그인</BtnBg>
           <BtnBorder type="submit" onClick={goJoin}>회원가입</BtnBorder>
         </SbmtBtnWrap>
       </FormWrap>
@@ -207,6 +215,10 @@ const SbmtBtnWrap = styled.div`
   justify-content: space-between;
   height: 90px;
   margin-top: 6px;
+
+  #login-submit-btn {
+    height: 40px;
+  }
 ` 
 
 export default Login;
