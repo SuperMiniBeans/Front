@@ -92,39 +92,39 @@ function AddProduct() {
     setDscntChked(e.target.checked);
   }
 
-  // 할인가 계산하기(작성중)
-  // const calcDscntPrice = () => {
-  //   setDscntPrice(add.productPrice *(add.discountRate/100));
-  //   console.log('할인가', dscntPrice);
-  // }
 
-
-
-
+  // 사이즈 옵션 입력 받기
   const [sizes, setSizes] = useState([]);
   const [newSize, setNewSize] = useState('');
   const [showInput, setShowInput] = useState(false);
   const inputFocus = useRef(null);
 
+  // 추가 버튼
   const handleAddSize = () => {
     setShowInput(true);
   };
 
+  // input에 값 입력
   const handleSizeChange = e => {
     setNewSize(e.target.value);
   };
 
+  // 확인 버튼
   const handleConfirmSize = () => {
     if(newSize.trim() === '') {
       alert("사이즈를 입력해주세요.");
+      return true;
     } 
-    if (sizes.length < 5) {
-      setSizes([...sizes, newSize]);
-    }
-    setNewSize('');
-    setShowInput(false);
+    return false;
+
+      // if (sizes.length < 5) {
+      //   setSizes([...sizes, newSize]);
+      // }
+      // setNewSize('');
+      // setShowInput(false);
   };
 
+  // x 버튼
   const handleDeleteSize = (index) => {
     const updateSizes = sizes.filter((_, i) => i !== index);
     setSizes(updateSizes);
@@ -159,7 +159,7 @@ function AddProduct() {
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
     // formData.append('discountPrice', discountPrice);
-    for(let i = 0; i<sizes.length; i++) {
+    for(let i = 0; i < sizes.length; i++) {
       formData.append('productSize', sizes[i]);
     }
     // formData.append('productSize', sizes);
@@ -207,7 +207,7 @@ function AddProduct() {
           <div id="p_cate_box">
             <AddINputWrap>
               <label>카테고리</label>
-              <select 
+              <select
                 name="categoryMajorCode"
                 value={majorCategory || ''}
                 onChange={handleMajorValue}
@@ -288,10 +288,6 @@ function AddProduct() {
           <div id="p_info_box">
             <AddINputWrap>
               <label>사이즈</label>
-              {/* <div  className="input_box">
-                <AddINput type="text" name="productSize" value={productSize} onChange={handleInputChange}/>
-              </div> */}
-
               {sizes.map((size, index) => (
                   <div className="new_option_box" key={index}>
                     <div className="option_value" >{size}</div>
@@ -303,7 +299,12 @@ function AddProduct() {
                 )}
                 {showInput && (
                   <div className="add_option_box">
-                    <input className="add_option_input" type="text" value={newSize} onChange={handleSizeChange} ref={inputFocus} />
+                    <input className="add_option_input" 
+                            name="productSize" 
+                            type="text" value={newSize} 
+                            onChange={handleSizeChange} 
+                            ref={inputFocus} 
+                    />
                     <button className="confirm_option_btn" onClick={handleConfirmSize}>확인</button>
                   </div>
                 )}
