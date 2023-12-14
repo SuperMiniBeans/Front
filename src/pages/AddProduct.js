@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -98,6 +98,50 @@ function AddProduct() {
   //   console.log('할인가', dscntPrice);
   // }
 
+
+
+
+  const [sizes, setSizes] = useState([]);
+  const [newSize, setNewSize] = useState('');
+  const [showInput, setShowInput] = useState(false);
+  const inputFocus = useRef(null);
+
+  const handleAddSize = () => {
+    setShowInput(true);
+  };
+
+  const handleSizeChange = e => {
+    setNewSize(e.target.value);
+  };
+
+  const handleConfirmSize = () => {
+    if(newSize.trim() === '') {
+      alert("사이즈를 입력해주세요.");
+    } 
+    if (sizes.length < 5) {
+      setSizes([...sizes, newSize]);
+    }
+    setNewSize('');
+    setShowInput(false);
+  };
+
+  const handleDeleteSize = (index) => {
+    const updateSizes = sizes.filter((_, i) => i !== index);
+    setSizes(updateSizes);
+  }
+
+  // autofocus설정 (리액트에서 동적으로 autofocus 설정할 때는 useRef사용하기)
+  useEffect(() => {
+    if (showInput && inputFocus.current) {
+      inputFocus.current.focus();
+    }
+  }, [showInput]);
+
+  console.log('sizes', sizes);
+
+
+
+
   // 등록하기 버튼 누르면 실행
   const onAddSubmit = () => {
     /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
@@ -115,7 +159,10 @@ function AddProduct() {
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
     // formData.append('discountPrice', discountPrice);
-    formData.append('productSize', productSize);
+    for(let i = 0; i<sizes.length; i++) {
+      formData.append('productSize', sizes[i]);
+    }
+    // formData.append('productSize', sizes);
     formData.append('productColor', productColor);
     formData.append('productQuantity', productQuantity);
     formData.append('productExplanation', productExplanation);
@@ -146,6 +193,7 @@ function AddProduct() {
         console.log('실패!');
       });
   }
+  
 
   return(
     <AddProductWrap>
@@ -189,7 +237,7 @@ function AddProduct() {
             </AddINputWrap>
           </div>
 
-          <div id="p_name_box">
+          <div id="p_img_box">
             <AddINputWrap>
               <label>상품 이미지</label>
               <div className="input_box">
@@ -240,9 +288,25 @@ function AddProduct() {
           <div id="p_info_box">
             <AddINputWrap>
               <label>사이즈</label>
-              <div  className="input_box">
+              {/* <div  className="input_box">
                 <AddINput type="text" name="productSize" value={productSize} onChange={handleInputChange}/>
-              </div>
+              </div> */}
+
+              {sizes.map((size, index) => (
+                  <div className="new_option_box" key={index}>
+                    <div className="option_value" >{size}</div>
+                    <div className="del_box" onClick={() => handleDeleteSize(index)}><span id="del_icon"></span></div>
+                  </div>
+                ))}
+                {!showInput && sizes.length < 5 && (
+                  <div><button className="add_option_btn" onClick={handleAddSize}>추가</button></div>
+                )}
+                {showInput && (
+                  <div className="add_option_box">
+                    <input className="add_option_input" type="text" value={newSize} onChange={handleSizeChange} ref={inputFocus} />
+                    <button className="confirm_option_btn" onClick={handleConfirmSize}>확인</button>
+                  </div>
+                )}
             </AddINputWrap>
 
             <AddINputWrap>
@@ -260,29 +324,31 @@ function AddProduct() {
             </AddINputWrap>
           </div> {/* p_info_box */}
 
-          <AddINputWrap>
-            <label>상품 설명</label>
-            <div className="input_box">
-              <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={handleInputChange} />
-            </div>
-          </AddINputWrap>
+          <div id="p_info_box2">
+            <AddINputWrap>
+              <label>상품 설명</label>
+              <div className="textarea_box">
+                <AddTextArea type="text" name="productExplanation" id="explanation" value={productExplanation} onChange={handleInputChange} />
+              </div>
+            </AddINputWrap>
 
-          <AddINputWrap>
-            <label>사이즈 안내</label>
-            <div className="input_box">
-              <AddTextArea type="text" name="productExplanation1" id="size_guide" value={productExplanation1} onChange={handleInputChange} />
-            </div>
-          </AddINputWrap>
+            <AddINputWrap>
+              <label>사이즈 안내</label>
+              <div className="textarea_box">
+                <AddTextArea type="text" name="productExplanation1" id="size_guide" value={productExplanation1} onChange={handleInputChange} />
+              </div>
+            </AddINputWrap>
 
-          <AddINputWrap>
-            <label>배송 및 <br /> 환불 안내</label>
-            <div className="input_box">
-              <AddTextArea type="text" name="productExplanation2" id="shipping_guide" value={productExplanation2} onChange={handleInputChange} />
-            </div>
-          </AddINputWrap>
+            <AddINputWrap>
+              <label>배송 및 <br /> 환불 안내</label>
+              <div className="textarea_box">
+                <AddTextArea type="text" name="productExplanation2" id="shipping_guide" value={productExplanation2} onChange={handleInputChange} />
+              </div>
+            </AddINputWrap>
+          </div>
         </form>
 
-          <div className="addbtn_box">
+          <div className="product_addbtn_box">
             <AddProductBtn type="submit" onClick={onAddSubmit}>등록</AddProductBtn>
           </div>
         </div> {/* align_center */}
@@ -308,13 +374,114 @@ const AddProductWrap = styled.div`
   }
 
   #p_cate_box,
+  #p_img_box,
   #p_name_box,
   #p_price_box,
   #p_info_box {
     margin-bottom: 40px;
   }
 
-  .addbtn_box {
+  #p_info_box {
+    .new_option_box {
+      position: relative;
+      display: flex; // .del_box 가운데 정렬
+      justify-content: center; // .del_box 가운데 정렬(수평)
+      padding: 0 10px;
+      height: 40px;
+      margin-right: 10px;
+      align-items: center; // .del_box 가운데 정렬(수직)
+      border-radius: 10px;
+      background-color: #eee;
+
+      // x 아이콘
+      .del_box {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          border-radius: 4px;
+          background-color: #ccc;
+        }
+
+        #del_icon:before,
+        #del_icon:after {
+          position: absolute;
+          top: 16%; // before, after요소 가운데 정렬
+          left: 48%; // before, after요소 가운데 정렬
+          width: 1px;
+          height: 14px;
+          content: '';
+          background: #000;
+        }
+
+        #del_icon:before {
+          transform: rotate(45deg);
+        }
+
+        #del_icon:after {
+          transform: rotate(-45deg);
+        }
+      }
+    }
+  }
+
+  // 추가 버튼
+  .add_option_btn {
+    width: 60px;
+    height: 40px;
+    border: none;
+    border: 1px solid #000;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: #fff;
+
+    &:hover {
+      background-color: #000;
+      color: #fff;
+    }
+  }
+
+  .add_option_box {
+    height: 40px;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+    // background-color: #eee;
+  }
+
+  .add_option_input {
+    width: 80px;
+    height: 24px;
+    padding-left: 4px;
+    margin-right: 10px;
+    border: none;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .confirm_option_btn {
+    width: 40px;
+    height: 24px;
+    border: none;
+    background-color: #fff;
+    // border: 1px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #000;
+      color: #fff;
+    }
+  }
+
+  .product_addbtn_box {
     display: flex;
     justify-content: center;
     margin-top: 110px;
@@ -329,19 +496,19 @@ const AddINputWrap = styled.div`
   // background-color: pink;
 
   label {
+    flex: 0 0 auto; // 부모 요소에 flex속성을 적용해서 자식요소의 width, margin 등의 속성이 제대로 적용되지 않기 때문에 지정해줌
     width: 140px;
-    margin-right: 20px;
+    margin-right: 10px;
     font-size: 20px;
-    // background-color: #eee;
   }
 
   .input_box {
     width: 100%;
+    height: 40px;
+  }
 
-    input,
-    textarea {
-      width: calc(780px-140px);
-    }
+  .textarea_box {
+    width: 100%;
   }
 `
 
@@ -355,12 +522,12 @@ const AddINput = styled.input`
 `
 
 const DscntChkBox = styled.div`
-  padding-left: 120px;
+  margin-left: calc(140px + 10px);
 `
 
 const AddTextArea = styled.textarea`
   width: 100%;
-  height: 200px;
+  height: 120px;
   padding: 10px;
   resize: none;
   font-family: 'pretendard';
