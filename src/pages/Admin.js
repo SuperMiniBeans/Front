@@ -24,7 +24,7 @@ function Admin() {
     })
       .then(response => {
         setProductList(response.data);
-        console.log('admin-response.data', response.data);
+        // console.log('admin-response.data', response.data);
       })
       .catch(error => {
         console.log(error);
