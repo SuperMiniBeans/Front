@@ -1,13 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import ProductList from "../components/ProductList";
-import productMockData from "../data/prductMockdata";
+import axios from "axios";
+
 
 function Product() {
-  const [products] = useState(productMockData);
+  const [product, setProduct] = useState({
+    productName: '',
+    productPrice: 0,
+    discountRate: 0,
+    discountPrice: 0,
+    productSize: '',
+    productColor: '',
+    productQuantity: 0,
+    productExplanation: '',
+    productExplanation1: '',
+    productExplanation2: '',
+  })
+  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
 
-  console.log(products);
+  const [imgData, setImgData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('/fileList', {
+          userId: sessionStorage.getItem("아이디"),
+        })
+        setImgData(response.data);
+        setProduct(response.data);
+        // setMajorCategory(response.data[0].categoryMajorCode);
+        // setMinorCategory(response.data[0].categoryMinorCode);
+      }
+      catch(error) {
+        console.log(error);
+        if(product.length === 0) {
+          console.log('데이터 없음');
+        }
+      }
+    }
+    fetchData();
+  }, []);
+
+
   /* 스크롤 했을 때 12개 목록 끝나면 데이터 불러오기 - 스크롤 이벤트 */
 
   return(
@@ -23,9 +59,13 @@ function Product() {
 
       {/* map사용해서 ProductList 컴포넌트 반복하기 */}
       <ProductListGrid>
-        {products.map((products, i) => {
-          return <ProductList products={products} key={i}/>
-        })}
+        {product.length === 0 ? (
+          <div>데이터 없음</div>
+        ) : (
+          product.map((products, i) => {
+            return <ProductList products={products} key={i}/>
+          })
+        )}
       </ProductListGrid>
     </Container>
   )
