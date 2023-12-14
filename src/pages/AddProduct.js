@@ -110,19 +110,23 @@ function AddProduct() {
   };
 
   // 확인 버튼
-  const handleConfirmSize = () => {
+  const handleConfirmSize = e => {
     if(newSize.trim() === '') {
-      alert("사이즈를 입력해주세요.");
-      return true;
-    } 
-    return false;
-
-      // if (sizes.length < 5) {
-      //   setSizes([...sizes, newSize]);
-      // }
-      // setNewSize('');
-      // setShowInput(false);
+      alert("사이즈를 입력해주세요.")
+      e.preventDefault();
+    } else {
+      if (sizes.length < 5) {
+        setSizes([...sizes, newSize]);
+      }
+      setNewSize('');
+      setShowInput(false);
+    }
   };
+
+  // 취소 버튼
+  const handleConfirmClose = () => {
+    setShowInput(false);
+  }
 
   // x 버튼
   const handleDeleteSize = (index) => {
@@ -137,7 +141,54 @@ function AddProduct() {
     }
   }, [showInput]);
 
-  console.log('sizes', sizes);
+
+  // 색상 옵션 입력 받기
+  const [colors, setColors] = useState([]);
+  const [newColor, setNewColor] = useState('');
+  const [showColorInput, setShowColorInput] = useState(false);
+  const inputColorFocus = useRef(null);
+
+  // 추가 버튼
+  const handleAddColor = () => {
+    setShowColorInput(true);
+  };
+
+  // input에 값 입력
+  const handleColorChange = e => {
+    setNewColor(e.target.value);
+  };
+
+  // 확인 버튼
+  const handleConfirmColor = e => {
+    if(newColor.trim() === '') {
+      alert("사이즈를 입력해주세요.")
+      e.preventDefault();
+    } else {
+      if (colors.length < 5) {
+        setColors([...colors, newColor]);
+      }
+      setNewColor('');
+      setShowColorInput(false);
+    }
+  };
+
+  // 취소 버튼
+  const handleColorConfirmClose = () => {
+    setShowColorInput(false);
+  }
+
+  // x 버튼
+  const handleDeleteColor = (index) => {
+    const updateColors = colors.filter((_, i) => i !== index);
+    setColors(updateColors);
+  }
+
+  // autofocus설정
+  useEffect(() => {
+    if (showColorInput && inputColorFocus.current) {
+      inputColorFocus.current.focus();
+    }
+  }, [showColorInput]);
 
 
 
@@ -159,11 +210,8 @@ function AddProduct() {
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
     // formData.append('discountPrice', discountPrice);
-    for(let i = 0; i < sizes.length; i++) {
-      formData.append('productSize', sizes[i]);
-    }
-    // formData.append('productSize', sizes);
-    formData.append('productColor', productColor);
+    formData.append('productSize', sizes);
+    formData.append('productColor', colors);
     formData.append('productQuantity', productQuantity);
     formData.append('productExplanation', productExplanation);
     formData.append('productExplanation1', productExplanation1);
@@ -181,7 +229,7 @@ function AddProduct() {
     axios.post('/registerProduct', formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-    },
+      },
     })
       .then((response) => {
         console.log(response.data);
@@ -306,15 +354,40 @@ function AddProduct() {
                             ref={inputFocus} 
                     />
                     <button className="confirm_option_btn" onClick={handleConfirmSize}>확인</button>
+                    <button className="confirm_option_btn" onClick={handleConfirmClose}>취소</button>
                   </div>
                 )}
             </AddINputWrap>
 
             <AddINputWrap>
               <label>색상</label>
-              <div className="input_box">
-                <AddINput type="text" name="productColor" value={productColor} onChange={handleInputChange} />
-              </div>
+              {colors.map((color, index) => (
+                  <div className="new_option_box" key={index}>
+                    <div className="option_value" >{color}</div>
+                    <div className="del_box" onClick={() => handleDeleteColor(index)}><span id="del_icon"></span></div>
+                  </div>
+                ))}
+                {!showColorInput && colors.length < 5 && (
+                  <div><button className="add_option_btn" onClick={handleAddColor}>추가</button></div>
+                )}
+                {showColorInput && (
+                  <div className="add_option_box">
+                    <input className="add_option_input" 
+                            name="productSize" 
+                            type="text" value={newColor} 
+                            onChange={handleColorChange} 
+                            ref={inputColorFocus} 
+                    />
+                    <button className="confirm_option_btn" onClick={handleConfirmColor}>확인</button>
+                    <button className="confirm_option_btn" onClick={handleColorConfirmClose}>취소</button>
+                  </div>
+                )}
+
+
+
+
+
+
             </AddINputWrap>
 
             <AddINputWrap>
