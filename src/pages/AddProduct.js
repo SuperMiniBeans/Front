@@ -14,17 +14,18 @@ function AddProduct() {
 
   const [product, setProduct] = useState({
     productName: '',
-    productPrice: 0,
-    discountRate: 0,
-    discountPrice: 0,
-    productSize: '',
-    productColor: '',
+    // productPrice: 0,
+    // discountRate: 0,
+    // discountPrice: 0,
+    // productSize: '',
+    // productColor: '',
     productQuantity: 0,
     productExplanation: '',
     productExplanation1: '',
     productExplanation2: '',
   });
-  const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
+  const {productName, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
+  // productSize, productColor, productPrice, discountRate, discountPrice,
 
   // input입력 받은 값 state에저장
   const handleInputChange = e => {
@@ -35,7 +36,7 @@ function AddProduct() {
     })
   }
 
-  // 카테고리 설정하기
+  /* 카테고리 설정하기 */
   const [majorCategory, setMajorCategory] = useState('');
   const [minorCategory, setMinorCategory] = useState('');
 
@@ -75,7 +76,7 @@ function AddProduct() {
     setMinorCategory(e.target.value);
   }
 
-  // 이미지 업로드
+  /* 이미지 업로드 */
   const [images, setImages] = useState([]);
 
   const handleImageUpload = e => {
@@ -84,32 +85,70 @@ function AddProduct() {
   }
   console.log('이미지',images);
 
-  // 할인 적용 체크 여부
+  /* 판매가, 할인가 */
+  // 가격 처리 할 때 3자리수마다 콤마 찍힐 수 있게 하기( )
+  const [productPrice, setProductPrice] = useState('');
+  const [discountRate, setDiscountRate] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
   const [dscntChked, setDscntChked] = useState(false);
 
   // 할인 적용 체크
   const handleDscntCheck = e => {
     setDscntChked(e.target.checked);
+    if (dscntChked === false) {
+      setDiscountRate('');
+      setDiscountPrice('');
+    }
   }
 
+  // 판매가
+  const handleProductPrice = e => {
+    const price = parseFloat(e.target.value);
+    const rate = parseFloat(discountRate);
 
-  // 사이즈 옵션 입력 받기
+    let calDiscountPrice = '';
+    if (dscntChked && !isNaN(price) && !isNaN(rate)) {
+      calDiscountPrice = (price - (price * rate) / 100).toFixed(2); 
+    }
+
+    setProductPrice(e.target.value);
+    setDiscountPrice(calDiscountPrice); // 소수점 둘째 자리까지 표시
+  };
+
+  // 할인율
+  const handleDiscountRate = e => {
+    const price = parseFloat(productPrice);
+    const rate = parseFloat(e.target.value);
+
+    let calDiscountPrice = '';
+    if (dscntChked && !isNaN(price) && !isNaN(rate)) {
+      calDiscountPrice = (price - (price * rate) / 100).toFixed(2); 
+    }
+    setDiscountRate(e.target.value);
+    setDiscountPrice(calDiscountPrice); // 소수점 둘째 자리까지 표시
+  };
+  // *판매가와 할인율에서 모두 할인 가격을 계산하는 이유는 판매가와 할인율이 상호 의존 관계이기 때문(사용자가 둘 중 하나를 변경하면 할인 가격이 다시 계산되어야 하기 때문에 두 함수 모두에서 할인가를 계산하는 것이 필요(+편리))
+
+
+
+
+  /* 사이즈 옵션 입력 받기 */
   const [sizes, setSizes] = useState([]);
   const [newSize, setNewSize] = useState('');
   const [showInput, setShowInput] = useState(false);
   const inputFocus = useRef(null);
 
-  // 추가 버튼
+  // 옵션 추가 버튼
   const handleAddSize = () => {
     setShowInput(true);
   };
 
-  // input에 값 입력
+  // 옵션 input에 값 입력
   const handleSizeChange = e => {
     setNewSize(e.target.value);
   };
 
-  // 확인 버튼
+  // 옵션 입력 확인 버튼
   const handleConfirmSize = e => {
     if(newSize.trim() === '') {
       alert("사이즈를 입력해주세요.")
@@ -123,18 +162,18 @@ function AddProduct() {
     }
   };
 
-  // 취소 버튼
+  // 옵션 입력 취소 버튼
   const handleConfirmClose = () => {
     setShowInput(false);
   }
 
-  // x 버튼
+  // 옵션 삭제(x) 버튼
   const handleDeleteSize = (index) => {
     const updateSizes = sizes.filter((_, i) => i !== index);
     setSizes(updateSizes);
   }
 
-  // autofocus설정 (리액트에서 동적으로 autofocus 설정할 때는 useRef사용하기)
+  // 옵션 input autofocus설정 (리액트에서 동적으로 autofocus 설정할 때는 useRef사용하기)
   useEffect(() => {
     if (showInput && inputFocus.current) {
       inputFocus.current.focus();
@@ -142,26 +181,26 @@ function AddProduct() {
   }, [showInput]);
 
 
-  // 색상 옵션 입력 받기
+  /* 색상 옵션 입력 받기 */
   const [colors, setColors] = useState([]);
   const [newColor, setNewColor] = useState('');
   const [showColorInput, setShowColorInput] = useState(false);
   const inputColorFocus = useRef(null);
 
-  // 추가 버튼
+  // 옵션 추가 버튼
   const handleAddColor = () => {
     setShowColorInput(true);
   };
 
-  // input에 값 입력
+  // 옵션 input에 값 입력
   const handleColorChange = e => {
     setNewColor(e.target.value);
   };
 
-  // 확인 버튼
+  // 옵션 입력 확인 버튼
   const handleConfirmColor = e => {
     if(newColor.trim() === '') {
-      alert("사이즈를 입력해주세요.")
+      alert("사이즈를 입력해주세요.");
       e.preventDefault();
     } else {
       if (colors.length < 5) {
@@ -172,18 +211,18 @@ function AddProduct() {
     }
   };
 
-  // 취소 버튼
+  // 옵션 입력 취소 버튼
   const handleColorConfirmClose = () => {
     setShowColorInput(false);
   }
 
-  // x 버튼
+  // 옵션 삭제(x) 버튼
   const handleDeleteColor = (index) => {
     const updateColors = colors.filter((_, i) => i !== index);
     setColors(updateColors);
   }
 
-  // autofocus설정
+  // 옵션 input autofocus설정
   useEffect(() => {
     if (showColorInput && inputColorFocus.current) {
       inputColorFocus.current.focus();
@@ -191,14 +230,9 @@ function AddProduct() {
   }, [showColorInput]);
 
 
-
-
-  // 등록하기 버튼 누르면 실행
+  /* 등록하기 버튼 누르면 실행 */
   const onAddSubmit = () => {
-    /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
-
     const formData = new FormData();
-
     for(let i = 0; i<images.length; i++) {
       formData.append('productFile', images[i]);
     }
@@ -209,14 +243,13 @@ function AddProduct() {
     formData.append('productName', productName);
     formData.append('productPrice', productPrice);
     formData.append('discountRate', discountRate);
-    // formData.append('discountPrice', discountPrice);
-    formData.append('productSize', sizes);
-    formData.append('productColor', colors);
+    formData.append('discountPrice', discountPrice);
+    formData.append('productSizes', sizes);
+    formData.append('productColors', colors);
     formData.append('productQuantity', productQuantity);
     formData.append('productExplanation', productExplanation);
     formData.append('productExplanation1', productExplanation1);
     formData.append('productExplanation2', productExplanation2);
-
 
     // formdata 값 확인하기
     console.log('폼데이터----여기부터');
@@ -225,7 +258,7 @@ function AddProduct() {
     }
     console.log('폼데이터----여기까지');
 
-
+    /* 필수 항목을 모두 입력해야 제출 할 수 있도록 유효성 검사 해주기( ) */
     axios.post('/registerProduct', formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -310,27 +343,29 @@ function AddProduct() {
             </DscntChkBox>
 
             <AddINputWrap>
-              <label>가격</label>
+              <label>판매가</label>
               <div className="input_box">
-                <AddINput type="text" name="productPrice" value={productPrice} onChange={handleInputChange} />
+                <AddINput type="text" name="productPrice" value={productPrice} onChange={handleProductPrice} />
               </div>
             </AddINputWrap>
 
-            <FlexBox>
-              <AddINputWrap>
+            {dscntChked && (
+              <>
+                <AddINputWrap>
                 <label>할인율</label>
                 <div className="input_box">
-                  <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} value={discountRate}/>
+                  <AddINput type="text" name="discountRate" disabled={dscntChked ? false : true} value={discountRate} onChange={handleDiscountRate} />
                 </div>
               </AddINputWrap>
 
-              {/* <AddINputWrap>
+              <AddINputWrap>
                 <label>할인가</label>
                 <div className="input_box">
-                  <AddINput type="text" name="discountPrice" value={dscntChked ? dscntPrice : 0} disabled={dscntChked ? false : true} onChange={handleInputChange} />
+                  <AddINput type="text" name="discountPrice" value={dscntChked ? discountPrice : ''} readOnly />
                 </div>
-              </AddINputWrap> */}
-            </FlexBox>
+              </AddINputWrap>
+              </>
+            )}
           </div> {/* p_price_box */}
           
           <div id="p_info_box">
@@ -382,12 +417,6 @@ function AddProduct() {
                     <button className="confirm_option_btn" onClick={handleColorConfirmClose}>취소</button>
                   </div>
                 )}
-
-
-
-
-
-
             </AddINputWrap>
 
             <AddINputWrap>
