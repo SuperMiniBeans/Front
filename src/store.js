@@ -122,9 +122,33 @@ const categorySlice = createSlice({
   },
 });
 
+const cartSlice = createSlice({
+  name: 'cart',
+  initialState: [],
+  reducers: {
+    addToCart: (state, action) => {
+      const itemIndex = state.findIndex(
+        item => item.id === action.payload.id && 
+                item.size === action.payload.size &&
+                item.color === action.payload.color
+      );
+
+      if(itemIndex >= 0) {
+        state[itemIndex].quantity += 1;
+      } else {
+        state.push({...action.payload, quantity: 1});
+      }
+      // state.push(action.payload);
+      console.log('cart redux', action.payload);
+    },
+  }
+});
+
+
 export const { setInputValue, clearInputValue, updateInputValue } = inputValueSlice.actions;
 export const { addProductList, setProductList, toggleProductList, removeProductList, setProduct, updateProduct } = productSlice.actions;
 export const { selectMajorCategory, selectMinorCategory, setMajorCategory, setMinorCategory } = categorySlice.actions;
+export const { addToCart } = cartSlice.actions;
 
 const store = configureStore({
   reducer: {
@@ -132,6 +156,8 @@ const store = configureStore({
     inputValue: inputValueSlice.reducer,
     products: productSlice.reducer,
     categories: categorySlice.reducer,
+    cart: cartSlice.reducer,
+
   },
 });
 export default store;
