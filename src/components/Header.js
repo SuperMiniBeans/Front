@@ -77,7 +77,7 @@ function Header({isLogin, isAdmin}) {
                 <LoginLi><Link to="/login">Login</Link></LoginLi>
               }
 
-              <ShoppingBag><Link to="/"><SlBag /></Link></ShoppingBag>
+              <ShoppingBag><Link to="/cart"><SlBag /></Link></ShoppingBag>
             </UserWrap>
           </GnbUserWrap>
 
