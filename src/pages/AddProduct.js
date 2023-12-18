@@ -96,7 +96,7 @@ function AddProduct() {
   const handleDscntCheck = e => {
     setDscntChked(e.target.checked);
     if (dscntChked === false) {
-      setDiscountRate('');
+      setDiscountRate(0);
       setDiscountPrice('');
     }
   }
