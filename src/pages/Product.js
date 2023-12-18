@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
-import ProductList from "../components/ProductList";
+import ProductList from "./ProductList";
 import axios from "axios";
 
 
