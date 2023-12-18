@@ -1,6 +1,10 @@
 // import { useState } from "react";
+import styled from "styled-components";
+
 import { Routes, Route } from "react-router-dom";
+
 import Home from "../pages/Home";
+
 import Login from "../pages/Login";
 import ResetPwIdChk from "../pages/ResetPwIdChk";
 import ResetPwEmailChk from "../pages/ResetPwEmailChk";
@@ -8,13 +12,17 @@ import ResetPw from "../pages/ResetPw";
 import SearchId from "../pages/SearchId";
 import Join from "../pages/Join";
 import JoinComplete from "../pages/JoinComplete";
+
 import MyPage from "../pages/MyPage";
 import Admin from "../pages/Admin";
+
 import Product from "../pages/Product";
-import ProductDetail from "./ProductDetail";
+import ProductDetail from "../pages/ProductDetail";
+
 import AddProduct from "../pages/AddProduct";
 import UpdateProduct from "../pages/UpdateProduct";
-import styled from "styled-components";
+
+import Cart from "../pages/Cart";
 
 
 function Main() {
@@ -22,6 +30,8 @@ function Main() {
   return (
     <MainWrap>
       <Routes>
+        <Route path='/cart' element={<Cart />} />
+
         <Route exact path='/admin/*' element={<Admin />} />
         <Route path='/admin/add' element={<AddProduct />} />
         <Route path='/admin/products/:id/edit' element={<UpdateProduct />} />
