@@ -103,7 +103,7 @@ function Login() {
           // alert(response.status + "로그인이 완료되었습니다.");
           console.log(response.data, id, password);
           sessionStorage.setItem("아이디", id);
-          sessionStorage.setItem("비밀번호", password);
+          // sessionStorage.setItem("비밀번호", password);
           sessionStorage.setItem("userNumber", response.data.userNumber);
           document.location.href = '/';
 
