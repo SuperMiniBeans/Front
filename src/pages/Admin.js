@@ -8,7 +8,7 @@ import moment from "moment/moment";
 
 import { Container, FlexBoxSB } from "../styles/Layout";
 import AddProduct from "./AddProduct"
-import ProductDetail from "../components/ProductDetail";
+import ProductDetail from "../pages/ProductDetail"
 import UpdateProduct from "./UpdateProduct";
 
 function Admin() {
@@ -89,8 +89,7 @@ function Admin() {
       })
       .catch(error => {
         console.log(error);
-        console.log('클릭한 항목', checkedProducts);
-        window.alert("실패");
+        // window.alert("실패");
       })
   };
 
