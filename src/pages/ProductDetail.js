@@ -1,11 +1,10 @@
 import styled from "styled-components";
-import { Container, FlexBox } from "../styles/Layout";
+import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../store";
-
 
 
 /* 
@@ -20,6 +19,7 @@ import { addToCart } from "../store";
 function ProductDetail() {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState({
     productName: '',
@@ -172,7 +172,9 @@ function ProductDetail() {
         checked: true,
       };
   
-      const existingOptionIndex = selectedOptions.findIndex(option => option.text === newOption.text);
+      const existingOptionIndex = selectedOptions.findIndex(option => 
+        option.text === newOption.text
+      );
   
       if (existingOptionIndex >= 0) {
         // 이미 존재하는 옵션의 수량 증가
@@ -186,35 +188,9 @@ function ProductDetail() {
         setSelectedOptions([...selectedOptions, newOption]);
       }
   
-      setSum(prevSum => prevSum + price);
+      // setSum(prevSum => prevSum + price);
     }
   };
-  // handleAddOption();
-
-
-
-
-
-
-  
-
-  // const minus = (option) => {
-  //   if(sum > 0 && option.quantity > 1) {
-  //     let price = Number(discountRate !== null ? discountPrice : productPrice); 
-  //     setSum(sum - price);
-  //     // setCount(selectedOptions.quantity - 1);
-  //     option.quantity -= 1;
-  //     option.sum -= price;
-  //   }
-  // }
-  
-  // const plus = (option) => {
-  //   // setCount(selectedOptions.quantity + 1);
-  //   let price = Number(discountRate !== null ? discountPrice : productPrice); 
-  //   setSum(sum + price);
-  //   option.quantity += 1;
-  //   option.sum += price;
-  // }
 
   const minus = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
@@ -222,9 +198,6 @@ function ProductDetail() {
       updatedOptions[optionIndex].quantity -= 1;
       setSelectedOptions(updatedOptions);
     }
-    // if(updatedOptions[optionIndex].quantity === 1) {
-    //   return updatedOptions[optionIndex].quantity === 1;
-    // }
   };
 
   const plus = (optionIndex) => {
@@ -247,37 +220,76 @@ function ProductDetail() {
 
 
   /* '장바구니 담기' 클릭하면 실행 */
-  const [cart, setCart] = useState([]);
-
-
-
   // 이것도 비동기로 처리해야?? ( )
-  const addCart = () => {
-    // if(!sessionStorage.getItem("useNumber")) {
-    //   alert("로그인 해주세요.")
-    // }
+  // 장바구니에 담긴 상품 또 담으려고 하면 이미 담긴 상품이라는 alert띄우기 ( )
+  
+  // const addCart = (option, optionIndex) => {
+
+  //   // if(!sessionStorage.getItem("useNumber")) {
+  //   //   alert("로그인 해주세요.")
+  //   // }
+
+  //   if(selectedOptions.length > 0) {
+  //     selectedOptions.forEach(option => {
+  //       axios.post('/addCart', {
+  //         userNumber: sessionStorage.getItem("userNumber"),
+  //         productNumber: id,
+  //         cartCount: 12,
+  //         selectedSize: option.size,
+  //         selectedColor: option.color,
+  //       })
+  //         .then(response => {
+  //           console.log(response.data);
+  //           dispatch(addToCart(option));
+  //           alert("장바구니에 상품이 담겼습니다.");
+  //         })
+  //         .catch(error => {
+  //           console.log(error);
+  //           alert("실패!");
+  //         });
+  //     });
+  //   } else {
+  //     alert("옵션을 선택해 주세요.");
+  //   }
+  // }
+  /* setCount - 어떻게 구할지에 따라 수정 */
+
+  const addCart = (option, optionIndex) => {
     if(selectedOptions.length > 0) {
-      axios.post('/addCart', {
-        userNumber: sessionStorage.getItem("useNumber"), // 세션
-        productNumber: sessionStorage.getItem("productNumber"), // 세션
-        selectedSize: selectedOptions.size, // 대분류, 소분류처럼 value 보내기
-        selectedColor: selectedOptions.color, // 대분류, 소분류처럼 value 보내기
-        cartCount: 1, // 처음에는 1 보내고 이후에는 자동 1++
-      })
-        .then(response => {
-          console.log(response.data);
-          dispatch(addToCart(selectedOptions));
+      // 모든 요청을 담을 배열
+      const requests = selectedOptions.map(option => 
+        axios.post('/addCart', {
+          userNumber: sessionStorage.getItem("userNumber"),
+          productNumber: id,
+          cartCount: 12,
+          selectedSize: option.size,
+          selectedColor: option.color,
+        })
+      );
+  
+      // 모든 요청이 완료될 때까지 기다림
+      Promise.all(requests)
+        .then(responses => {
+          responses.forEach(response => {
+            console.log(response.data);
+          });
+  
+          // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+          selectedOptions.forEach(option => {
+            dispatch(addToCart(option));
+          });
+  
           alert("장바구니에 상품이 담겼습니다.");
         })
         .catch(error => {
           console.log(error);
-          alert("실패!");
-
-        })
+        });
     } else {
       alert("옵션을 선택해 주세요.");
     }
   }
+
+
 
   // const addCart = () => {
   //   // const cartItems = {
@@ -293,8 +305,8 @@ function ProductDetail() {
 
   //   dispatch(addToCart(selectedOptions));
   // }
-  
 
+  
   return(
     <ProductDetailWrap>
       <Container>
@@ -325,25 +337,25 @@ function ProductDetail() {
             <InfoWrap className="detail_infos_wrap">
               <div><h3>{productName}</h3></div>
               <PriceWrap>
-                {discountRate ? (
+                {discountRate > 0 ? (
                   <>
                     <span className="dscnt_rate">{discountRate}%</span>
                     <span className="dscnt_price">{discountPrice}</span>
-                    <span className="price">{discountRate > 0 ? discountPrice : productPrice}</span>
+                    <span className="price">{productPrice}</span>
                   </>
                 ) : (
                   <>
-                    <span className="price">{productPrice}</span>
+                    <span className="non_dscnt_price">{productPrice}</span>
                   </>
                 )}
               </PriceWrap>
 
-              <SelctBox className="select_box">
+              <SelectBox className="select_box">
                 <select
                   value={selectedSize || ""}
                   onChange={handleSelectedSize}
                 >
-                  <option value="">-- Select Size --</option>
+                  <option value="">사이즈 선택</option>
                   {productSizes.map((size) => (
                     <option key={size} value={size}>
                       {size}
@@ -356,7 +368,7 @@ function ProductDetail() {
                   onChange={handleSelectedColor}
                   onClick={handleAddOption}
                   >
-                  <option value="">-- Select Color --</option>
+                  <option value="">색상 선택</option>
                   {selectedSize && productColors.map((color) => (
                     <option key={color} value={color}>
                       {color}
@@ -369,18 +381,22 @@ function ProductDetail() {
                       {selectedOptions.map((option, index) => (
                         <li key={index}>
                           <FlexBox>
-                            <span>{option.text}</span>
+                            <span id="option_text">{option.text}</span>
                             <button id="minus_btn" onClick={() => minus(index)}>-</button>
-                            <span>{option.quantity ? option.quantity : 1}</span>
+                            <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
                             <button id="plus_btn" onClick={() => plus(index)}>+</button>
-                            <span>{calculatePrice(index)}원</span>
+                            <span id="option_cal_price">{calculatePrice(index)}원</span>
                             <button id="remove_btn" onClick={() => removeOption(index)}>x</button>
                           </FlexBox>
                         </li>    
                       ))}
                     </ul>
                 </SelectedOptionBox>
-              </SelctBox> {/* select_box */}
+                <FlexBoxSB>
+                  <div>총 상품 금액</div>
+                  <div>계산 값</div>
+                </FlexBoxSB>
+              </SelectBox> {/* select_box */}
 
               <div className="btn_wrap">
                 <button>바로구매</button>
@@ -433,7 +449,8 @@ min-width: 1200px;
   }
   
   .right {
-    width: 50%;
+    // width: 50%;
+    width: 400px;
     // background-color: yellow;
   }
 `
@@ -500,15 +517,10 @@ const ThumbWrap = styled.div`
 `
 
 const InfoWrap = styled.div`
-
-
   h3 {
     font-size: 24px;
     margin-bottom: 10px;
   }
-
-
-
 `
 
 const PriceWrap = styled.div`
@@ -516,7 +528,7 @@ const PriceWrap = styled.div`
   display: flex;
   margin-bottom: 120px;
 
-  .price {
+  .non_dscnt_price {
     line-height: 20px;
     font-size: 20px;
   }
@@ -540,8 +552,22 @@ const PriceWrap = styled.div`
   }
 `
 
-const SelctBox = styled.div`
+const SelectBox = styled.div`
   margin-bottom: 40px;
+
+  select {
+    width: 400px;
+    height: 28px;
+    margin-bottom: 10px;
+    padding: 0 10px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: none;
+
+    &:first-child {
+      margin-bottom: 4px;
+    }
+  }
 
 `
 
@@ -549,30 +575,63 @@ const SelectedOptionBox = styled.div`
   display: flex;
   justify-content: space-between;
   width: 400px;
-  height: 40px;
-  background-color: pink;
+  height: auto;
+  font-size: 14px;
 
   ul {
     
     li {
+      display: flex;
+      align-items: centery;
+      width: 400px;
+      height: 40px;
+      padding-left: 10px;
+      // border-bottom: 1px solid #ccc;
+      background-color: orange;
+      margin-bottom: 4px;
 
       #minus_btn,
       #plus_btn,
       #remove_btn {
-        width: 24px;
-        height: 32px;
+        width: 20px;
+        height: 20px;
+        border-radius: none;
+        cursor: pointer;
+      }
+
+      #option_text {
+        display: flex;
+        align-items: center;
+        width: 200px;
+        background-color: yellow;
+
       }
 
       #minus_btn {
-        margin-left: 120px;
+        // margin-left: 120px;
+      }
+
+      #option_quantity {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
       }
 
       #plus_btn {
-        margin-right: 80px;
+        // margin-right: 80px;
+      }
+
+      #option_cal_price {
+        display: flex;
+        align-items: center;
       }
 
       #remove_btn {
         margin-left: 20px;
+        right: 0;
+        border: none;
+        background: none;
       }
     }
   }

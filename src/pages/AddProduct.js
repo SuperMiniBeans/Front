@@ -6,8 +6,8 @@ import axios from "axios";
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBg } from "../styles/ButtonStyle";
 
-// 수정하는 기능 추가하기 -> 기존 값을 input에 표시하고 수정된 값 업ㅂ데ㅣ트
 // 상품 등록 후 value값 비우기( )
+// 할인 적용 체크하면 input생기는거 말고 비활성화 -> 활성화로 변경하기
 
 function AddProduct() {
   const navigate = useNavigate();
@@ -282,7 +282,6 @@ function AddProduct() {
         <h2>상품 등록</h2>
 
         <div className="align_center">
-        {/* <div>날짜: {today}</div> */}
 
         <form>
           <div id="p_cate_box">

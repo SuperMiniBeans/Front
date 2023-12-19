@@ -127,20 +127,38 @@ const cartSlice = createSlice({
   initialState: [],
   reducers: {
     addToCart: (state, action) => {
-      const itemIndex = state.findIndex(
-        item => item.id === action.payload.id && 
-                item.size === action.payload.size &&
-                item.color === action.payload.color
+      const itemIndex = state.findIndex(item => 
+        item.id === action.payload.id && 
+        item.size === action.payload.size &&
+        item.color === action.payload.color
       );
 
-      if(itemIndex >= 0) {
-        state[itemIndex].quantity += 1;
+      if (itemIndex >= 0) {
+        // 기존 상품이 존재하는 경우 수량을 증가
+        return [
+          ...state.slice(0, itemIndex),
+          {
+            ...state[itemIndex],
+            quantity: state[itemIndex].quantity + 1
+          },
+          ...state.slice(itemIndex + 1)
+        ];
       } else {
-        state.push({...action.payload, quantity: 1});
+        // 새로운 상품을 추가
+        return [
+          ...state,
+          {
+            ...action.payload,
+            quantity: 1,
+            checked: true
+          }
+        ];
       }
-      // state.push(action.payload);
-      console.log('cart redux', action.payload);
+
     },
+    deleteFromCart: (state, action) => {
+      
+    }
   }
 });
 

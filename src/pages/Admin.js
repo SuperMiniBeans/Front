@@ -36,7 +36,7 @@ function Admin() {
   const [checkedProducts, setCheckedProducts] = useState([]);
   console.log('선택된 항목', checkedProducts);
   /* 혹시 콘솔 값을 setLanguage 바로 밑에서 체크한것이라면 반영은 제대로 되었을 가능성이 큽니다. 
-  왜냐하면 useState는 값이 바로 변경되지 않고, useState가 들어있는 컴포넌트가 리렌더링 될때 업데이트 되기 때문입니다. 
+  왜냐하면 useState는 값이 바로 변경되지 않고, useState가 들어있는 컴포넌트가 리렌더링 될때 업데이트 되기 때문입니다.
   콘솔값을 selectBox 최상단이나, 혹은 이 함수에게 props를 주고있는 부모함수에서 찍어보면 값을 얻을수 있을것 같기는 합니다.  */
   const handleCheckbox = (checked, pNum) => {
     if(checked) {
@@ -89,7 +89,6 @@ function Admin() {
       })
       .catch(error => {
         console.log(error);
-        // window.alert("실패");
       })
   };
 
