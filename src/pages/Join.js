@@ -7,6 +7,8 @@ import { FlexBox } from "../styles/Layout";
 import Post from "../components/Post";
 
 function Join() {
+  const navigate = useNavigate();
+
   // 사용자 정보
   const [name, setName] = useState("");
   const [id, setId] = useState("");
@@ -47,8 +49,6 @@ function Join() {
 
   // 주소 검색창 팝업
   const [popup, setPopup] = useState(false);
-
-  const navigate = useNavigate();
 
   //문자열에 공백이 있는 경우
   let blankReg = /[\s]/g;

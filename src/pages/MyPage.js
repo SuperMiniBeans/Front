@@ -19,6 +19,8 @@ function MyPage() {
     })
   }, []);
 
+  console.log(data)
+
   // 사이드 탭메뉴
   const tabContent = data ? [
     {
@@ -28,7 +30,10 @@ function MyPage() {
         <div id="mp_info_content" className="content">
           <h2>내 정보</h2>
           <div>이름: {data.userName}</div>
-          <div>사용자 번호 : {data.userNumber}</div>
+          <div>이메일: {data.userEmail}</div>
+          <div>주소: {data.userAddress1} {data.userAddress2} {data.userAddress3}</div>
+
+          <div>휴대폰 번호 : {data.userPhoneNumber}</div>
         </div>
       )
     },
@@ -74,27 +79,10 @@ function MyPage() {
 
                 <MyPageContents>
                   {tabContent.filter(item => index === item.id).map(item => (
-                    <div>{item.content}</div>
+                    <div key={index}>{item.content}</div>
                   ))}
                   
 
-                  {/*
-                  <div id="mp_info_content" className="content">
-                    <h2>내 정보</h2>
-                    <div>이름: {data.userName}</div>
-                    <div>사용자 번호 : {data.userNumber}</div>
-                  </div>
-
-
-                  <div id="mp_wishlist_content" className="content">
-                    <h2>찜 목록</h2>
-                    <div>이미지, map돌리기?, 이미지-상품명-가격, 썸네일에 하트 아이콘(빈 하트, 채운 하트 두개 필요) </div>
-                  </div>
-
-                  <div id="mp_wishlist_content" className="content">
-                    <h2>장바구니</h2>
-                    <div>map돌리기?, 이미지-상품명-가격, </div>
-                  </div> */}
                 </MyPageContents> 
               </FlexBox>
             </ConentBox>
