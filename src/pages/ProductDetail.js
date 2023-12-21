@@ -38,41 +38,18 @@ function ProductDetail() {
   // 이미지 데이터 배열로 저장
   const [imgData, setImgData] = useState([]);
 
-
-  // DB에 저장된 게시글 불러와서 보여주기
-  /* https://onethejay.tistory.com/194 */
-  // useEffect(() => { 
-  //   axios.post('/productView', {
-  //     productNumber: id,
-  //   })
-  //     .then(response => {
-  //       console.log('데이터', response.data);
-  //       setProduct(response.data[0]);
-  //       // setMajorCategory(response.data[0].categoryMajorCode);
-  //       // setMinorCategory(response.data[0].categoryMinorCode);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       if(product.length === 0) {
-  //         console.log('데이터 없음');
-  //       }
-  //     })
-  // }, [id]);
-
   /* db에 저장된 상품 데이터 불러오기(비동기) */
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.post('/productView', {
-        productNumber: id
+          productNumber: id
         })
         setImgData(response.data);
         setProduct(response.data[0]);
         sessionStorage.setItem("productNumber", response.data[0].productNumber);
         // setMajorCategory(response.data[0].categoryMajorCode);
         // setMinorCategory(response.data[0].categoryMinorCode);
-        console.log('response.data', response.data);
-
       }
       catch(error) {
         console.log(error);
@@ -112,48 +89,10 @@ function ProductDetail() {
 
   // 선택된 옵션 보여주기
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [sum, setSum] = useState(0);
-  const [count, setCount] = useState(1);
+  // const [sum, setSum] = useState(0);
+  // const [count, setCount] = useState(1);
 
 
-  // useEffect(() => {
-  //   if (selectedColor && selectedSize) {
-  //     // let price = Number(selectedSize.slice(-7, -1).split(",").join("").trim());
-  //     let price = Number(discountRate !== null ? discountPrice : productPrice);
-  //     const newOption = { 
-  //       id: id, 
-  //       img: imgPathList[0],
-  //       name: productName,
-  //       text: selectedSize + ", " + selectedColor,
-  //       size: selectedSize, 
-  //       color: selectedColor,
-  //       quantity: 1, 
-  //       sum: price,
-  //       checked: true,
-  //     };
-
-  //     setSelectedOptions(prevOptions => {
-  //       const existingOptionIndex = prevOptions.findIndex(option => 
-  //         option.text === newOption.text
-  //       );
-
-  //       if (existingOptionIndex >= 0) {
-  //         // 이미 존재하는 옵션의 수량 증가
-  //         const newOptions = [...prevOptions];
-  //         // newOptions[existingOptionIndex].quantity++;
-  //         // newOptions[existingOptionIndex].sum += price;
-  //         alert("이미 선택된 옵션 입니다.");
-  //         return newOptions; 
-  //       } else {
-  //         // 새로운 옵션 추가
-  //         return [...prevOptions, newOption];
-  //       }
-  //   });
-
-  //     setSum(prevSum => prevSum + price);
-
-  //   }
-  // }, [selectedColor, selectedSize]);
 
   console.log('selectedOptions', selectedOptions);
 
@@ -169,7 +108,6 @@ function ProductDetail() {
         color: selectedColor,
         quantity: 1, 
         sum: price,
-        checked: true,
       };
   
       const existingOptionIndex = selectedOptions.findIndex(option => 
@@ -222,15 +160,12 @@ function ProductDetail() {
   /* '장바구니 담기' 클릭하면 실행 */
   // 이것도 비동기로 처리해야?? ( )
   // 장바구니에 담긴 상품 또 담으려고 하면 이미 담긴 상품이라는 alert띄우기 ( )
-  
-  // const addCart = (option, optionIndex) => {
+  /* cartCount - 어떻게 구할지에 따라 수정 */
 
-  //   // if(!sessionStorage.getItem("useNumber")) {
-  //   //   alert("로그인 해주세요.")
-  //   // }
-
+  // const addCart = () => {
   //   if(selectedOptions.length > 0) {
-  //     selectedOptions.forEach(option => {
+  //     // 모든 요청을 담을 배열
+  //     const requests = selectedOptions.map(option => 
   //       axios.post('/addCart', {
   //         userNumber: sessionStorage.getItem("userNumber"),
   //         productNumber: id,
@@ -238,52 +173,52 @@ function ProductDetail() {
   //         selectedSize: option.size,
   //         selectedColor: option.color,
   //       })
-  //         .then(response => {
-  //           console.log(response.data);
+  //     );
+
+  //     // 모든 요청이 완료될 때까지 기다림
+  //     Promise.all(requests)
+  //       .then(responses => {
+  //         // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+  //         selectedOptions.forEach(option => {
   //           dispatch(addToCart(option));
-  //           alert("장바구니에 상품이 담겼습니다.");
-  //         })
-  //         .catch(error => {
-  //           console.log(error);
-  //           alert("실패!");
   //         });
-  //     });
+
+  //         // 로컬 스토리지에 아이템 저장
+  //         const cart = JSON.parse(localStorage.getItem('cart')) || {};
+  //         selectedOptions.forEach(option => {
+  //           const productOptions = cart[option.id] || [];
+  //           productOptions.push(option);
+  //           cart[option.id] = productOptions;
+  //         });
+  //         localStorage.setItem('cart', JSON.stringify(cart));
+
+  //         alert("장바구니에 상품이 담겼습니다.");
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //       });
   //   } else {
   //     alert("옵션을 선택해 주세요.");
   //   }
   // }
-  /* setCount - 어떻게 구할지에 따라 수정 */
 
-  const addCart = (option, optionIndex) => {
+  // api빼고 리덕스랑 세션스토리지만 테스트
+  const addCart = () => {
     if(selectedOptions.length > 0) {
-      // 모든 요청을 담을 배열
-      const requests = selectedOptions.map(option => 
-        axios.post('/addCart', {
-          userNumber: sessionStorage.getItem("userNumber"),
-          productNumber: id,
-          cartCount: 12,
-          selectedSize: option.size,
-          selectedColor: option.color,
-        })
-      );
-  
-      // 모든 요청이 완료될 때까지 기다림
-      Promise.all(requests)
-        .then(responses => {
-          responses.forEach(response => {
-            console.log(response.data);
-          });
-  
-          // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-          selectedOptions.forEach(option => {
-            dispatch(addToCart(option));
-          });
-  
-          alert("장바구니에 상품이 담겼습니다.");
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      // store에 아이템 저장
+      selectedOptions.forEach(option => {
+        dispatch(addToCart(option));
+      });
+
+      // 로컬 스토리지에 아이템 저장
+      const cart = JSON.parse(localStorage.getItem('cart')) || {};
+      selectedOptions.forEach(option => {
+        const productOptions = cart[option.id] || [];
+        productOptions.push(option);
+        cart[option.id] = productOptions;
+      });
+      localStorage.setItem('cart', JSON.stringify(cart));
+
     } else {
       alert("옵션을 선택해 주세요.");
     }
@@ -291,22 +226,21 @@ function ProductDetail() {
 
 
 
-  // const addCart = () => {
-  //   // const cartItems = {
-  //   //   id: id, 
-  //   //   img: imgPathList[0],
-  //   //   name: productName,
-  //   //   size: selectedSize,
-  //   //   color: selectedColor,
-  //   //   price: sum,
-  //   //   quantity: quantity,
-  //   //   checked: true,
-  //   // }
 
-  //   dispatch(addToCart(selectedOptions));
-  // }
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
   return(
     <ProductDetailWrap>
       <Container>

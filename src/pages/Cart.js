@@ -4,34 +4,42 @@ import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import CartOptionChangeModal from "../components/CartOptionChangeModal";
 
-// 장바구니는 리덕스 사용해서 관리하기 
+
+
+// 상품 체크 수정하기( ) pNum 말고 인덱스로 구분해도 될까?
+// 삭제하기 구현( )
+
+
+
 function Cart() {
-
-
+  const [isModalOpened, setIsModalOpened] = useState(false);
+  const closeModal = () => setIsModalOpened(false);
 
   const cart = useSelector((state) => state.cart);
   console.log('reduxcart', cart);
 
-  const[cartList, setCartList] = useState([])
+  // db에 있는 장바구니 데이터 저장할 state
+  const[cartList, setCartList] = useState([]);
 
   // 장바구니로 post한 데이터 받아와서 보여주기
-  useEffect(() => {
-    axios.post('/userCart', {
-      userNumber: sessionStorage.getItem("userNumber"),
-    })
-      .then(response => {
-        setCartList(response.data);
-        console.log('response.data', response.data)
-      })
-      .catch(error => {
-        console.log(error);
-      })
-  }, []);
+  // useEffect(() => {
+  //   axios.post('/userCart', {
+  //     userNumber: sessionStorage.getItem("userNumber"),
+  //   })
+  //     .then(response => {
+  //       setCartList(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }, []);
+  
   console.log('cartList', cartList);
 
   
-  // 체크박스 토글
+  // 체크박스 토글 - 수정하기 ( )
   const [checkedProducts, setCheckedProducts] = useState([]);
   console.log('선택된 항목', checkedProducts);
   const handleCheckbox = (checked, pNum) => {
@@ -88,6 +96,7 @@ function Cart() {
               </th>
               <th scope="col" id="cart_list_info">상품 정보</th>
               <th scope="col" id="cart_list_price">상품 금액</th>
+              <th></th>
             </tr>
           </thead>
 
@@ -125,7 +134,7 @@ function Cart() {
                           <div className="cart_product_name">{items.productName} </div>
                         </Link>
                         <div className="selected_option">옵션: {items.selectedSize}/ {items.selectedColor}</div>
-                        <div><button id="option_change">사이즈/수량 변경</button></div>
+                        <div><button id="option_change" onClick={() => setIsModalOpened(true)}>사이즈/수량 변경</button></div>
                       </div>
                     </FlexBox>
                     
@@ -145,6 +154,12 @@ function Cart() {
                       )}
                     </PriceWrap>
                   </td>
+
+                  <td>
+                    <div><button>주문하기</button></div>
+                    <div><button>찜</button></div>
+                    <div><button>삭제하기</button></div>
+                  </td>
                   
                 </tr>
               </tbody>
@@ -152,6 +167,8 @@ function Cart() {
           )}
           {/* map으로 돌리기 (여기까지-----------)*/}
         </table>
+
+        <CartOptionChangeModal isModalOpened={isModalOpened} closeModal={closeModal} cartList={cartList}/>
 
         <div><DeleteChkedBtn type="submit" onClick={onRemove}>선택 삭제</DeleteChkedBtn></div>
         

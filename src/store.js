@@ -158,7 +158,15 @@ const cartSlice = createSlice({
     },
     deleteFromCart: (state, action) => {
       
-    }
+    },
+    addCount(state, action) {
+      let nums = state.findIndex( a => a.id === action.payload);
+      state[nums].count++;
+    },
+    minusCount(state, action) {
+      let nums = state.findIndex( a => a.id === action.payload);
+      if (state[nums].count > 1)  state[nums].count--;
+    },
   }
 });
 
