@@ -15,7 +15,6 @@ import { addToCart } from "../store";
 */
 
 
-
 function ProductDetail() {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -80,7 +79,6 @@ function ProductDetail() {
   
   const handleSelectedSize = e => {
     setSelectedSize(e.target.value);
-    setSelectedColor('');
   }
   
   const handleSelectedColor = e => {
@@ -89,18 +87,14 @@ function ProductDetail() {
 
   // 선택된 옵션 보여주기
   const [selectedOptions, setSelectedOptions] = useState([]);
-  // const [sum, setSum] = useState(0);
-  // const [count, setCount] = useState(1);
-
-
-
   console.log('selectedOptions', selectedOptions);
 
   const handleAddOption = () => {
     if (selectedColor && selectedSize) {
       let price = Number(discountRate !== null ? discountPrice : productPrice);
       const newOption = { 
-        id: id, 
+        id: id + selectedSize + selectedColor, // 고유한 키 생성(옵션이 다르면 다른 상품으로 취급해야하기 때문)
+        productNumber: id, // 상품의 원래 아이디
         img: imgPathList[0],
         name: productName,
         text: selectedSize + ", " + selectedColor,
@@ -108,27 +102,43 @@ function ProductDetail() {
         color: selectedColor,
         quantity: 1, 
         sum: price,
+        productPrice: productPrice,
+        discountPrice: discountPrice,
+        productSizes : productSizes,
+        productColors : productColors,
       };
   
       const existingOptionIndex = selectedOptions.findIndex(option => 
-        option.text === newOption.text
+        option.id === newOption.id
       );
   
       if (existingOptionIndex >= 0) {
-        // 이미 존재하는 옵션의 수량 증가
         const newOptions = [...selectedOptions];
         alert("이미 선택된 옵션 입니다.");
-        // setSelectedOptions(newOptions);
-        return newOptions; 
+        setSelectedOptions(newOptions);
 
+        setSelectedSize("");
+        setSelectedColor("");
       } else {
-        // 새로운 옵션 추가
-        setSelectedOptions([...selectedOptions, newOption]);
+        setSelectedOptions([...selectedOptions, newOption]); // 새로운 옵션 추가
+
+        setSelectedSize("");
+        setSelectedColor("");
       }
-  
-      // setSum(prevSum => prevSum + price);
     }
   };
+
+  useEffect(() => {
+    handleAddOption();
+  }, [selectedColor]);
+  /* handleAddOption내부 코드를 useEffect 내부로 옮겨도 될까? X
+  -> useEffect는 React 컴포넌트의 생명주기 중 특정 시점에 동작하도록 설계된 Hook입니다. 일반적으로 useEffect는 데이터 fetching, 구독 설정, 수동으로 변경해야 하는 React 컴포넌트의 DOM 등 side effect를 수행할 때 사용합니다.
+
+handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 의해 호출되는 이벤트 핸들러 함수입니다. 이를 useEffect 내부로 옮기는 것은 적절하지 않을 수 있습니다.
+
+왜냐하면 useEffect는 컴포넌트 렌더링 후에 실행되는 함수이기 때문에, 렌더링이 여러 번 발생하거나, 의도치 않은 시점에 함수가 실행될 수 있기 때문입니다.
+
+따라서, handleAddOption의 로직을 그대로 유지하고, 선택된 사이즈와 색상이 변경될 때마다 이 함수를 호출하도록 하는 것이 좋습니다. 사이즈와 색상이 변경될 때마다 handleAddOption 함수를 호출하려면, 이 두 상태를 useEffect의 의존성 배열에 추가하면 됩니다. */
 
   const minus = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
@@ -144,17 +154,34 @@ function ProductDetail() {
     setSelectedOptions(updatedOptions);
   };
 
+  // const plus = (optionIndex) => {
+  //   const updatedOptions = selectedOptions.map((option, index) => {
+  //     if(index === optionIndex) {
+  //       return {...option, quantity: option.quantity + 1};
+  //     } else {
+  //       return option;
+  //     }
+  //   });
+  //   setSelectedOptions(updatedOptions);
+  // };
+
+
   const removeOption = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
     updatedOptions.splice(optionIndex, 1);
     setSelectedOptions(updatedOptions);
   };
   
-  const calculatePrice = (optionIndex) => {
+  const calculateEachPrice = (optionIndex) => {
     let option = selectedOptions[optionIndex];
     let totalPrice = option.sum * option.quantity;
     return totalPrice;
-};
+  };
+
+  // 총 상품 금액 계산하기
+  // const calculateAllPrice = () => {
+    
+  // }
 
 
   /* '장바구니 담기' 클릭하면 실행 */
@@ -162,83 +189,62 @@ function ProductDetail() {
   // 장바구니에 담긴 상품 또 담으려고 하면 이미 담긴 상품이라는 alert띄우기 ( )
   /* cartCount - 어떻게 구할지에 따라 수정 */
 
-  // const addCart = () => {
-  //   if(selectedOptions.length > 0) {
-  //     // 모든 요청을 담을 배열
-  //     const requests = selectedOptions.map(option => 
-  //       axios.post('/addCart', {
-  //         userNumber: sessionStorage.getItem("userNumber"),
-  //         productNumber: id,
-  //         cartCount: 12,
-  //         selectedSize: option.size,
-  //         selectedColor: option.color,
-  //       })
-  //     );
-
-  //     // 모든 요청이 완료될 때까지 기다림
-  //     Promise.all(requests)
-  //       .then(responses => {
-  //         // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-  //         selectedOptions.forEach(option => {
-  //           dispatch(addToCart(option));
-  //         });
-
-  //         // 로컬 스토리지에 아이템 저장
-  //         const cart = JSON.parse(localStorage.getItem('cart')) || {};
-  //         selectedOptions.forEach(option => {
-  //           const productOptions = cart[option.id] || [];
-  //           productOptions.push(option);
-  //           cart[option.id] = productOptions;
-  //         });
-  //         localStorage.setItem('cart', JSON.stringify(cart));
-
-  //         alert("장바구니에 상품이 담겼습니다.");
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //       });
-  //   } else {
-  //     alert("옵션을 선택해 주세요.");
-  //   }
-  // }
-
-  // api빼고 리덕스랑 세션스토리지만 테스트
   const addCart = () => {
     if(selectedOptions.length > 0) {
-      // store에 아이템 저장
-      selectedOptions.forEach(option => {
-        dispatch(addToCart(option));
-      });
+      // 모든 요청을 담을 배열
+      const requests = selectedOptions.map(option => 
+        axios.post('/addCart', {
+          userNumber: sessionStorage.getItem("userNumber"),
+          productNumber: id,
+          cartCount: 12,
+          selectedSize: option.size,
+          selectedColor: option.color,
+        })
+      );
 
-      // 로컬 스토리지에 아이템 저장
-      const cart = JSON.parse(localStorage.getItem('cart')) || {};
-      selectedOptions.forEach(option => {
-        const productOptions = cart[option.id] || [];
-        productOptions.push(option);
-        cart[option.id] = productOptions;
-      });
-      localStorage.setItem('cart', JSON.stringify(cart));
+      // 모든 요청이 완료될 때까지 기다림
+      Promise.all(requests)
+        .then(responses => {
+          // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+          selectedOptions.forEach(option => {
+            dispatch(addToCart(option));
+          });
 
+          // 로컬 스토리지에 아이템 저장
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
+          selectedOptions.forEach(option => {
+            cart.unshift(option);
+          });
+          localStorage.setItem('cart', JSON.stringify(cart));
+          alert("장바구니에 상품이 담겼습니다.");
+            })
+        .catch(error => {
+          console.log(error);
+        });
     } else {
       alert("옵션을 선택해 주세요.");
     }
   }
 
+  // api빼고 리덕스랑 세션스토리지만 테스트 (성공~!)
+  // const addCart = () => {
+  //   if(selectedOptions.length > 0) {
+  //     // store에 아이템 저장
+  //     selectedOptions.forEach(option => {
+  //       dispatch(addToCart(option));
+  //     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  //     // 로컬 스토리지에 아이템 저장
+  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  //     selectedOptions.forEach(option => {
+  //       cart.unshift(option);
+  //     });
+  //     localStorage.setItem('cart', JSON.stringify(cart));
+  //     alert("장바구니에 상품이 담겼습니다.");
+  //   } else {
+  //     alert("옵션을 선택해 주세요.");
+  //   }
+  // }
 
 
   return(
@@ -300,7 +306,6 @@ function ProductDetail() {
                 <select
                   value={selectedColor || ""}
                   onChange={handleSelectedColor}
-                  onClick={handleAddOption}
                   >
                   <option value="">색상 선택</option>
                   {selectedSize && productColors.map((color) => (
@@ -314,12 +319,14 @@ function ProductDetail() {
                     <ul>
                       {selectedOptions.map((option, index) => (
                         <li key={index}>
-                          <FlexBox>
+                          <FlexBox className="option_list">
                             <span id="option_text">{option.text}</span>
-                            <button id="minus_btn" onClick={() => minus(index)}>-</button>
-                            <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
-                            <button id="plus_btn" onClick={() => plus(index)}>+</button>
-                            <span id="option_cal_price">{calculatePrice(index)}원</span>
+                            <div className="handle_quantity_box">
+                              <button id="minus_btn" onClick={() => minus(index)}>-</button>
+                              <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
+                              <button id="plus_btn" onClick={() => plus(index)}>+</button>
+                            </div>
+                            <span id="option_cal_price">{calculateEachPrice(index)}원</span>
                             <button id="remove_btn" onClick={() => removeOption(index)}>x</button>
                           </FlexBox>
                         </li>    
@@ -383,7 +390,6 @@ min-width: 1200px;
   }
   
   .right {
-    // width: 50%;
     width: 400px;
     // background-color: yellow;
   }
@@ -411,7 +417,6 @@ const CtgryWrap = styled.div`
     border-top: 2px solid #aaa; 
     border-right: 2px solid #aaa; 
     transform: rotate(45deg); 
-    // background-color: red;
   }
 
   h2 {
@@ -429,8 +434,8 @@ const ThumbWrap = styled.div`
     margin-bottom: 10px;
 
     img {
-      width: 580px;
-      height: 704px;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
   }
@@ -502,7 +507,6 @@ const SelectBox = styled.div`
       margin-bottom: 4px;
     }
   }
-
 `
 
 const SelectedOptionBox = styled.div`
@@ -513,15 +517,15 @@ const SelectedOptionBox = styled.div`
   font-size: 14px;
 
   ul {
-    
     li {
       display: flex;
-      align-items: centery;
+      align-items: center;
+      justify-content: space-between;
       width: 400px;
       height: 40px;
-      padding-left: 10px;
+      // padding-left: 10px;
       // border-bottom: 1px solid #ccc;
-      background-color: orange;
+      // background-color: #eee;
       margin-bottom: 4px;
 
       #minus_btn,
@@ -536,9 +540,14 @@ const SelectedOptionBox = styled.div`
       #option_text {
         display: flex;
         align-items: center;
-        width: 200px;
+        min-width: 100px;
         background-color: yellow;
+      }
 
+      .handle_quantity_box {
+        display: flex;
+        width: cal(20px + 20px + 32px);
+        background: blue;
       }
 
       #minus_btn {
@@ -549,7 +558,7 @@ const SelectedOptionBox = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 20px;
+        width: 32px;
       }
 
       #plus_btn {
@@ -559,13 +568,18 @@ const SelectedOptionBox = styled.div`
       #option_cal_price {
         display: flex;
         align-items: center;
+        width: 100px;
+        align-self: right;
+        background: pink;
       }
 
       #remove_btn {
-        margin-left: 20px;
+        width: 40px;
+        // margin-left: 20px;
         right: 0;
         border: none;
         background: none;
+        background-color: red;
       }
     }
   }

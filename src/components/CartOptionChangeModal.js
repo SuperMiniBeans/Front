@@ -1,18 +1,21 @@
 import styled from "styled-components";
 import { FlexBox, FlexBoxSB } from "../styles/Layout";
 import { useState, useEffect } from "react";
-// import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { updateQuantity } from "../store";
 
 import axios from "axios";
 
+/* 
+모달 컴포넌트에서는 장바구니의 모든 아이템을 props로 받아올 필요는 없고,
+수정할 특정 상품의 정보만 props로 전달 받으면 된다. 
+*/
 
-function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
 
-  console.log('modal cartList', cartList);
-  
-  const cart = useSelector((state) => state.cart);
-  console.log('modal cart', cart);
+function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
+  const dispatch = useDispatch();
+
+  console.log('editItemSelect -modal', items);
 
   
   /* 선택한 옵션을 화면에 나타내기 */
@@ -30,20 +33,35 @@ function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
   }
 
   const [selectedOptions, setSelectedOptions] = useState([]);
-  
-  // const minus = (optionIndex) => {
-  //   const updatedOptions = [...selectedOptions];
-  //   if(updatedOptions[optionIndex].quantity > 1) {
-  //     updatedOptions[optionIndex].quantity -= 1;
-  //     setSelectedOptions(updatedOptions);
-  //   }
-  // };
 
-  // const plus = (optionIndex) => {
-  //   const updatedOptions = [...selectedOptions];
-  //   updatedOptions[optionIndex].quantity += 1;
-  //   setSelectedOptions(updatedOptions);
-  // };
+  const [newQuantity, setNewQuantity] = useState(items.quantity);
+
+  const minus = () => {
+    setNewQuantity(newQuantity > 1 ? newQuantity - 1 : 1);
+  };
+
+  const plus = () => {
+    setNewQuantity(newQuantity + 1);
+  };
+
+  const change = () => {
+    dispatch(updateQuantity({ 
+      id: items.id, 
+      quantity: items.quantity 
+    }));
+    updateLocalStorage();
+    window.alert("옵션이 변경되었습니다.")
+    closeModal();
+  };
+
+  const updateLocalStorage = () => {
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+    const updatedCart = currentCart.map(item => 
+      item.id === items.id ? {...item, quantity: newQuantity} : item
+    );
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  }
+
 
   const quantityUpdate = () => {
     axios.post('/changeCount', {
@@ -51,13 +69,16 @@ function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
     })
       .then(response => {
         console.log(response.data);
+        dispatch(updateQuantity({ 
+          id: items.id, 
+          quantity: items.quantity 
+        }));
+        closeModal();
       })
       .catch(error => {
         console.log(error);
       })
   }
-
-  const productColors = ['red', 'green', 'blue'];
 
   return(
     <ModalWrapper className={`${isModalOpened ? "open" : "close"}`}>
@@ -74,7 +95,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
               onChange={handleSelectedSize}
             >
               <option value="">사이즈 선택</option>
-              {cart.map((size) => (
+              {items.productSizes.map((size) => (
                 <option key={size} value={size}>
                   {size}
                 </option>
@@ -86,7 +107,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
               onChange={handleSelectedColor}
               >
               <option value="">색상 선택</option>
-              {selectedSize && productColors.map((color) => (
+              {selectedSize && items.productColors.map((color) => (
                 <option key={color} value={color}>
                   {color}
                 </option>
@@ -94,13 +115,15 @@ function CartOptionChangeModal({ isModalOpened, closeModal, cartList }) {
             </select>
 
             {/* 수량 변경 */}
-            {/* <button id="minus_btn" onClick={() => minus(index)}>-</button>
-            <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
-            <button id="plus_btn" onClick={() => plus(index)}>+</button> */}
+            <div className="handle_quantity_box">
+              <button id="minus_btn" onClick={minus}>-</button>
+              <span id="option_quantity">{newQuantity}</span>
+              <button id="plus_btn" onClick={plus}>+</button>
+            </div>
 
             <FlexBox>
               <button onClick={closeModal}>취소</button>
-              <button>적용</button>
+              <button onClick={change}>적용</button>
             </FlexBox>
 
           </SelectBox> {/* select_box */}
