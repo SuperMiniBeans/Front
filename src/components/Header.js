@@ -19,13 +19,16 @@ function Header({isLogin, isAdmin}) {
 
   return(
     <HeaderWrap>
-      <Container>
         <HeaderWrapFlex>
           <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
 
           <GnbUserWrap>
             <nav className="gnb">
               <Gnb>
+                <MouseOver>
+                  <Link to="/product/list">ALL</Link>
+                </MouseOver>
+
                 <MouseOver>
                   <Link to="/product/list">OUTER</Link>
                   <Lnb className="lnb">
@@ -83,7 +86,6 @@ function Header({isLogin, isAdmin}) {
 
         </HeaderWrapFlex>
 
-      </Container>
     </HeaderWrap>
   ) 
 }
@@ -95,6 +97,7 @@ const HeaderWrap = styled.header`
   min-width: 1200px;
   height: 100px;
   margin-bottom: 100px;
+  padding: 0 40px;
   border-bottom: 1px solid #000;
   // background-color: yellow;
 `
