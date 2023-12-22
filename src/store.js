@@ -124,45 +124,35 @@ const categorySlice = createSlice({
 
 const cartSlice = createSlice({
   name: 'cart',
-  initialState: [],
+  initialState: {
+    items: [],
+  },
   reducers: {
     addToCart: (state, action) => {
-      const itemIndex = state.findIndex(item => 
-        item.id === action.payload.id && 
-        item.size === action.payload.size &&
-        item.color === action.payload.color
-      );
-
-      if (itemIndex >= 0) {
-        // 기존 상품이 존재하는 경우 수량을 증가
-        return [
-          ...state.slice(0, itemIndex),
-          {
-            ...state[itemIndex],
-            quantity: state[itemIndex].quantity + 1
-          },
-          ...state.slice(itemIndex + 1)
-        ];
-      } else {
-        // 새로운 상품을 추가
-        return [
-          ...state,
-          {
-            ...action.payload,
-            quantity: 1,
-            checked: true
-          }
-        ];
-      }
-
+      state.items.push(action.payload);
+      console.log('addToCart action.payload', action.payload);
     },
+    loadCart: (state, action) => {
+      state.items = action.payload;
+    },
+
     deleteFromCart: (state, action) => {
       
     },
+
+    updateQuantity: (state, action) => {
+      const { id, quantity } = action.payload;
+      const item = state.items.find(item => item.id === id);
+      if(item) {
+        item.quantity = quantity;
+      }
+    },
+
     addCount(state, action) {
       let nums = state.findIndex( a => a.id === action.payload);
       state[nums].count++;
     },
+
     minusCount(state, action) {
       let nums = state.findIndex( a => a.id === action.payload);
       if (state[nums].count > 1)  state[nums].count--;
@@ -174,7 +164,7 @@ const cartSlice = createSlice({
 export const { setInputValue, clearInputValue, updateInputValue } = inputValueSlice.actions;
 export const { addProductList, setProductList, toggleProductList, removeProductList, setProduct, updateProduct } = productSlice.actions;
 export const { selectMajorCategory, selectMinorCategory, setMajorCategory, setMinorCategory } = categorySlice.actions;
-export const { addToCart } = cartSlice.actions;
+export const { addToCart, loadCart, updateQuantity } = cartSlice.actions;
 
 const store = configureStore({
   reducer: {
