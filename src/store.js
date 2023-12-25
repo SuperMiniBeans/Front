@@ -133,19 +133,19 @@ const cartSlice = createSlice({
     },
     addToCart: (state, action) => {
       state.items.push(action.payload);
-      // localStorage.setItem('cart', JSON.stringify(state));
-      console.log('addToCart action.payload', action.payload);
     },
     removeFromCart: (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
-    updateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
+    updateOption: (state, action) => {
+      const { id, newSize, newColor, newQuantity } = action.payload;
       const item = state.items.find(item => item.id === id);
       if(item) {
-        item.quantity = quantity;
+        // item.quantity = quantity;
       }
     },
+
+
     addCount(state, action) {
       let nums = state.findIndex(a => a.id === action.payload);
       state[nums].count++;

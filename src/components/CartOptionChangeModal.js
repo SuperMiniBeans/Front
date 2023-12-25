@@ -15,7 +15,7 @@ import axios from "axios";
 function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
   const dispatch = useDispatch();
 
-  console.log('editItemSelect -modal', items);
+  console.log('editItemSelect-modal', items);
 
   
   /* 선택한 옵션을 화면에 나타내기 */
@@ -44,36 +44,31 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
     setNewQuantity(newQuantity + 1);
   };
 
-  const change = () => {
-    dispatch(updateQuantity({ 
-      id: items.id, 
-      quantity: items.quantity 
-    }));
-    updateLocalStorage();
-    window.alert("옵션이 변경되었습니다.")
-    closeModal();
-  };
 
-  const updateLocalStorage = () => {
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-    const updatedCart = currentCart.map(item => 
-      item.id === items.id ? {...item, quantity: newQuantity} : item
-    );
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  }
+  // const updateLocalStorage = () => {
+  //   const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+  //   const updatedCart = currentCart.map(item => 
+  //     item.id === items.id ? {...item, quantity: newQuantity} : item
+  //   );
+  //   localStorage.setItem('cart', JSON.stringify(updatedCart));
+  // }
 
 
   const quantityUpdate = () => {
-    axios.post('/changeCount', {
-      productQuantity: 4,
+    axios.post('/cartChangeOption', {
+      cartNumber: items.cartNumber,
+      selectedSize: selectedSize,
+      selectedColor: selectedColor,
+      productQuantity: newQuantity,
     })
       .then(response => {
         console.log(response.data);
-        dispatch(updateQuantity({ 
-          id: items.id, 
-          quantity: items.quantity 
-        }));
-        closeModal();
+        // dispatch(updateQuantity({ 
+        //   id: items.id, 
+        //   quantity: items.quantity 
+        // }));
+        closeModal(true);
+        console.log('newQuantity', newQuantity);
       })
       .catch(error => {
         console.log(error);
@@ -84,7 +79,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
     <ModalWrapper className={`${isModalOpened ? "open" : "close"}`}>
       <ModalBackGround>
         <div className="modal_content">
-          <div>옵션 변경</div>
+          <h3>옵션 변경</h3>
           <div className="close_modal_box"><button id="colse_modal_btn" onClick={closeModal}></button></div>
         
 
@@ -123,7 +118,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
 
             <FlexBox>
               <button onClick={closeModal}>취소</button>
-              <button onClick={change}>적용</button>
+              <button onClick={quantityUpdate}>적용</button>
             </FlexBox>
 
           </SelectBox> {/* select_box */}
@@ -160,19 +155,28 @@ const ModalBackGround = styled.div`
     position: absolute; 
     top: 50%;
     left: 50%;
+    padding: 20px;
     transform: translate(-50%, -50%);
     width: 480px;
     height: 320px;
     margin: 0 auto;
     background-color: #fff;
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      background-color: #eee;
+
+    }
   }
 
   .close_modal_box {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 40px;
-    height: 40px;
+    top: 16px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: pink;
   }
 
   #colse_modal_btn {
@@ -189,7 +193,7 @@ const ModalBackGround = styled.div`
       top: 0;
       left: 50%;
       width: 1px;
-      height: 40px;
+      height: 32px;
       content: '';
       background: #333;
     }

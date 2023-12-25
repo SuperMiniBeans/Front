@@ -15,6 +15,7 @@ function Admin() {
   const navigate = useNavigate();
 
   const [productList, setProductList] = useState([]);
+  console.log('productList', productList);
 
   // DB에 저장된 게시글 불러와서 보여주기
   // const [refresh, setRefresh] = useState(1);
@@ -57,23 +58,6 @@ function Admin() {
     }
   }
 
-  // 선택 삭제
-  const onRemove = () => {
-    window.alert("삭제하시겠습니까?");
-    axios.post('/productDelete', {
-      productNumber: checkedProducts,
-    })
-      .then(response => {
-        console.log(response.data);
-        window.location.reload();
-      })
-      .catch(error => {
-        console.log(error);
-        window.alert("실패");
-        console.log('체크된 항목', checkedProducts);
-      })
-  }
-
   // 아이콘 클릭하면 삭제
   const onRemoveClick = (pNum) => {
     window.alert("삭제하시겠습니까?");
@@ -91,6 +75,25 @@ function Admin() {
         console.log(error);
       })
   };
+
+  // 선택 삭제
+  const onRemove = () => {
+    window.alert("삭제하시겠습니까?");
+    axios.post('/productDelete', {
+      productNumber: checkedProducts,
+    })
+      .then(response => {
+        console.log(response.data);
+        window.location.reload();
+      })
+      .catch(error => {
+        console.log(error);
+        window.alert("실패");
+        console.log('체크된 항목', checkedProducts);
+      })
+  }
+
+
 
   // 상품 등록 페이지로 이동(버튼에 연결)
   const goAddProduct = () => {

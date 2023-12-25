@@ -177,57 +177,6 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
   // }
 
 
-  /* '장바구니 담기' 클릭하면 실행 */
-  // 이것도 비동기로 처리해야?? ( )
-  /* cartCount - 어떻게 구할지에 따라 수정 */
-
-  // 리덕스, 로컬스토리지 빼기
-  // const addCart = () => {
-  //   if(selectedOptions.length > 0) {
-  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  //     const isAlreadyInCart = selectedOptions.some(option => {
-  //       return cart.find(cartItem => cartItem.id === option.id);
-  //     });
-
-  //     if(isAlreadyInCart) {
-  //       alert("이미 장바구니에 있는 상품 입니다.");
-  //     } else {
-  //       // 모든 요청을 담을 배열
-  //       const requests = selectedOptions.map(option => 
-  //         axios.post('/addCart', {
-  //           userNumber: sessionStorage.getItem("userNumber"),
-  //           productNumber: id,
-  //           cartCount: 12,
-  //           selectedSize: option.size,
-  //           selectedColor: option.color,
-  //         })
-  //       );
-  
-  //       // 모든 요청이 완료될 때까지 기다림
-  //       Promise.all(requests)
-  //         .then(responses => {
-  //           // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-  //           selectedOptions.forEach(option => {
-  //             dispatch(addToCart(option));
-  //           });
-  
-  //           // 로컬 스토리지에 아이템 저장
-  //           selectedOptions.forEach(option => {
-  //             cart.unshift(option);
-  //           });
-  //           localStorage.setItem('cart', JSON.stringify(cart));
-  //           alert("장바구니에 상품이 담겼습니다.");
-  //             })
-  //         .catch(error => {
-  //           console.log(error);
-  //         });
-  //     }
-  //   } else {
-  //     alert("옵션을 선택해 주세요.");
-  //   }
-  // }
-
-
   const addCart = () => {
     if(selectedOptions.length > 0) {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -292,27 +241,6 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
       alert("옵션을 선택해 주세요.");
     }
   }
-
-  // api빼고 리덕스랑 세션스토리지만 테스트 (성공~!)
-  // const addCart = () => {
-  //   if(selectedOptions.length > 0) {
-  //     // store에 아이템 저장
-  //     selectedOptions.forEach(option => {
-  //       dispatch(addToCart(option));
-  //     });
-
-  //     // 로컬 스토리지에 아이템 저장
-  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  //     selectedOptions.forEach(option => {
-  //       cart.unshift(option);
-  //     });
-  //     localStorage.setItem('cart', JSON.stringify(cart));
-  //     alert("장바구니에 상품이 담겼습니다.");
-  //   } else {
-  //     alert("옵션을 선택해 주세요.");
-  //   }
-  // }
-
 
   return(
     <ProductDetailWrap>
