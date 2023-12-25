@@ -6,6 +6,10 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../store";
 
+import { SlBag } from "react-icons/sl"
+import { IoIosHeartEmpty } from "react-icons/io";
+import { IoIosHeart } from "react-icons/io";
+
 
 /* 
 1. admin이 isLogin===true이면 [수정]버튼 보이게 하기 ( )
@@ -106,6 +110,7 @@ function ProductDetail() {
         discountPrice: discountPrice,
         productSizes : productSizes,
         productColors : productColors,
+        cartNumber: '',
       };
   
       const existingOptionIndex = selectedOptions.findIndex(option => 
@@ -154,18 +159,6 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
     setSelectedOptions(updatedOptions);
   };
 
-  // const plus = (optionIndex) => {
-  //   const updatedOptions = selectedOptions.map((option, index) => {
-  //     if(index === optionIndex) {
-  //       return {...option, quantity: option.quantity + 1};
-  //     } else {
-  //       return option;
-  //     }
-  //   });
-  //   setSelectedOptions(updatedOptions);
-  // };
-
-
   const removeOption = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
     updatedOptions.splice(optionIndex, 1);
@@ -186,41 +179,115 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
 
   /* '장바구니 담기' 클릭하면 실행 */
   // 이것도 비동기로 처리해야?? ( )
-  // 장바구니에 담긴 상품 또 담으려고 하면 이미 담긴 상품이라는 alert띄우기 ( )
   /* cartCount - 어떻게 구할지에 따라 수정 */
+
+  // 리덕스, 로컬스토리지 빼기
+  // const addCart = () => {
+  //   if(selectedOptions.length > 0) {
+  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  //     const isAlreadyInCart = selectedOptions.some(option => {
+  //       return cart.find(cartItem => cartItem.id === option.id);
+  //     });
+
+  //     if(isAlreadyInCart) {
+  //       alert("이미 장바구니에 있는 상품 입니다.");
+  //     } else {
+  //       // 모든 요청을 담을 배열
+  //       const requests = selectedOptions.map(option => 
+  //         axios.post('/addCart', {
+  //           userNumber: sessionStorage.getItem("userNumber"),
+  //           productNumber: id,
+  //           cartCount: 12,
+  //           selectedSize: option.size,
+  //           selectedColor: option.color,
+  //         })
+  //       );
+  
+  //       // 모든 요청이 완료될 때까지 기다림
+  //       Promise.all(requests)
+  //         .then(responses => {
+  //           // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+  //           selectedOptions.forEach(option => {
+  //             dispatch(addToCart(option));
+  //           });
+  
+  //           // 로컬 스토리지에 아이템 저장
+  //           selectedOptions.forEach(option => {
+  //             cart.unshift(option);
+  //           });
+  //           localStorage.setItem('cart', JSON.stringify(cart));
+  //           alert("장바구니에 상품이 담겼습니다.");
+  //             })
+  //         .catch(error => {
+  //           console.log(error);
+  //         });
+  //     }
+  //   } else {
+  //     alert("옵션을 선택해 주세요.");
+  //   }
+  // }
+
 
   const addCart = () => {
     if(selectedOptions.length > 0) {
-      // 모든 요청을 담을 배열
-      const requests = selectedOptions.map(option => 
-        axios.post('/addCart', {
-          userNumber: sessionStorage.getItem("userNumber"),
-          productNumber: id,
-          cartCount: 12,
-          selectedSize: option.size,
-          selectedColor: option.color,
-        })
-      );
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const isAlreadyInCart = selectedOptions.some(option => {
+        return cart.find(cartItem => cartItem.id === option.id);
+      });
 
-      // 모든 요청이 완료될 때까지 기다림
-      Promise.all(requests)
-        .then(responses => {
-          // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-          selectedOptions.forEach(option => {
-            dispatch(addToCart(option));
-          });
-
-          // 로컬 스토리지에 아이템 저장
-          const cart = JSON.parse(localStorage.getItem('cart')) || [];
-          selectedOptions.forEach(option => {
-            cart.unshift(option);
-          });
-          localStorage.setItem('cart', JSON.stringify(cart));
-          alert("장바구니에 상품이 담겼습니다.");
+      if(isAlreadyInCart) {
+        alert("이미 장바구니에 있는 상품 입니다.");
+      } else {
+        // 모든 요청을 담을 배열
+        const requests = selectedOptions.map(option => 
+          axios.post('/addCart', {
+            userNumber: sessionStorage.getItem("userNumber"),
+            productNumber: id,
+            cartCount: 12,
+            selectedSize: option.size,
+            selectedColor: option.color,
+          })
+        );
+  
+        // 모든 요청이 완료될 때까지 기다림
+        Promise.all(requests)
+          .then(responses => {
+            axios.post('/userCart', {
+              userNumber: sessionStorage.getItem("userNumber"),
             })
-        .catch(error => {
-          console.log(error);
-        });
+              .then(response => {
+                console.log('userCart', response.data);
+                // const cartNumbers = response.data.map(item => item.cartNumber);
+
+                // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+                const serverOptions = response.data;
+                selectedOptions.forEach(option => {
+                  const matchingOption = serverOptions.find(data =>
+                    data.selectedSize === option.size &&
+                    data.selectedColor === option.color
+                  );
+
+                  if(matchingOption) {
+                    option.cartNumber = matchingOption.cartNumber;
+                    dispatch(addToCart({...option, cartNumber: matchingOption.cartNumber}));
+                  }
+                });
+
+                // 로컬 스토리지에 아이템 저장
+                selectedOptions.forEach(option => {
+                  cart.unshift(option);
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert("장바구니에 상품이 담겼습니다.");
+              })
+              .catch(error => {
+                console.log('userCart error', error);
+              })
+              })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     } else {
       alert("옵션을 선택해 주세요.");
     }
@@ -319,16 +386,16 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
                     <ul>
                       {selectedOptions.map((option, index) => (
                         <li key={index}>
-                          <FlexBox className="option_list">
-                            <span id="option_text">{option.text}</span>
-                            <div className="handle_quantity_box">
-                              <button id="minus_btn" onClick={() => minus(index)}>-</button>
-                              <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
-                              <button id="plus_btn" onClick={() => plus(index)}>+</button>
-                            </div>
-                            <span id="option_cal_price">{calculateEachPrice(index)}원</span>
-                            <button id="remove_btn" onClick={() => removeOption(index)}>x</button>
-                          </FlexBox>
+                          <span id="option_text">{option.text}</span>
+                          <div className="handle_quantity_box">
+                            <button id="minus_btn" onClick={() => minus(index)}></button>
+                            <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
+                            <button id="plus_btn" onClick={() => plus(index)}></button>
+                          </div>
+                          <span id="option_cal_price">{calculateEachPrice(index)}원</span>
+                          <div id="remove_btn_box">
+                            <button id="remove_btn" onClick={() => removeOption(index)}></button>
+                          </div>
                         </li>    
                       ))}
                     </ul>
@@ -339,11 +406,11 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
                 </FlexBoxSB>
               </SelectBox> {/* select_box */}
 
-              <div className="btn_wrap">
-                <button>바로구매</button>
-                <button onClick={addCart}>장바구니 담기</button>
-                <button>하트</button>
-              </div>
+              <BuyBtnWrap className="btn_wrap">
+                <button id="buy_btn">바로구매</button>
+                <button id="add_cart_btn" onClick={addCart}><SlBag size={24}/></button>
+                <button id="add_wish_btn"><IoIosHeartEmpty size={28} /></button>
+              </BuyBtnWrap>
 
 
               {/* 아코디언 메뉴 참고 -> 간단하게 이미지 클릭하면 state를 변경시켜 해당 메뉴 스타일 display none 에서 블락으로 변경만 시켜주면 될것 같습니다 */}
@@ -517,70 +584,187 @@ const SelectedOptionBox = styled.div`
   font-size: 14px;
 
   ul {
+    margin-bottom: 10px;
+
+    &:last-child {
+      border-bottom: 1px solid #eee;
+    }
+
     li {
       display: flex;
+      position: relative;
       align-items: center;
       justify-content: space-between;
       width: 400px;
       height: 40px;
-      // padding-left: 10px;
-      // border-bottom: 1px solid #ccc;
-      // background-color: #eee;
-      margin-bottom: 4px;
+      padding: 0 2px;
+      // background: pink;
 
       #minus_btn,
-      #plus_btn,
-      #remove_btn {
+      #plus_btn {
         width: 20px;
         height: 20px;
-        border-radius: none;
+        font-size: 20px;
+        line-height: 20px;
+        background: none;
+        border: 1px solid #ccc;
+        border-radius: 2px;
         cursor: pointer;
+
+        &:hover {
+          background-color: #eee;
+          transition: all 0.3s;
+        }
       }
 
       #option_text {
         display: flex;
         align-items: center;
-        min-width: 100px;
-        background-color: yellow;
+        min-width: 160px;
+        // background-color: yellow;
       }
 
       .handle_quantity_box {
         display: flex;
         width: cal(20px + 20px + 32px);
-        background: blue;
       }
 
       #minus_btn {
-        // margin-left: 120px;
+        position: relative;
+
+        &:before {
+          position: absolute;
+          top:50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 1px;
+          content: '';
+          background: #333;
+        }
       }
 
       #option_quantity {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
+        width: 20px;
       }
 
       #plus_btn {
-        // margin-right: 80px;
+        position: relative;
+
+        &:before,
+        &:after {
+          display: block;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 10px;
+          height: 1px;
+          content: '';
+          background: #333;
+        }
+
+        &:before {
+          transform: translate(-50%, -50%);
+        }
+
+        &:after {
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(90deg);
+        }
       }
 
       #option_cal_price {
-        display: flex;
-        align-items: center;
+        display: block; 
         width: 100px;
-        align-self: right;
-        background: pink;
+        text-align: right;
+        // background: pink;
       }
 
-      #remove_btn {
-        width: 40px;
-        // margin-left: 20px;
-        right: 0;
-        border: none;
-        background: none;
-        background-color: red;
-      }
+      #remove_btn_box {
+        display: flex;
+        position: relative;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+
+        #remove_btn {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          border: none;
+          border-radius: 2px;
+          cursor: pointer;
+
+          &:before,
+          &:after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1px;
+            height: 10px;
+            content: '';
+            background: #333;
+          }
+  
+          &:before {
+            transform: translate(-50%, -50%) rotate(45deg);
+          }
+  
+          &:after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+          }
+        } // #remove_btn
+      } // #remove_btn_box
+    } // li
+  } // ul
+`
+
+const BuyBtnWrap = styled.div`
+  display: flex;
+  gap: 4px;
+
+  #buy_btn,
+  #add_cart_btn,
+  #add_wish_btn {
+    height: 60px;
+    cursor: pointer;
+  }
+  
+
+  #buy_btn {
+    flex-grow: 2;
+    font-size: 20px;
+    color: #fff;
+    background-color: #333;
+    border: none;
+  }
+
+  #add_cart_btn {
+    width: 60px;
+    background: none;
+    border: 1px solid #333;
+
+    svg {
+      color: #999;
+    }
+  }
+
+  #add_wish_btn {
+    position: relative;
+    width: 60px;
+    background: none;
+    border: 1px solid #333;
+
+    svg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #F82A2A;
     }
   }
 `

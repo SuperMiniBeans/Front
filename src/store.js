@@ -128,18 +128,17 @@ const cartSlice = createSlice({
     items: [],
   },
   reducers: {
-    addToCart: (state, action) => {
-      state.items.push(action.payload);
-      console.log('addToCart action.payload', action.payload);
-    },
     loadCart: (state, action) => {
       state.items = action.payload;
     },
-
-    deleteFromCart: (state, action) => {
-      
+    addToCart: (state, action) => {
+      state.items.push(action.payload);
+      // localStorage.setItem('cart', JSON.stringify(state));
+      console.log('addToCart action.payload', action.payload);
     },
-
+    removeFromCart: (state, action) => {
+      state.items = state.items.filter(item => item.id !== action.payload);
+    },
     updateQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       const item = state.items.find(item => item.id === id);
@@ -147,14 +146,12 @@ const cartSlice = createSlice({
         item.quantity = quantity;
       }
     },
-
     addCount(state, action) {
-      let nums = state.findIndex( a => a.id === action.payload);
+      let nums = state.findIndex(a => a.id === action.payload);
       state[nums].count++;
     },
-
     minusCount(state, action) {
-      let nums = state.findIndex( a => a.id === action.payload);
+      let nums = state.findIndex(a => a.id === action.payload);
       if (state[nums].count > 1)  state[nums].count--;
     },
   }
@@ -164,7 +161,7 @@ const cartSlice = createSlice({
 export const { setInputValue, clearInputValue, updateInputValue } = inputValueSlice.actions;
 export const { addProductList, setProductList, toggleProductList, removeProductList, setProduct, updateProduct } = productSlice.actions;
 export const { selectMajorCategory, selectMinorCategory, setMajorCategory, setMinorCategory } = categorySlice.actions;
-export const { addToCart, loadCart, updateQuantity } = cartSlice.actions;
+export const { loadCart, addToCart, removeFromCart, updateQuantity } = cartSlice.actions;
 
 const store = configureStore({
   reducer: {
