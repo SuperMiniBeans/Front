@@ -1,4 +1,5 @@
-import { configureStore, createSlice } from "@reduxjs/toolkit";
+import { configureStore, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from 'axios';
 
 // 초기값 설정
 const initialState = {
@@ -122,6 +123,41 @@ const categorySlice = createSlice({
   },
 });
 
+export const sendCartItems = createAsyncThunk(
+  'cart/sendCartItems',
+  async ({ selectedOptions, optionId, productSizes, productColors }, thunkAPI) => {
+    console.log('리덕스selectedOptions', selectedOptions);
+
+    const requests = selectedOptions.map(option => 
+      axios.post('/addCart', option)
+    );
+    await Promise.all(requests);
+    // return { ...extraValues };
+    const response = await axios.post('/userCart', {
+      userNumber: sessionStorage.getItem("userNumber"),
+    });
+    
+    const addOptionData = response.data.map(item => ({
+      ...item,
+      optionId,
+      productSizes,
+      productColors
+    }));
+    return addOptionData;
+  }
+);
+
+export const fetchCartList = createAsyncThunk(
+  'cart/fetchCartList',
+  async (_, thunkAPI) => {
+    console.log();
+    const response = await axios.post('/userCart', {
+      userNumber: sessionStorage.getItem("userNumber"),
+    })
+    return response.data;
+  }
+)
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
@@ -131,21 +167,24 @@ const cartSlice = createSlice({
     loadCart: (state, action) => {
       state.items = action.payload;
     },
-    addToCart: (state, action) => {
-      state.items.push(action.payload);
-    },
+    // addToCart: (state, action) => {
+    //   state.items.push(action.payload);
+    // },
     removeFromCart: (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
     updateOption: (state, action) => {
-      const { id, newSize, newColor, newQuantity } = action.payload;
-      const item = state.items.find(item => item.id === id);
-      if(item) {
-        // item.quantity = quantity;
+      const { cartNumber, newSize, newColor, newQuantity } = action.payload;
+      const cartIndex = state.findIndex(item => item.cartNumber === cartNumber);
+      if(cartIndex >= 0) {
+        state[cartIndex].selectedColor = newColor;
+        state[cartIndex].selectedSize = newSize;
+        state[cartIndex].cartCount = newQuantity;
       }
+      console.log('update action.payload', action.payload);
+      console.log('update action.payload', cartIndex);
+
     },
-
-
     addCount(state, action) {
       let nums = state.findIndex(a => a.id === action.payload);
       state[nums].count++;
@@ -154,14 +193,38 @@ const cartSlice = createSlice({
       let nums = state.findIndex(a => a.id === action.payload);
       if (state[nums].count > 1)  state[nums].count--;
     },
-  }
+  },
+  extraReducers: builder => {
+    builder
+      // 비동기 액션 pending 상태
+      .addCase(sendCartItems.pending, (state) => {
+        state.status = 'loading';
+      })
+      // 비동기 액션 fulfilled 상태
+      .addCase(sendCartItems.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items.push(action.payload);
+        console.log('addcart action.payload', action.payload);
+
+        window.alert('장바구니 등록 성공');
+      })
+      // 비동기 액션 rejected 상태
+      .addCase(sendCartItems.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+        window.alert('장바구니 등록 실패');
+      })
+      .addCase(fetchCartList.fulfilled, (state, action) => {
+        state.items = action.payload;
+      });
+  },
 });
 
 
 export const { setInputValue, clearInputValue, updateInputValue } = inputValueSlice.actions;
 export const { addProductList, setProductList, toggleProductList, removeProductList, setProduct, updateProduct } = productSlice.actions;
 export const { selectMajorCategory, selectMinorCategory, setMajorCategory, setMinorCategory } = categorySlice.actions;
-export const { loadCart, addToCart, removeFromCart, updateQuantity } = cartSlice.actions;
+export const { loadCart, addToCart, removeFromCart, updateOption } = cartSlice.actions;
 
 const store = configureStore({
   reducer: {

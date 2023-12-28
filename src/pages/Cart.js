@@ -1,46 +1,33 @@
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import CartOptionChangeModal from "../components/CartOptionChangeModal";
-import { loadCart, removeFromCart } from "../store";
+import { removeFromCart, fetchCartList, sendCartItems } from "../store";
 
 
 
-// 삭제하기 구현( )
-
+// 옵션 수정 구현하기 ( )
+// 로그인한 사용자만 장바구니 볼 수 있게 처리하기 ( )
 
 
 function Cart() {
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state) => state.cart.items);
-  console.log('reduxcart cartItems', cartItems);
-
-  // 로컬 스토리지에 있는 데이터 store.js-state에 저장하기
-  // const [refresh, setRefresh] = useState(1);
-  useEffect(() => {
-    const savedItems = JSON.parse(localStorage.getItem('cart')) || [];
-    dispatch(loadCart(savedItems));
-    // setRefresh(refresh => refresh * -1);
-  }, [dispatch]);
-
-  // cartNumber 받아오기
-  // const [cartList, setCartList] = useState([]);
-  // // let cartNumbers = 
-  // axios.post('/userCart', {
-  //   userNumber: sessionStorage.getItem("userNumber"),
-  // })
-  //   .then(response => {
-  //     setCartList(response.data);
-  //     console.log(response.data);
-  //   })
+  console.log('Cart.js cartItems', cartItems);
 
   // 옵션 수정 모달
   const [isModalOpened, setIsModalOpened] = useState(false);
   const closeModal = () => setIsModalOpened(false);
+
+  // 리덕스 스토어에 저장된 state불러오기
+  useEffect(() => {
+    dispatch(fetchCartList());
+  }, [dispatch]);
+
 
   // 수정하기 버튼 클릭
   const [editItemSelect, setEditItemSelect] = useState(null);
@@ -71,23 +58,6 @@ function Cart() {
     }
   }
 
-  // 선택 삭제 - api 수정하기
-  // const onRemove = () => {
-  //   window.alert("삭제하시겠습니까?");
-  //   axios.post('/deleteCart', {
-  //     productNumber: checkedProducts,
-  //   })
-  //     .then(response => {
-  //       console.log(response.data);
-  //       window.location.reload();
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       window.alert("실패");
-  //       console.log('체크된 항목', checkedProducts);
-  //     })
-  // }
-
   // '삭제하기'클릭
   const handleRemoveEachCart = (id) => {
     window.alert("상품을 삭제하시겠습니까?");
@@ -100,8 +70,7 @@ function Cart() {
       .then(res => {
         console.log(res.data);
         dispatch(removeFromCart(id));
-        const updatedCart = JSON.parse(localStorage.getItem('cart')).filter(item => item.cartNumber !== id);
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        dispatch(fetchCartList());
       })
       .catch(error => {
         console.log(error);
@@ -123,18 +92,13 @@ function Cart() {
           const updatedCart = JSON.parse(localStorage.getItem('cart')).filter(item => item.cartNumber !== id);
           localStorage.setItem('cart', JSON.stringify(updatedCart));
         });
-        window.location.reload();
+        dispatch(fetchCartList());
       })
       .catch(error => {
         console.log(error);
-        window.alert('장바구니 삭제 실패');
       });
-
-    
     window.alert("장바구니에서 삭제되었습니다.");
   }
-
-
 
   return(
     <CartWrap>
@@ -178,50 +142,67 @@ function Cart() {
 
                   <td>
                     <input type="checkbox" 
-                          onChange={e => handleCheckbox(e.target.checked, items.cartNumber)}
-                          checked={checkedProducts.includes(items.cartNumber) ? true : false}
+                          onChange={e => 
+                            handleCheckbox(e.target.checked, items.cartNumber)
+                          }
+                          checked={
+                            checkedProducts.includes(items.cartNumber) ? 
+                            true : false
+                          }
                     />
                   </td>
 
                   <td>
-                    <FlexBox className="cart_item_info">
+                    <div className="cart_item_info">
                       <div id="admin_thumb_box">
                         <Link to={`/product/list/detail/${items.productNumber}`}>
-                          {/* <img id="admin_thumb_img" src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} alt="thumbnail" /> */}
-                          <img id="admin_thumb_img" src={items.img} alt={items.name} />
-
+                          <img id="cart_thumb_img" src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} alt={items.productName} />
                         </Link>
                       </div>
                       <div>
                         <Link to={`/product/list/detail/${items.productNumber}`}>
-                          <div className="cart_product_name">{items.name}</div>
+                          <div className="cart_product_name">{items.productName}</div>
                         </Link>
-                        <div className="selected_option">옵션: {items.size} / {items.color}</div>
-                        <div></div>
-                        <div><button id="option_change" onClick={() => handleEditClick(items)}>옵션 변경</button></div>
+                        <div className="selected_option">
+                          옵션: {items.selectedSize} / {items.selectedColor}
+                        </div>
+                        <div>
+                          <button id="option_change" 
+                                  onClick={() => handleEditClick(items)}>
+                                  옵션 변경
+                          </button>
+                        </div>
                       </div>
-                    </FlexBox>
+                    </div> {/* cart_item_info */}
                   </td>
   
                   <td>
-                  {cartItems.discountRate > 0 ? (
-                        <>
-                          <span className="dscnt_price">{items.discountPrice}</span>
-                          <span className="price">{items.productPrice}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="non_dscnt_price">{items.productPrice}</span>
-                        </>
-                      )}
-                    <PriceWrap >
-                    
+                  {items.discountRate > 0 ? (
+                    <PriceWrap>
+                      <span className="dscnt_price">{items.discountPrice}</span>
+                      <span className="price">{items.productPrice}</span>
                     </PriceWrap>
+                  ) : (
+                    <PriceWrap>
+                      <span className="non_dscnt_price">{items.productPrice}</span>
+                    </PriceWrap>
+                  )}
                   </td>
 
-                  <td>{items.quantity}</td>
+                  <td>{items.cartCount}</td>
 
-                  <td>가격 * 수량</td>
+                  <td>
+                    
+                    {items.discountRate > 0 ? (
+                      <>
+                        {items.cartCount * items.discountPrice}
+                      </>
+                  ) : (
+                      <>
+                        {items.cartCount * items.productPrice}
+                      </>
+                  )}
+                  </td>
 
                   <td>
                     <div><button>주문하기</button></div>
@@ -307,8 +288,7 @@ const CartWrap = styled.div`
   }
 
   tbody {
-    height: 80px;
-    // background-color: pink;
+    height: 160px;
 
     td {
       vertical-align: middle;
@@ -324,7 +304,7 @@ const CartWrap = styled.div`
   }
 
   // 썸네일 이미지 스타일
-  #admin_thumb_img {
+  #cart_thumb_img {
     width: 60px;
     height: 80px;
     object-fit: cover;
@@ -337,14 +317,13 @@ const CartWrap = styled.div`
     width: 100%;
     padding-left: 20px;
     text-align: left;
-    // background: pink;
 
     .cart_product_name {
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
 
     .selected_option {
-      margin-bottom: 4px;
+      margin-bottom: 10px;
       font-size: 12px;
       color: #aaa;
     }
@@ -360,9 +339,11 @@ const CartWrap = styled.div`
 `
 
 const PriceWrap = styled.div`
-  position: relative;
+  // position: relative;
   display: flex;
-  margin-bottom: 120px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   .non_dscnt_price {
     font-size: 16px;
@@ -376,7 +357,6 @@ const PriceWrap = styled.div`
 
   .price {
     font-size: 16px;
-    line-height: 20px;
     text-decoration: line-through;
     color: #aaa;
   }

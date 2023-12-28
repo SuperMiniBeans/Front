@@ -2,7 +2,8 @@ import styled from "styled-components";
 import { FlexBox, FlexBoxSB } from "../styles/Layout";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { updateQuantity } from "../store";
+import { updateOption, fetchCartList } from "../store";
+import store from "../store";
 
 import axios from "axios";
 
@@ -20,8 +21,9 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
   
   /* 선택한 옵션을 화면에 나타내기 */
   // 옵션 선택
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState(items.selectedSize);
+  const [selectedColor, setSelectedColor] = useState(items.selectedColor);
+  const [newQuantity, setNewQuantity] = useState(items.cartCount);
   
   const handleSelectedSize = e => {
     setSelectedSize(e.target.value);
@@ -32,10 +34,6 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
     setSelectedColor(e.target.value);
   }
 
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
-  const [newQuantity, setNewQuantity] = useState(items.quantity);
-
   const minus = () => {
     setNewQuantity(newQuantity > 1 ? newQuantity - 1 : 1);
   };
@@ -45,34 +43,30 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
   };
 
 
-  // const updateLocalStorage = () => {
-  //   const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-  //   const updatedCart = currentCart.map(item => 
-  //     item.id === items.id ? {...item, quantity: newQuantity} : item
-  //   );
-  //   localStorage.setItem('cart', JSON.stringify(updatedCart));
-  // }
+  console.log('items.selectedSize', items.selectedSize);
 
-
-  const quantityUpdate = () => {
-    axios.post('/cartChangeOption', {
+  const updateCartOption = () => {
+    const changeSizeColor = axios.post('/cartChangeOption', {
       cartNumber: items.cartNumber,
       selectedSize: selectedSize,
       selectedColor: selectedColor,
-      productQuantity: newQuantity,
     })
-      .then(response => {
-        console.log(response.data);
-        // dispatch(updateQuantity({ 
-        //   id: items.id, 
-        //   quantity: items.quantity 
-        // }));
-        closeModal(true);
-        console.log('newQuantity', newQuantity);
-      })
-      .catch(error => {
-        console.log(error);
-      })
+
+    const changeQuantity = axios.post('/changeCount', {
+      cartNumber: items.cartNumber,
+      cartCount: newQuantity !== null ? newQuantity : items.cartCount,
+    })
+
+    Promise.all([changeSizeColor, changeQuantity])
+    .then(([resOne, resTwo]) => {
+      console.log(resOne.data, resTwo.data);
+      window.alert("옵션이 변경되었습니다.");
+      closeModal();
+      dispatch(fetchCartList());
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   return(
@@ -118,7 +112,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
 
             <FlexBox>
               <button onClick={closeModal}>취소</button>
-              <button onClick={quantityUpdate}>적용</button>
+              <button onClick={updateCartOption}>적용</button>
             </FlexBox>
 
           </SelectBox> {/* select_box */}

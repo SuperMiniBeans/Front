@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../store";
+import { sendCartItems } from "../store";
 
 import { SlBag } from "react-icons/sl"
 import { IoIosHeartEmpty } from "react-icons/io";
@@ -15,7 +15,9 @@ import { IoIosHeart } from "react-icons/io";
 1. admin이 isLogin===true이면 [수정]버튼 보이게 하기 ( )
 2. [수정] 버튼 클릭하면 상품 수정 페이지로 이동( )
 상품 등록 페이지로 이동하되 기존 데이터는 남아있게
-3. 할인가 표시하기 - 서버에서 받은 데이터 중에서 할인가 있으면 할인가 표시
+3. 할인가 표시하기 - 서버에서 받은 데이터 중에서 할인가 있으면 할인가 표시 
+4. 아코디언 메뉴, 사진 넘기기 => 컴포넌트로 작성하기
+
 */
 
 
@@ -93,12 +95,14 @@ function ProductDetail() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   console.log('selectedOptions', selectedOptions);
 
+  let price = Number(discountRate > 0 ? discountPrice : productPrice);
+
   const handleAddOption = () => {
     if (selectedColor && selectedSize) {
-      let price = Number(discountRate !== null ? discountPrice : productPrice);
+      
       const newOption = { 
         id: id + selectedSize + selectedColor, // 고유한 키 생성(옵션이 다르면 다른 상품으로 취급해야하기 때문)
-        productNumber: id, // 상품의 원래 아이디
+        productNumber: id, // 상품의 원래 아이디(useParam으로 받아옴)
         img: imgPathList[0],
         name: productName,
         text: selectedSize + ", " + selectedColor,
@@ -110,7 +114,6 @@ function ProductDetail() {
         discountPrice: discountPrice,
         productSizes : productSizes,
         productColors : productColors,
-        cartNumber: '',
       };
   
       const existingOptionIndex = selectedOptions.findIndex(option => 
@@ -121,12 +124,10 @@ function ProductDetail() {
         const newOptions = [...selectedOptions];
         alert("이미 선택된 옵션 입니다.");
         setSelectedOptions(newOptions);
-
         setSelectedSize("");
         setSelectedColor("");
       } else {
         setSelectedOptions([...selectedOptions, newOption]); // 새로운 옵션 추가
-
         setSelectedSize("");
         setSelectedColor("");
       }
@@ -136,15 +137,8 @@ function ProductDetail() {
   useEffect(() => {
     handleAddOption();
   }, [selectedColor]);
-  /* handleAddOption내부 코드를 useEffect 내부로 옮겨도 될까? X
-  -> useEffect는 React 컴포넌트의 생명주기 중 특정 시점에 동작하도록 설계된 Hook입니다. 일반적으로 useEffect는 데이터 fetching, 구독 설정, 수동으로 변경해야 하는 React 컴포넌트의 DOM 등 side effect를 수행할 때 사용합니다.
 
-handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 의해 호출되는 이벤트 핸들러 함수입니다. 이를 useEffect 내부로 옮기는 것은 적절하지 않을 수 있습니다.
-
-왜냐하면 useEffect는 컴포넌트 렌더링 후에 실행되는 함수이기 때문에, 렌더링이 여러 번 발생하거나, 의도치 않은 시점에 함수가 실행될 수 있기 때문입니다.
-
-따라서, handleAddOption의 로직을 그대로 유지하고, 선택된 사이즈와 색상이 변경될 때마다 이 함수를 호출하도록 하는 것이 좋습니다. 사이즈와 색상이 변경될 때마다 handleAddOption 함수를 호출하려면, 이 두 상태를 useEffect의 의존성 배열에 추가하면 됩니다. */
-
+  
   const minus = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
     if(updatedOptions[optionIndex].quantity > 1) {
@@ -165,82 +159,134 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
     setSelectedOptions(updatedOptions);
   };
   
-  const calculateEachPrice = (optionIndex) => {
+  // 선택한 옵션에 대한 가격 표시
+  const calEachPrice = (optionIndex) => {
     let option = selectedOptions[optionIndex];
-    let totalPrice = option.sum * option.quantity;
-    return totalPrice;
+    let calPrice = option.sum * option.quantity;
+    return calPrice;
   };
 
   // 총 상품 금액 계산하기
-  // const calculateAllPrice = () => {
-    
+  const calAllPrice = () => {
+    return selectedOptions.reduce((total, _, index) => {
+      return total + calEachPrice(index);
+    }, 0);
+  }
+
+  const [totalPrice, setTotalPrice] = useState(0);
+  useEffect(() => {
+    setTotalPrice(calAllPrice());
+  }, [selectedOptions]);
+
+  
+  // 장바구니에 담기 클릭
+  const handleAddToCart = () => {
+    dispatch(sendCartItems({
+      selectedOptions: selectedOptions.map(option => ({
+        userNumber: sessionStorage.getItem("userNumber"),
+        productNumber: id,
+        selectedSize: option.size,
+        selectedColor: option.color,
+        cartCount: option.quantity,
+        totalPrice: totalPrice,
+      })),
+    }));
+  };
+
+  // const [cartList, setCartList] = useState([])
+  // const getCartList = () => {
+  //   axios.post('/userCart', {
+  //     userNumber: sessionStorage.getItem("userNumber"),
+  //   })
+  //     .then(res => {
+  //       console.log('userCart', res.data);
+
+  //       const addNewOptionObj = res.data.map(item => {
+  //         return {
+  //           ...item,
+  //           productNumber: id, // 상품의 원래 아이디
+  //           img: imgPathList[0],
+  //           name: productName,
+  //           text: item.selectedSize + ", " + item.selectedColor,
+  //           size: item.selectedSize, 
+  //           color: selectedColor,
+  //           quantity: 1, 
+  //           sum: price,
+  //           productPrice: productPrice,
+  //           discountPrice: discountPrice,
+  //           productSizes : productSizes,
+  //           productColors : productColors,
+  //         }
+  //       });
+  //       setCartList(addNewOptionObj);
+  //     });
   // }
 
+  // const addCart = () => {
+  //   if(selectedOptions.length > 0) {
+  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  //     const isAlreadyInCart = selectedOptions.some(option => {
+  //       return cart.find(cartItem => cartItem.id === option.id);
+  //     });
 
-  const addCart = () => {
-    if(selectedOptions.length > 0) {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const isAlreadyInCart = selectedOptions.some(option => {
-        return cart.find(cartItem => cartItem.id === option.id);
-      });
-
-      if(isAlreadyInCart) {
-        alert("이미 장바구니에 있는 상품 입니다.");
-      } else {
-        // 모든 요청을 담을 배열
-        const requests = selectedOptions.map(option => 
-          axios.post('/addCart', {
-            userNumber: sessionStorage.getItem("userNumber"),
-            productNumber: id,
-            cartCount: 12,
-            selectedSize: option.size,
-            selectedColor: option.color,
-          })
-        );
+  //     if(isAlreadyInCart) {
+  //       alert("이미 장바구니에 있는 상품 입니다.");
+  //     } else {
+  //       // 모든 요청을 담을 배열
+  //       const requests = selectedOptions.map(option => 
+  //         axios.post('/addCart', {
+  //           userNumber: sessionStorage.getItem("userNumber"),
+  //           productNumber: id,
+  //           cartCount: 12,
+  //           selectedSize: option.size,
+  //           selectedColor: option.color,
+  //         })
+  //       );
   
-        // 모든 요청이 완료될 때까지 기다림
-        Promise.all(requests)
-          .then(responses => {
-            axios.post('/userCart', {
-              userNumber: sessionStorage.getItem("userNumber"),
-            })
-              .then(response => {
-                console.log('userCart', response.data);
-                // const cartNumbers = response.data.map(item => item.cartNumber);
+  //       // 모든 요청이 완료될 때까지 기다림
+  //       Promise.all(requests)
+  //         .then(responses => {
+  //           axios.post('/userCart', {
+  //             userNumber: sessionStorage.getItem("userNumber"),
+  //           })
+  //             .then(response => {
+  //               console.log('userCart', response.data);
+  //               // const cartNumbers = response.data.map(item => item.cartNumber);
 
-                // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-                const serverOptions = response.data;
-                selectedOptions.forEach(option => {
-                  const matchingOption = serverOptions.find(data =>
-                    data.selectedSize === option.size &&
-                    data.selectedColor === option.color
-                  );
+  //               // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
+  //               const serverOptions = response.data;
+  //               selectedOptions.forEach(option => {
+  //                 const matchingOption = serverOptions.find(data =>
+  //                   data.selectedSize === option.size &&
+  //                   data.selectedColor === option.color
+  //                 );
 
-                  if(matchingOption) {
-                    option.cartNumber = matchingOption.cartNumber;
-                    dispatch(addToCart({...option, cartNumber: matchingOption.cartNumber}));
-                  }
-                });
+  //                 if(matchingOption) {
+  //                   option.cartNumber = matchingOption.cartNumber;
+  //                   dispatch(addToCart({...option, cartNumber: matchingOption.cartNumber}));
+  //                 }
+  //               });
 
-                // 로컬 스토리지에 아이템 저장
-                selectedOptions.forEach(option => {
-                  cart.unshift(option);
-                });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                alert("장바구니에 상품이 담겼습니다.");
-              })
-              .catch(error => {
-                console.log('userCart error', error);
-              })
-              })
-          .catch(error => {
-            console.log(error);
-          });
-      }
-    } else {
-      alert("옵션을 선택해 주세요.");
-    }
-  }
+  //               // 로컬 스토리지에 아이템 저장
+  //               selectedOptions.forEach(option => {
+  //                 cart.unshift(option);
+  //               });
+  //               localStorage.setItem('cart', JSON.stringify(cart));
+  //               alert("장바구니에 상품이 담겼습니다.");
+  //             })
+  //             .catch(error => {
+  //               console.log('userCart error', error);
+  //             })
+  //             })
+  //         .catch(error => {
+  //           console.log(error);
+  //         });
+  //     }
+  //   } else {
+  //     alert("옵션을 선택해 주세요.");
+  //   }
+  // }
+
 
   return(
     <ProductDetailWrap>
@@ -320,7 +366,7 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
                             <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
                             <button id="plus_btn" onClick={() => plus(index)}></button>
                           </div>
-                          <span id="option_cal_price">{calculateEachPrice(index)}원</span>
+                          <span id="option_cal_price">{calEachPrice(index)}원</span>
                           <div id="remove_btn_box">
                             <button id="remove_btn" onClick={() => removeOption(index)}></button>
                           </div>
@@ -330,13 +376,13 @@ handleAddOption 함수의 경우, 특정 사용자의 액션(옵션 선택)에 �
                 </SelectedOptionBox>
                 <FlexBoxSB>
                   <div>총 상품 금액</div>
-                  <div>계산 값</div>
+                  <div id="">{totalPrice}원</div>
                 </FlexBoxSB>
               </SelectBox> {/* select_box */}
 
               <BuyBtnWrap className="btn_wrap">
                 <button id="buy_btn">바로구매</button>
-                <button id="add_cart_btn" onClick={addCart}><SlBag size={24}/></button>
+                <button id="add_cart_btn" onClick={handleAddToCart}><SlBag size={24}/></button>
                 <button id="add_wish_btn"><IoIosHeartEmpty size={28} /></button>
               </BuyBtnWrap>
 
