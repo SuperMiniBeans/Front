@@ -23,7 +23,7 @@ import { IoIosHeart } from "react-icons/io";
 
 function ProductDetail() {
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const { id, majorName, minorName } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState({
@@ -193,112 +193,24 @@ function ProductDetail() {
     }));
   };
 
-  // const [cartList, setCartList] = useState([])
-  // const getCartList = () => {
-  //   axios.post('/userCart', {
-  //     userNumber: sessionStorage.getItem("userNumber"),
-  //   })
-  //     .then(res => {
-  //       console.log('userCart', res.data);
-
-  //       const addNewOptionObj = res.data.map(item => {
-  //         return {
-  //           ...item,
-  //           productNumber: id, // 상품의 원래 아이디
-  //           img: imgPathList[0],
-  //           name: productName,
-  //           text: item.selectedSize + ", " + item.selectedColor,
-  //           size: item.selectedSize, 
-  //           color: selectedColor,
-  //           quantity: 1, 
-  //           sum: price,
-  //           productPrice: productPrice,
-  //           discountPrice: discountPrice,
-  //           productSizes : productSizes,
-  //           productColors : productColors,
-  //         }
-  //       });
-  //       setCartList(addNewOptionObj);
-  //     });
-  // }
-
-  // const addCart = () => {
-  //   if(selectedOptions.length > 0) {
-  //     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  //     const isAlreadyInCart = selectedOptions.some(option => {
-  //       return cart.find(cartItem => cartItem.id === option.id);
-  //     });
-
-  //     if(isAlreadyInCart) {
-  //       alert("이미 장바구니에 있는 상품 입니다.");
-  //     } else {
-  //       // 모든 요청을 담을 배열
-  //       const requests = selectedOptions.map(option => 
-  //         axios.post('/addCart', {
-  //           userNumber: sessionStorage.getItem("userNumber"),
-  //           productNumber: id,
-  //           cartCount: 12,
-  //           selectedSize: option.size,
-  //           selectedColor: option.color,
-  //         })
-  //       );
-  
-  //       // 모든 요청이 완료될 때까지 기다림
-  //       Promise.all(requests)
-  //         .then(responses => {
-  //           axios.post('/userCart', {
-  //             userNumber: sessionStorage.getItem("userNumber"),
-  //           })
-  //             .then(response => {
-  //               console.log('userCart', response.data);
-  //               // const cartNumbers = response.data.map(item => item.cartNumber);
-
-  //               // 모든 요청이 성공적으로 완료된 후에 액션 디스패치
-  //               const serverOptions = response.data;
-  //               selectedOptions.forEach(option => {
-  //                 const matchingOption = serverOptions.find(data =>
-  //                   data.selectedSize === option.size &&
-  //                   data.selectedColor === option.color
-  //                 );
-
-  //                 if(matchingOption) {
-  //                   option.cartNumber = matchingOption.cartNumber;
-  //                   dispatch(addToCart({...option, cartNumber: matchingOption.cartNumber}));
-  //                 }
-  //               });
-
-  //               // 로컬 스토리지에 아이템 저장
-  //               selectedOptions.forEach(option => {
-  //                 cart.unshift(option);
-  //               });
-  //               localStorage.setItem('cart', JSON.stringify(cart));
-  //               alert("장바구니에 상품이 담겼습니다.");
-  //             })
-  //             .catch(error => {
-  //               console.log('userCart error', error);
-  //             })
-  //             })
-  //         .catch(error => {
-  //           console.log(error);
-  //         });
-  //     }
-  //   } else {
-  //     alert("옵션을 선택해 주세요.");
-  //   }
-  // }
-
-
   return(
     <ProductDetailWrap>
       <Container>
-        <CtgryWrap>
-          <FlexBox>
-            <div>대분류</div>
+      <CtgryWrap>
+        {
+          minorName ? 
+          <>
+            <FlexBox>
+            <div>{majorName}</div>
             <span></span>
-            <div>소분류</div>
-          </FlexBox>
-          <div><h2>현재 카테고리</h2></div>
-        </CtgryWrap>
+            <div>{minorName}</div>
+            </FlexBox>
+            <div><h2>{minorName}</h2></div>
+          </>
+          :
+          <div><h2>{majorName}</h2></div>
+        }
+      </CtgryWrap>
 
         <FlexBox>
           <div className="left">
