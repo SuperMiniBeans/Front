@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
+import MyInfo from "../components/MyInfo";
+
 
 function MyPage() {
    // 유저 정보 중 수정 가능한 정보는 input태그에 넣고 disalbled 설정, 수정 버튼 누르면 활성화하기
@@ -19,8 +21,6 @@ function MyPage() {
     })
   }, []);
 
-  console.log(data)
-
   // 사이드 탭메뉴
   const tabContent = data ? [
     {
@@ -29,11 +29,7 @@ function MyPage() {
       content: (
         <div id="mp_info_content" className="content">
           <h2>내 정보</h2>
-          <div>이름: {data.userName}</div>
-          <div>이메일: {data.userEmail}</div>
-          <div>주소: {data.userAddress1} {data.userAddress2} {data.userAddress3}</div>
-
-          <div>휴대폰 번호 : {data.userPhoneNumber}</div>
+          <MyInfo />
         </div>
       )
     },
