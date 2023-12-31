@@ -92,14 +92,16 @@ const categorySlice = createSlice({
       2: [
         {id: 21, name: 'T-SHIRTS', value: 4},
         {id: 22, name: 'SHIRTS', value: 5},
-        {id: 23, name: 'HOODIES/SWEATSHIRTS', value: 6},
+        {id: 23, name: 'HOODIES&SWEATSHIRTS', value: 6},
         {id: 24, name: 'KNITWEAR', value: 7},
       ],
       3: [
         {id: 31, name: 'PANTS', value: 8},
         {id: 32, name: 'JEANS', value: 9},
       ],
-      4: [ ],
+      4: [
+        {id: 41, name: 'ACC', value: 10}
+      ],
     },
     selectedMajorCategory: null,
     selectedMinorCategory: null,
