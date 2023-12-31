@@ -3,22 +3,17 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import MyInfo from "../components/MyInfo";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCartList } from "../store";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 
 // 디자인 레퍼런스 다시 찾아서 해보기( )
 
 
 function Order() {
-
-  // 임시 데이터
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-
-  useEffect(() => {
-    dispatch(fetchCartList());
-  }, [dispatch]);
+  const location = useLocation();
+  const { pickedItems } = location.state;
+  console.log('order pickedItems', pickedItems);
 
   return(
     <OrderWrap>
@@ -41,61 +36,78 @@ function Order() {
               </tr>
             </thead>
 
-            {cartItems.length === 0 ? (
+            {pickedItems ? 
+              (
+                pickedItems.map((items, index) => (
+                  <tbody key={index}>
+                    <tr className="tbody_content">
+  
+                      <td>
+                        <div className="cart_item_info">
+
+                          <div id="admin_thumb_box">
+                            <Link to={`/product/list/detail/${items.productNumber}`}>
+                              <img 
+                                id="cart_thumb_img" 
+                                src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} 
+                                alt={items.productName} 
+                              />
+                            </Link>
+                          </div>
+
+                          <div>
+                            <Link to={`/product/list/detail/${items.productNumber}`}>
+                              <div className="cart_product_name">{items.productName}</div>
+                            </Link>
+                            <div className="selected_option">
+                              옵션: {items.selectedSize} / {items.selectedColor}
+                            </div>
+                          </div>
+
+                        </div> {/* cart_item_info */}
+                      </td>
+  
+                      <td>{items.cartCount}개</td>
+  
+                      <td>
+                      {items.discountRate > 0 ? (
+                        <PriceWrap>
+                          <span className="price">
+                            {items.cartCount * items.productPrice}원
+                          </span>
+                          <span className="dscnt_price">
+                            {items.cartCount * items.discountPrice}원
+                          </span>
+                        </PriceWrap>
+                      ) : (
+                        <PriceWrap>
+                          <span className="non_dscnt_price">
+                            {items.productPrice}원
+                          </span>
+                        </PriceWrap>
+                      )}
+                      </td>
+                    </tr>
+                  </tbody>
+                ))
+              )
+            :
               <tbody>
                 <tr>
                   <td colSpan={3}>
-                    장바구니에 담긴 상품이 없습니다.
+                    주문한 상품이 없습니다.
                   </td>
                 </tr>
               </tbody>
-            ) : (
-              cartItems.map((items, index) => (
-                <tbody key={index}>
-                  <tr className="tbody_content">
-
-                    <td>
-                      <div className="cart_item_info">
-                        <div id="admin_thumb_box">
-                          <Link to={`/product/list/detail/${items.productNumber}`}>
-                            <img id="cart_thumb_img" src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} alt={items.productName} />
-                          </Link>
-                        </div>
-                        <div>
-                          <Link to={`/product/list/detail/${items.productNumber}`}>
-                            <div className="cart_product_name">{items.productName}</div>
-                          </Link>
-                          <div className="selected_option">
-                            옵션: {items.selectedSize} / {items.selectedColor}
-                          </div>
-
-                        </div>
-                      </div> {/* cart_item_info */}
-                    </td>
-
-                    <td>{items.cartCount}개</td>
-
-                    <td>
-                    {items.discountRate > 0 ? (
-                      <PriceWrap>
-                        <span className="price">{items.cartCount * items.productPrice}원</span>
-                        <span className="dscnt_price">{items.cartCount * items.discountPrice}원</span>
-                      </PriceWrap>
-                    ) : (
-                      <PriceWrap>
-                        <span className="non_dscnt_price">{items.productPrice}원</span>
-                      </PriceWrap>
-                    )}
-                    </td>
-                  </tr>
-                </tbody>
-              ))
-            )}
+            }
             </OrderItemsTable>
         </section>
 
         <section className="payment-section">
           <h3>결제 정보</h3>
+          <div>
+            <button>결제하기</button>
+          </div>
         </section>
 
       </Container>
@@ -116,7 +128,6 @@ const OrderWrap = styled.div`
   section {
     padding-bottom: 20px;
     border-bottom: 1px solid #eee;
-    // background: #FAE7F3;
   }
 
   h3 {
