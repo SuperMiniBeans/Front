@@ -1,65 +1,76 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { Container, FlexBox } from "../styles/Layout";
+import { Link, useNavigate } from "react-router-dom";
+import { FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
-
-function Header({isLogin, isAdmin}) {
+import { useSelector } from "react-redux";
 
   /* 카테고리 Link to에도 쿼리스트링으로 지정?! 아니면 라우터로 설정? */
   /* OUTER클릭하면 OUTER에 속한 모든 제품 보이게 하기 */
+  
+  
+function Header({ isLogin, setIsLogin, isAdmin }) {
+  const navigate = useNavigate();
+  const categories = useSelector(state => state.categories);
 
   // 로그아웃 클릭하면 실행될 코드
   const onLogout = () => {
     sessionStorage.removeItem("아이디");
     sessionStorage.removeItem("비밀번호");
     sessionStorage.removeItem("userNumber");
-    document.location.href = '/';
+    setIsLogin(false);
+    navigate('/');
   }
 
   return(
     <HeaderWrap>
         <HeaderWrapFlex>
-          <H1Wrap><h1><Link to="/">LYS</Link></h1></H1Wrap>
+          <H1Wrap>
+            <h1><Link to="/">LYS</Link></h1>
+          </H1Wrap>
 
           <GnbUserWrap>
             <nav className="gnb">
               <Gnb>
                 <MouseOver>
-                  <Link to="/product/list">ALL</Link>
+                  <Link to="/product/list/ALL">ALL</Link>
                 </MouseOver>
 
-                <MouseOver>
-                  <Link to="/product/list">OUTER</Link>
-                  <Lnb className="lnb">
-                    <LnbLi><Link to='/'>COAT</Link></LnbLi>
-                    <LnbLi><Link to='/'>JACKET</Link></LnbLi>
-                    <LnbLi><Link to='/'>BLAZERS</Link></LnbLi>
-                  </Lnb>
-                </MouseOver>
-                <MouseOver>
-                  <Link to="/">TOP</Link>
-                  <Lnb className="lnb">
-                    <LnbLi><Link to='/'>T-SHIRTS</Link></LnbLi>
-                    <LnbLi><Link to='/'>SHIRTS</Link></LnbLi>
-                    <LnbLi><Link to='/'>HOODIES/<br />SWEATSHIRTS</Link></LnbLi>
-                    <LnbLi><Link to='/'>KNITWEAR</Link></LnbLi>
-                  </Lnb>
-                </MouseOver>
-                <MouseOver>
-                  <Link to="/">BOTTOM</Link>
-                  <Lnb className="lnb">
-                    <LnbLi><Link to='/'>PANTS</Link></LnbLi>
-                    <LnbLi><Link to='/'>JEANS</Link></LnbLi>
-                  </Lnb>
-                </MouseOver>
-                <MouseOver><Link to="/">ACC</Link></MouseOver>
+                {categories.majorCategories.map(category => (
+                  <MouseOver 
+                    // onClick={() => onCategoryClick(category.value)} 
+                    key={category.id}
+                  >
+                    <Link to={`/product/list/${category.name}`}>
+                      {category.name}
+                    </Link>
 
-                {
-                isAdmin ? 
-                <MouseOver><Link to="/admin/*">관리자</Link></MouseOver>
+                    <Lnb className="lnb">
+                      {categories.minorCategories[category.value].map(subcategory => (
+                        <LnbLi 
+                          className="LnbLi" 
+                          onClick={e => {
+                            e.stopPropagation(); 
+                            // onCategoryClick(category.value, subcategory.value)
+                          }}
+                          key={subcategory.id}
+                        >
+                          <Link to={`/product/list/${category.name}/${subcategory.name}`}>
+                            {subcategory.name}
+                          </Link>
+                        </LnbLi>
+                      ))}
+                    </Lnb>
+
+                  </MouseOver>
+                ))}
+
+                {isAdmin ? 
+                  <MouseOver>
+                    <Link to="/admin/*">관리자</Link>
+                  </MouseOver>
                 :
-                <></>
+                  <></>
                 }
               </Gnb>
             </nav>
