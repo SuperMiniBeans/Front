@@ -62,7 +62,9 @@ function AddProduct() {
       {id: 31, name: 'PANTS', value: 8},
       {id: 32, name: 'JEANS', value: 9},
     ],
-    4: [ ],
+    4: [
+      {id: 41, name: 'ACC', value: 10}
+    ],
   };
 
   // major 선택 상태 업데이트
@@ -128,8 +130,6 @@ function AddProduct() {
     setDiscountPrice(calDiscountPrice); // 소수점 둘째 자리까지 표시
   };
   // *판매가와 할인율에서 모두 할인 가격을 계산하는 이유는 판매가와 할인율이 상호 의존 관계이기 때문(사용자가 둘 중 하나를 변경하면 할인 가격이 다시 계산되어야 하기 때문에 두 함수 모두에서 할인가를 계산하는 것이 필요(+편리))
-
-
 
 
   /* 사이즈 옵션 입력 받기 */
@@ -287,6 +287,7 @@ function AddProduct() {
           <div id="p_cate_box">
             <AddINputWrap>
               <label>카테고리</label>
+
               <select
                 name="categoryMajorCode"
                 value={majorCategory || ''}
@@ -300,7 +301,7 @@ function AddProduct() {
                 ))}
               </select>
 
-              {majorCategory && (
+              {majorCategory && minorCategories[majorCategory].length > 0 && (
                 <select 
                   name="categoryMinorCode"
                   value={minorCategory || ''}
