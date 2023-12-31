@@ -15,9 +15,10 @@ import { removeFromCart, fetchCartList } from "../store";
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const cartItems = useSelector((state) => state.cart.items);
-  console.log('Cart.js cartItems', cartItems);
+  const [checkedProducts, setCheckedProducts] = useState([]);
+
+  console.log('선택된 항목', checkedProducts);
 
   // 옵션 수정 모달
   const [isModalOpened, setIsModalOpened] = useState(false);
@@ -37,8 +38,6 @@ function Cart() {
   };
   
   // 체크박스 토글
-  const [checkedProducts, setCheckedProducts] = useState([]);
-  console.log('선택된 항목', checkedProducts);
   const handleCheckbox = (checked, cartNum) => {
     if(checked) {
       setCheckedProducts([...checkedProducts, cartNum]);
@@ -98,6 +97,22 @@ function Cart() {
     window.alert("장바구니에서 삭제되었습니다.");
   }
 
+  // 주문하기 
+  const handelOrder = () => {
+    axios.post('/pickCart', {
+      cartNumber: checkedProducts,
+    })
+      .then(response => {
+        console.log('response.data', response.data);
+        navigate('/order', {
+          state: { pickedItems: response.data }
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   return(
     <CartWrap>
       <Container>
@@ -124,7 +139,7 @@ function Cart() {
           </thead>
 
           {/* map으로 돌리기 + 데이터 바인딩 (----------여기부터) */}
-          {cartItems.length === 0 ? (
+          {cartItems.length === 0 ? 
             <tbody>
               <tr>
                 <td colSpan={8}>
@@ -132,21 +147,23 @@ function Cart() {
                 </td>
               </tr>
             </tbody>
-          ) : (
+          : 
+          (
             cartItems.map((items, index) => (
               <tbody key={index}>
                 <tr className="tbody_content">
                   <td>{index + 1}</td>
 
                   <td>
-                    <input type="checkbox" 
-                          onChange={e => 
-                            handleCheckbox(e.target.checked, items.cartNumber)
-                          }
-                          checked={
-                            checkedProducts.includes(items.cartNumber) ? 
-                            true : false
-                          }
+                    <input 
+                      type="checkbox" 
+                      onChange={e => 
+                        handleCheckbox(e.target.checked, items.cartNumber)
+                      }
+                      checked={
+                        checkedProducts.includes(items.cartNumber) ? 
+                        true : false
+                      }
                     />
                   </td>
 
@@ -154,7 +171,11 @@ function Cart() {
                     <div className="cart_item_info">
                       <div id="admin_thumb_box">
                         <Link to={`/product/list/detail/${items.productNumber}`}>
-                          <img id="cart_thumb_img" src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} alt={items.productName} />
+                          <img 
+                            id="cart_thumb_img" 
+                            src={`/upload/${items.fileUploadPath}/th_${items.fileUuid}_${items.fileName}`} 
+                            alt={items.productName} 
+                          />
                         </Link>
                       </div>
                       <div>
@@ -165,9 +186,11 @@ function Cart() {
                           옵션: {items.selectedSize} / {items.selectedColor}
                         </div>
                         <div>
-                          <button id="option_change" 
-                                  onClick={() => handleEditClick(items)}>
-                                  옵션 변경
+                          <button 
+                            id="option_change" 
+                            onClick={() => handleEditClick(items)}
+                          >
+                            옵션 변경
                           </button>
                         </div>
                       </div>
@@ -190,27 +213,30 @@ function Cart() {
                   <td>{items.cartCount}개</td>
 
                   <td>
-                    
-                    {items.discountRate > 0 ? (
+                    {items.discountRate > 0 ? 
                       <>
                         {items.cartCount * items.discountPrice}원
                       </>
-                  ) : (
+                    :
                       <>
                         {items.cartCount * items.productPrice}원
                       </>
-                  )}
+                    }
                   </td>
 
                   <td>
                     <div>
-                        <button>주문하기</button>
+                      <button>주문하기</button>
                     </div>
                     <div>
                       <button>찜</button>
                     </div>
                     <div>
-                      <button onClick={() => handleRemoveEachCart(items.cartNumber)}>삭제하기</button>
+                      <button 
+                        onClick={() => handleRemoveEachCart(items.cartNumber)}
+                      >
+                        삭제하기
+                      </button>
                     </div>
                   </td>
                   
@@ -222,17 +248,28 @@ function Cart() {
         </table>
         
         {isModalOpened && 
-          <CartOptionChangeModal isModalOpened={isModalOpened} closeModal={closeModal} items={editItemSelect}/>
+          <CartOptionChangeModal 
+            isModalOpened={isModalOpened} 
+            closeModal={closeModal} 
+            items={editItemSelect}
+          />
         }
 
-        <div><DeleteChkedBtn type="submit" onClick={handelRemoveCart}>선택 삭제</DeleteChkedBtn></div>
+        <div>
+          <DeleteChkedBtn 
+            type="submit" 
+            onClick={handelRemoveCart}
+          >
+            선택 삭제
+          </DeleteChkedBtn>
+        </div>
         
         <div>총 금액: {}</div>
         
         <div>
-          <Link to={'/order'}>
-            <button>주문하기</button>
-          </Link>
+          {/* <Link to={'/order'}> */}
+            <button onClick={handelOrder}>주문하기</button>
+          {/* </Link> */}
         </div>
 
       </Container>
