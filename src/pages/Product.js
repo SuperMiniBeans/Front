@@ -10,12 +10,10 @@ import { useSelector } from "react-redux";
 
 function Product() {
   const categories = useSelector(state => state.categories);
-
-  // const { majorValue, minorValue } = useParams();
   const [cateProduct, setCateProduct] = useState();
-
   const { majorName, minorName } = useParams();
 
+  // categories의 name에 맞는 value를 리턴
   const findCategoryValue = (categories, name) => {
     for (let category of categories) {
       if (category.name === name) {
@@ -28,6 +26,7 @@ function Product() {
   const minorValue = minorName ? findCategoryValue(categories.minorCategories[majorValue], minorName) : null;
 
   useEffect(() => {
+    let endpoint; //카테고리가 ALL일 때는 서버url이 다르기 때문에 endpoint추가
     const categoryValue = {
       categoryMajorCode: majorValue,
     }
@@ -35,27 +34,38 @@ function Product() {
       categoryValue.categoryMinorCode = minorValue;
     }
 
-    axios.post('/divideCode', categoryValue)
+    if(majorName === 'ALL') {
+      endpoint = '/fileList';
+    } else {
+      endpoint = '/divideCode';
+    }
+
+    axios.post(endpoint, categoryValue)
       .then(res => {
         setCateProduct(res.data);
       })
       .catch(error => {
         console.log(error);
       })
-    
-    
-  }, [majorValue, minorValue])
+  }, [majorValue, minorValue, majorName])
 
 
   return(
     <Container>
       <CtgryWrap>
-        <FlexBox>
-          <div>대분류</div>
-          <span></span>
-          <div>소분류</div>
-        </FlexBox>
-        <div><h2>현재 카테고리</h2></div>
+        {
+          minorName ? 
+          <>
+            <FlexBox>
+            <div>{majorName}</div>
+            <span></span>
+            <div>{minorName}</div>
+            </FlexBox>
+            <div><h2>{minorName}</h2></div>
+          </>
+          :
+          <div><h2>{majorName}</h2></div>
+        }
       </CtgryWrap>
 
       <ProductListGrid>
