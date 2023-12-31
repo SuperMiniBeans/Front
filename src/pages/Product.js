@@ -1,50 +1,51 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import ProductList from "./ProductList";
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
+/* 스크롤 했을 때 12개 목록 끝나면 데이터 불러오기 - 스크롤 이벤트 */
 
 function Product() {
-  const [product, setProduct] = useState({
-    productName: '',
-    productPrice: 0,
-    discountRate: 0,
-    discountPrice: 0,
-    productSize: '',
-    productColor: '',
-    productQuantity: 0,
-    productExplanation: '',
-    productExplanation1: '',
-    productExplanation2: '',
-  })
-  // const {productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2} = product;
+  const categories = useSelector(state => state.categories);
 
-  const [imgData, setImgData] = useState([]);
+  // const { majorValue, minorValue } = useParams();
+  const [cateProduct, setCateProduct] = useState();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post('/fileList', {
-          userId: sessionStorage.getItem("아이디"),
-        })
-        setImgData(response.data);
-        setProduct(response.data);
-        // setMajorCategory(response.data[0].categoryMajorCode);
-        // setMinorCategory(response.data[0].categoryMinorCode);
-      }
-      catch(error) {
-        console.log(error);
-        if(product.length === 0) {
-          console.log('데이터 없음');
-        }
+  const { majorName, minorName } = useParams();
+
+  const findCategoryValue = (categories, name) => {
+    for (let category of categories) {
+      if (category.name === name) {
+        return category.value;
       }
     }
-    fetchData();
-  }, []);
+  };
 
+  const majorValue = findCategoryValue(categories.majorCategories, majorName);
+  const minorValue = minorName ? findCategoryValue(categories.minorCategories[majorValue], minorName) : null;
 
-  /* 스크롤 했을 때 12개 목록 끝나면 데이터 불러오기 - 스크롤 이벤트 */
+  useEffect(() => {
+    const categoryValue = {
+      categoryMajorCode: majorValue,
+    }
+    if(minorValue) {
+      categoryValue.categoryMinorCode = minorValue;
+    }
+
+    axios.post('/divideCode', categoryValue)
+      .then(res => {
+        setCateProduct(res.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    
+    
+  }, [majorValue, minorValue])
+
 
   return(
     <Container>
@@ -57,14 +58,16 @@ function Product() {
         <div><h2>현재 카테고리</h2></div>
       </CtgryWrap>
 
-      {/* map사용해서 ProductList 컴포넌트 반복하기 */}
       <ProductListGrid>
-        {product.length === 0 ? (
-          <div>데이터 없음</div>
-        ) : (
-          product.map((products, i) => {
-            return <ProductList products={products} key={i}/>
+        {cateProduct ? (
+          cateProduct.map((products, i) => {
+            return <ProductList 
+                      products={products}
+                      key={i}
+                    />
           })
+        ) : (
+          <div>데이터 없음</div>
         )}
       </ProductListGrid>
     </Container>
