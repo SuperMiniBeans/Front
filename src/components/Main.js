@@ -1,7 +1,7 @@
 // import { useState } from "react";
 import styled from "styled-components";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useParams } from "react-router-dom";
 
 import Home from "../pages/Home";
 
@@ -23,13 +23,18 @@ import AddProduct from "../pages/AddProduct";
 import UpdateProduct from "../pages/UpdateProduct";
 
 import Cart from "../pages/Cart";
+import Order from "../pages/Order";
+
+// 로그인한 사용자만 볼 수 있는 페이지는 redirect to='/login'처리하기( )
 
 
 function Main() {
 
+
   return (
     <MainWrap>
       <Routes>
+        <Route path='/order' element={<Order />} />
         <Route path='/cart' element={<Cart />} />
 
         <Route exact path='/admin/*' element={<Admin />} />
@@ -38,9 +43,28 @@ function Main() {
 
         <Route path='/myPage' element={<MyPage />} />
 
-        <Route path='/product/list/*' element={<Product />} />
-        <Route path='/product/list/detail/:id' element={<ProductDetail />} />
+        {/* <Route 
+          path='/product/list/*' 
+          element={
+            <Product 
+              category={category} 
+              onMajorCategoryClick={onMajorCategoryClick}
+              onMinorCategoryClick={onMinorCategoryClick} 
+              cateProduct={cateProduct}
+            />
+          } 
+        /> */}
 
+        <Route 
+          path='/product/list/:majorName/:minorName?' 
+          element={
+            <Product 
+              // cateProduct={cateProduct}
+              // onCategoryClick={onCategoryClick}
+            />
+          } 
+        />
+        <Route path='/product/list/detail/:id' element={<ProductDetail />} />
 
         <Route path='/join/joincomplete' element={<JoinComplete />} />
         <Route path='/join' element={<Join />} />
