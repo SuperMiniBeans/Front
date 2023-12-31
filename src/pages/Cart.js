@@ -5,16 +5,16 @@ import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import CartOptionChangeModal from "../components/CartOptionChangeModal";
-import { removeFromCart, fetchCartList, sendCartItems } from "../store";
+import { removeFromCart, fetchCartList } from "../store";
 
 
+// 장바구니 중복 처리하기 ( )
 
-// 옵션 수정 구현하기 ( )
-// 로그인한 사용자만 장바구니 볼 수 있게 처리하기 ( )
 
 
 function Cart() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const cartItems = useSelector((state) => state.cart.items);
   console.log('Cart.js cartItems', cartItems);
@@ -89,8 +89,6 @@ function Cart() {
         console.log(response.data);
         checkedProducts.forEach(id => {
           dispatch(removeFromCart(id));
-          const updatedCart = JSON.parse(localStorage.getItem('cart')).filter(item => item.cartNumber !== id);
-          localStorage.setItem('cart', JSON.stringify(updatedCart));
         });
         dispatch(fetchCartList());
       })
@@ -179,35 +177,41 @@ function Cart() {
                   <td>
                   {items.discountRate > 0 ? (
                     <PriceWrap>
-                      <span className="dscnt_price">{items.discountPrice}</span>
-                      <span className="price">{items.productPrice}</span>
+                      <span className="price">{items.productPrice}원</span>
+                      <span className="dscnt_price">{items.discountPrice}원</span>
                     </PriceWrap>
                   ) : (
                     <PriceWrap>
-                      <span className="non_dscnt_price">{items.productPrice}</span>
+                      <span className="non_dscnt_price">{items.productPrice}원</span>
                     </PriceWrap>
                   )}
                   </td>
 
-                  <td>{items.cartCount}</td>
+                  <td>{items.cartCount}개</td>
 
                   <td>
                     
                     {items.discountRate > 0 ? (
                       <>
-                        {items.cartCount * items.discountPrice}
+                        {items.cartCount * items.discountPrice}원
                       </>
                   ) : (
                       <>
-                        {items.cartCount * items.productPrice}
+                        {items.cartCount * items.productPrice}원
                       </>
                   )}
                   </td>
 
                   <td>
-                    <div><button>주문하기</button></div>
-                    <div><button>찜</button></div>
-                    <div><button onClick={() => handleRemoveEachCart(items.cartNumber)}>삭제하기</button></div>
+                    <div>
+                        <button>주문하기</button>
+                    </div>
+                    <div>
+                      <button>찜</button>
+                    </div>
+                    <div>
+                      <button onClick={() => handleRemoveEachCart(items.cartNumber)}>삭제하기</button>
+                    </div>
                   </td>
                   
                 </tr>
@@ -225,7 +229,11 @@ function Cart() {
         
         <div>총 금액: {}</div>
         
-        <div><button>주문하기</button></div>
+        <div>
+          <Link to={'/order'}>
+            <button>주문하기</button>
+          </Link>
+        </div>
 
       </Container>
     </CartWrap>
