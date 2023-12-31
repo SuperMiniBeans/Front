@@ -11,7 +11,6 @@ import { BtnBg } from "../styles/ButtonStyle";
 function UpdateProduct() {
   const navigate = useNavigate();
   const { id } = useParams();
-  // console.log('아이디파람', id);
 
   const [product, setProduct] = useState({
     productName: '',
@@ -26,7 +25,6 @@ function UpdateProduct() {
     productExplanation2: '',
   })
   const { productName, productPrice, discountRate, discountPrice, productSize, productColor, productQuantity, productExplanation, productExplanation1, productExplanation2 } = product;
-
 
 
   // 카테고리 설정하기
@@ -55,31 +53,14 @@ function UpdateProduct() {
       {id: 31, name: 'PANTS', value: 8},
       {id: 32, name: 'JEANS', value: 9},
     ],
-    4: [ ],
+    4: [
+      {id: 41, name: 'ACC', value: 10}
+    ],
   };
 
-
-  const [imgData, setImgData] = useState([]);
-
+  
   // 데이터 불러오기
-  // useEffect(() => {
-  //   axios.post('/productView', {
-  //     productNumber: id
-  //   })
-  //     .then(response => {
-  //       console.log('response.data', response.data[0]);
-  //       setProduct(response.data[0]);
-  //       setMajorCategory(response.data[0].categoryMajorCode);
-  //       setMinorCategory(response.data[0].categoryMinorCode);
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }, [id]);
-  // console.log('response.data[0].categoryMajorCode', majorCategory);
-
-
-  // 데이터 불러오기(비동기)
+  const [imgData, setImgData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -107,26 +88,18 @@ function UpdateProduct() {
     setImgPathList(newImgPathList);
   }, [imgData]); 
 
-  console.log('imgPathList', imgPathList);
-
   // major 선택 상태 업데이트
   const handleMajorValue = e => {
     setMajorCategory(e.target.value);
     setMinorCategory('');
   }
-  console.log('메이저', majorCategory);
+  // console.log('메이저', majorCategory);
 
   // minor카테고리 선택 상태 업데이트
   const handleMinorValue = e => {
     setMinorCategory(e.target.value);
   }
-  console.log('마이너', minorCategory);
-
-
-
-
-
-  // console.log('이미지 경로 리스트', imgPathList);
+  // console.log('마이너', minorCategory);
 
   // 이미지 업로드
   const [images, setImages] = useState([]);
@@ -150,12 +123,6 @@ function UpdateProduct() {
   const handleDscntCheck = e => {
     setDscntChked(e.target.checked);
   }
-
-  // 할인가 계산하기(작성중)
-  // const calcDscntPrice = () => {
-  //   setDscntPrice(add.productPrice *(add.discountRate/100));
-  //   console.log('할인가', dscntPrice);
-  // }
 
   // 등록하기 버튼 누르면 실행
   const onUpdateSubmit = () => {
@@ -359,7 +326,6 @@ function UpdateProduct() {
 const AddProductWrap = styled.div`
   width: 100%;
   min-width: 1200px;
-  // background-color: green;
 
   h2 {
     margin-bottom: 30px;
@@ -369,7 +335,6 @@ const AddProductWrap = styled.div`
   .align_center {
     width: 780px;
     margin: 0 auto;
-    // background-color: #eee;
   }
 
   #p_cate_box,
@@ -391,14 +356,11 @@ const AddINputWrap = styled.div`
   width: 100%;
   margin-bottom: 10px;
   align-items: center;
-  // background-color: pink;
-
 
   label {
     width: 140px;
     margin-right: 20px;
     font-size: 20px;
-    // background-color: #eee;
   }
 
   .input_box {
@@ -407,8 +369,6 @@ const AddINputWrap = styled.div`
     input,
     textarea {
       width: calc(780px-140px);
-      // background-color: blue;
-
     }
   }
 `
@@ -419,7 +379,6 @@ const AddINput = styled.input`
   padding: 0 10px;
   font-size: 16px;
   border: 1px solid #aaa;
-  // background-color: yellowgreen;
 `
 
 const DscntChkBox = styled.div`
@@ -433,7 +392,6 @@ const AddTextArea = styled.textarea`
   resize: none;
   font-family: 'pretendard';
   border: 1px solid #aaa;
-  // background-color: yellowgreen;
 
   // textarea 스크롤바 커스텀
   &::-webkit-scrollbar {
@@ -451,8 +409,6 @@ const AddTextArea = styled.textarea`
 const AddProductBtn = styled(BtnBg)`
   width: 120px;
   font-size: 16px;
-
-  // background-color: pink;
 `
 
 export default UpdateProduct;
