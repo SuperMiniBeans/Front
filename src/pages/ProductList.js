@@ -4,8 +4,6 @@ import { Routes, Route, Link } from "react-router-dom";
 
 function ProductList({ products }) {
 
-  console.log('prolist', products);
-
   return(
     <>
     {products ? 
@@ -25,10 +23,18 @@ function ProductList({ products }) {
           </Title>
 
           <PriceWrap>
-            <span className="dscnt_rate">{products.discountRate}</span>
-            <span className="dscnt_price">{products.discountPrice}</span>
-            <span className="price">{products.productPrice}</span>
-          </PriceWrap>
+                {products.discountRate > 0 ? (
+                  <>
+                    <span className="dscnt_rate">{products.discountRate}%</span>
+                    <span className="dscnt_price">{products.discountPrice}</span>
+                    <span className="price">{products.productPrice}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="non_dscnt_price">{products.productPrice}</span>
+                  </>
+                )}
+              </PriceWrap>
 
         </FlexBoxCol>
       </div>
@@ -57,35 +63,30 @@ const Title = styled.div`
 const PriceWrap = styled.div`
   position: relative;
   display: flex;
+  margin-bottom: 120px;
 
-  .dscnt_rate,
-  .dscnt_price {
-    display: none;
-  }
-
-  .price {
+  .non_dscnt_price {
     line-height: 20px;
     font-size: 20px;
   }
 
   /* 할인가 스타일 적용 */
-  // .dscnt_rate {
-  //   font-size: 20px;
-  //   color: red;
-  // }
+  .dscnt_rate {
+    font-size: 20px;
+    color: red;
+  }
 
-  // .dscnt_price {
-  //   font-size: 20px;
-  //   margin: 0 8px;
-  // }
+  .dscnt_price {
+    font-size: 20px;
+    margin: 0 8px;
+  }
 
-  // .price {
-  //   font-size: 14px;
-  //   line-height: 20px;
-  //   text-decoration: line-through;
-  //   color: #aaa;
-  // }
-
+  .price {
+    font-size: 14px;
+    line-height: 20px;
+    text-decoration: line-through;
+    color: #aaa;
+  }
 `
 
 export default ProductList;
