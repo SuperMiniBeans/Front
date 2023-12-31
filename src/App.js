@@ -3,6 +3,7 @@ import GlobalStyle from './styles/GlobalStyle';
 import Header from './components/Header';
 import Main from './components/Main';
 import Footer from './components/Footer';
+import axios from 'axios';
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
       console.log('isLogin?', isLogin);
       setIsLogin(true);
     }
-  }, [isLogin]);
+  }, []);
 
   // 관리자 로그인 상태관리
   const [isAdmin, setIsAdmin] = useState(false);
@@ -27,15 +28,60 @@ function App() {
       console.log('isAdmin?', isAdmin);
       setIsAdmin(true);
     }
-  }, [isAdmin]);
+  }, []);
+
+  // 카테고리 선택 
+  // const [majorCategory, setMajorCategory] = useState(null);
+  // const [minorCategory, setMinorCategory] = useState(null);
+
+  // const [cateProduct, setCateProduct] = useState();
+
+  // const handleCategoryClick = (majorValue, minorValue) => {
+  //   console.log('카테고리 클릭', majorValue, minorValue);
+
+  //   const categoryValue = {
+  //     categoryMajorCode: majorValue,
+  //   }
+
+  //   if(minorValue) {
+  //     categoryValue.categoryMinorCode = minorValue;
+  //   }
+
+  //   axios.post('/divideCode', categoryValue)
+  //     .then(res => {
+  //       setMajorCategory(majorValue);
+
+  //       if(minorValue) {
+  //         setMinorCategory(minorValue);
+  //       }
+
+  //       setCateProduct(res.data);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     })
+  // }
+
+
+  // console.log('cateProduct', cateProduct);
+
+
+
 
 
   return (
     <div>
       <GlobalStyle />
       
-      <Header isLogin={isLogin} isAdmin={isAdmin}/>
-      <Main />
+      <Header 
+        isLogin={isLogin} setIsLogin={setIsLogin} 
+        isAdmin={isAdmin} setIsAdmin={setIsAdmin}
+        // onCategoryClick={handleCategoryClick}
+      />
+      <Main 
+        // onCategoryClick={handleCategoryClick}
+        // cateProduct={cateProduct}
+      />
       <Footer />
     </div>
   );
