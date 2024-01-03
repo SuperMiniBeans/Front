@@ -30,8 +30,35 @@ import { Link, useLocation } from "react-router-dom";
 function Order() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { pickedItems } = location.state;
-  console.log('order pickedItems', pickedItems);
+  const { pickedItems, totalPrice } = location.state;
+  console.log('order.js pickedItems', pickedItems);
+  console.log('totalPrice', totalPrice)
+
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    axios.post('/myPage', {
+      userNumber: sessionStorage.getItem("userNumber"),
+    })
+    .then(response => {
+      setUserInfo(response.data);
+      console.log('userInfo', response.data);
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }, []);
+
+  // let allCartPrice; // 상위 스코프에서 allCartPrice 선언
+  // async function fetchCartPrice() {
+  //   try {
+  //     const response = await axios.post('/allCartPrice');
+  //     allCartPrice = response.data; // allCartPrice 업데이트
+  //   } catch (error) {
+  //     console.error('Error fetching cart price', error);
+  //     console.log('allCartPrice', allCartPrice);
+  //   }
+  // }
+  // fetchCartPrice();
 
 
   /* 없어도 되는 부분인가? 나중에 실행해서 확인해보기 (여기부터) */
@@ -53,30 +80,35 @@ function Order() {
   const requestPay = () => {
     const { IMP } = window;
     IMP.init('imp28217053');
-
+    
     // 결제창 호출, { }안에는 결제 데이터 정의 - 이후에 vale 자리에 데이터 바인딩하기 
     IMP.request_pay({
       pg: 'kakaopay', //{PG사코드}.{PG상점ID}
       pay_method: 'card',
       merchant_uid: new Date().getTime(),
-      name: '결제 테스트',
-      amount: 1004, // 결제 금액
-      buyer_email: 'applej07@naver.com',
-      buyer_name: '송하정',
-      buyer_tel: '010-5113-5826',
-      buyer_addr: '서울특별시',
-      buyer_postcode: '123-456',
+      name: `${pickedItems[0].productName} 외 ${pickedItems.length - 1}개`,
+      amount: totalPrice, // 결제 금액
+      buyer_email: userInfo.userEmail,
+      buyer_name: userInfo.userName,
+      buyer_tel: userInfo.userPhoneNumber,
+      buyer_addr: userInfo.userAddress1 + userInfo.userAddress2 + userInfo.userAddress3,
+      buyer_postcode: userInfo.userAddressNumber,
     }, async (res) => {
       try {
-        const { data } = await axios.post('/' + res.imp_uid); // data: 서버에서 보내준 결과를 data라는 변수에 담는 것/ 서버 주소 뒤의 res.imp_uid는 결제 검증을 위해 요청 url에 보내는 값/ imp_uid는 아임포트 결제 후에 반환되는 response객체 내부에 있는 속성으로 아임포트에서 결제 완료 시 자동으로 생성되는 고유한 결제 ID
+        const { data } = await axios.post('/verifyIamport/' + res.imp_uid); 
+        // data: 서버에서 보내준 결과를 data라는 변수에 담는 것/ 서버 주소 뒤의 res.imp_uid는 결제 검증을 위해 요청 url에 보내는 값/ imp_uid는 아임포트 결제 후에 반환되는 response객체 내부에 있는 속성으로 아임포트에서 결제 완료 시 자동으로 생성되는 고유한 결제 ID
+        // console.log('data', data);
+        
         if (res.paid_amount === data.response.amount) { // 요청 결제 금액이 서버에서 반환하는 금액과 같으면 결제성공!/ data.response.amount에서 amount는 서버 코드에 작성된 변수에 맞추기
           alert('결제 성공');
         } else {
           alert('결제 실패');
+          console.log('data', data);
         }
       } catch (error) {
         console.error('결제 오류!!!:', error);
-        alert('결제 실패');
+        
+        alert('결제 실패!!');
       }
     });
   }
