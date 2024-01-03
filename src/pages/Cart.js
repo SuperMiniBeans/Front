@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
+import { BtnBorder } from "../styles/ButtonStyle";
+
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +19,7 @@ function Cart() {
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
   const [checkedProducts, setCheckedProducts] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   console.log('선택된 항목', checkedProducts);
 
@@ -97,20 +100,66 @@ function Cart() {
     window.alert("장바구니에서 삭제되었습니다.");
   }
 
+  // 주문 할 상품의 총 금액
+  
+  useEffect(() => {
+    // 선택한 상품의 총 금액을 계산합니다.
+    const total = checkedProducts.reduce((sum, item) => sum + item.price, 0);
+    setTotalPrice(total);
+  }, [checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산합니다.
+
+
+
   // 주문하기 
-  const handelOrder = () => {
-    axios.post('/pickCart', {
-      cartNumber: checkedProducts,
-    })
-      .then(response => {
-        console.log('response.data', response.data);
-        navigate('/order', {
-          state: { pickedItems: response.data }
-        });
-      })
-      .catch(error => {
-        console.log(error);
+  // const handelOrder = () => {
+  //   axios.post('/pickCart', {
+  //     cartNumber: checkedProducts,
+  //   })
+  //     .then(response => {
+  //       console.log('pickCart', response.data);
+  //       navigate('/order', {
+  //         state: { pickedItems: response.data }
+  //       });
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+
+  //   axios.post('/allCartPrice ', {
+  //     cartNumber: checkedProducts,
+  //   })
+  //     .then(response => {
+  //       console.log('allCartPrice', response.data);
+  //       navigate('/order', {
+  //         state: { totalPrice: response.data }
+  //       });
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //     });
+  // }
+
+  const handelOrder = async () => {
+    try {
+      const pickCartRes = await axios.post('/pickCart', {
+        cartNumber: checkedProducts,
       });
+      console.log('pickCart', pickCartRes.data);
+  
+      const allCartPriceRes = await axios.post('/allCartPrice', {
+        cartNumber: checkedProducts,
+      });
+      console.log('allCartPrice', allCartPriceRes.data);
+  
+      navigate('/order', {
+        state: { 
+          pickedItems: pickCartRes.data, 
+          totalPrice: allCartPriceRes.data.discountTotalPrice,
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return(
@@ -264,7 +313,10 @@ function Cart() {
           </DeleteChkedBtn>
         </div>
         
-        <div>총 금액: {}</div>
+        <TotalPrice>
+          
+          <div>총 금액: {totalPrice}</div>
+        </TotalPrice>
         
         <div>
           {/* <Link to={'/order'}> */}
@@ -407,11 +459,19 @@ const PriceWrap = styled.div`
   }
 `
 
-const DeleteChkedBtn = styled.button`
+const DeleteChkedBtn = styled(BtnBorder)`
   width: 80px;
   height: 32px;
   margin-top: 10px;
   font-size: 14px;
+`
+
+const TotalPrice = styled.div`
+  width: 60%;
+  height: 200px;
+  margin: 0 auto;
+  background-color: #eee;
+  border-radius: 40px;
 `
 
 export default Cart;
