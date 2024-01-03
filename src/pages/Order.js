@@ -97,18 +97,17 @@ function Order() {
       try {
         const { data } = await axios.post('/verifyIamport/' + res.imp_uid); 
         // data: 서버에서 보내준 결과를 data라는 변수에 담는 것/ 서버 주소 뒤의 res.imp_uid는 결제 검증을 위해 요청 url에 보내는 값/ imp_uid는 아임포트 결제 후에 반환되는 response객체 내부에 있는 속성으로 아임포트에서 결제 완료 시 자동으로 생성되는 고유한 결제 ID
-        // console.log('data', data);
+        console.log('data', data);
         
         if (res.paid_amount === data.response.amount) { // 요청 결제 금액이 서버에서 반환하는 금액과 같으면 결제성공!/ data.response.amount에서 amount는 서버 코드에 작성된 변수에 맞추기
           alert('결제 성공');
         } else {
-          alert('결제 실패');
+          alert('결제가 취소되었습니다.');
           console.log('data', data);
         }
       } catch (error) {
         console.error('결제 오류!!!:', error);
-        
-        alert('결제 실패!!');
+        alert('결제가 취소되었습니다.');
       }
     });
   }
