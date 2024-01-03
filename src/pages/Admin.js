@@ -7,6 +7,7 @@ import axios from "axios";
 import moment from "moment/moment";
 
 import { Container, FlexBoxSB } from "../styles/Layout";
+import { BtnBg } from "../styles/ButtonStyle";
 import AddProduct from "./AddProduct"
 import ProductDetail from "../pages/ProductDetail"
 import UpdateProduct from "./UpdateProduct";
@@ -297,6 +298,5 @@ const DeleteChkedBtn = styled.button`
   margin-top: 10px;
   font-size: 14px;
 `
-
 
 export default Admin;

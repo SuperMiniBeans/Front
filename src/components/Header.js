@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { FlexBox } from "../styles/Layout";
+import { Container, FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
 import { useSelector } from "react-redux";
@@ -76,10 +76,10 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
             </nav>
 
             <UserWrap>
-              <SearchWrap>
+              {/* <SearchWrap>
                 <div><input type="search"></input></div>
                 <div><button type="submit"><GoSearch /></button></div>
-              </SearchWrap>
+              </SearchWrap> */}
 
               {
               isLogin ? 
@@ -92,6 +92,11 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
               }
 
               <ShoppingBag><Link to="/cart"><SlBag /></Link></ShoppingBag>
+
+              <SearchWrap>
+                <div><input type="search"></input></div>
+                <div><button type="submit"><GoSearch /></button></div>
+              </SearchWrap>
             </UserWrap>
           </GnbUserWrap>
 
@@ -108,7 +113,7 @@ const HeaderWrap = styled.header`
   min-width: 1200px;
   height: 100px;
   margin-bottom: 100px;
-  padding: 0 40px;
+  padding: 0 10px;
   border-bottom: 1px solid #000;
   // background-color: yellow;
 `
