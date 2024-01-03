@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { sendCartItems } from "../store";
+import formatPrice from "../utils/formatPrice";
 
 import { SlBag } from "react-icons/sl"
 import { IoIosHeartEmpty } from "react-icons/io";
@@ -233,12 +234,12 @@ function ProductDetail() {
                 {discountRate > 0 ? (
                   <>
                     <span className="dscnt_rate">{discountRate}%</span>
-                    <span className="dscnt_price">{discountPrice}</span>
-                    <span className="price">{productPrice}</span>
+                    <span className="dscnt_price">{formatPrice(discountPrice)}원</span>
+                    <span className="price">{formatPrice(productPrice)}원</span>
                   </>
                 ) : (
                   <>
-                    <span className="non_dscnt_price">{productPrice}</span>
+                    <span className="non_dscnt_price">{formatPrice(productPrice)}</span>
                   </>
                 )}
               </PriceWrap>
@@ -278,7 +279,7 @@ function ProductDetail() {
                             <span id="option_quantity">{option.quantity ? option.quantity : 1}</span>
                             <button id="plus_btn" onClick={() => plus(index)}></button>
                           </div>
-                          <span id="option_cal_price">{calEachPrice(index)}원</span>
+                          <span id="option_cal_price">{formatPrice(calEachPrice(index))}원</span>
                           <div id="remove_btn_box">
                             <button id="remove_btn" onClick={() => removeOption(index)}></button>
                           </div>
@@ -286,10 +287,10 @@ function ProductDetail() {
                       ))}
                     </ul>
                 </SelectedOptionBox>
-                <FlexBoxSB>
+                <div className="option_total_box">
                   <div>총 상품 금액</div>
-                  <div id="">{totalPrice}원</div>
-                </FlexBoxSB>
+                  <div id="option_total_price">{formatPrice(totalPrice)}원</div>
+                </div>
               </SelectBox> {/* select_box */}
 
               <BuyBtnWrap className="btn_wrap">
@@ -349,7 +350,6 @@ min-width: 1200px;
 `
 
 const CtgryWrap = styled.div`
-
   /* CtgryWrap의 first-child는 FlexBox컴포넌트 */
   div:first-child { 
     line-height: 20px;
@@ -378,9 +378,6 @@ const CtgryWrap = styled.div`
 `
 
 const ThumbWrap = styled.div`
-  // width: 50%;
-  // background-color: red;
-
   .main_img {
     width: 580px;
     height: 704px;
@@ -428,19 +425,20 @@ const PriceWrap = styled.div`
   /* 할인가 스타일 적용 */
   .dscnt_rate {
     font-size: 20px;
-    color: red;
+    font-weight: 600;
+    color: #F82A2A;
   }
 
   .dscnt_price {
-    font-size: 20px;
     margin: 0 8px;
+    font-size: 20px;
+    font-weight: 600;
   }
 
   .price {
     font-size: 14px;
     line-height: 20px;
-    text-decoration: line-through;
-    color: #aaa;
+    color: #ccc;
   }
 `
 
@@ -460,6 +458,18 @@ const SelectBox = styled.div`
       margin-bottom: 4px;
     }
   }
+
+  .option_total_box {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+
+    #option_total_price {
+      font-size: 20px;
+      color: #F82A2A;
+    }
+  }
+
 `
 
 const SelectedOptionBox = styled.div`
