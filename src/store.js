@@ -92,7 +92,7 @@ const categorySlice = createSlice({
       2: [
         {id: 21, name: 'T-SHIRTS', value: 4},
         {id: 22, name: 'SHIRTS', value: 5},
-        {id: 23, name: 'HOODIES&SWEATSHIRTS', value: 6},
+        {id: 23, name: 'HOODIES & SWEATSHIRTS', value: 6},
         {id: 24, name: 'KNITWEAR', value: 7},
       ],
       3: [
@@ -208,7 +208,7 @@ const cartSlice = createSlice({
         state.items.push(action.payload);
         console.log('addcart action.payload', action.payload);
 
-        window.alert('장바구니 등록 성공');
+        window.alert('장바구니에 상품이 담겼습니다.');
       })
       // 비동기 액션 rejected 상태
       .addCase(sendCartItems.rejected, (state, action) => {
