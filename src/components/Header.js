@@ -1,17 +1,25 @@
 import styled from "styled-components";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
+import { fetchCartList } from "../store";
+
 
   /* 카테고리 Link to에도 쿼리스트링으로 지정?! 아니면 라우터로 설정? */
   /* OUTER클릭하면 OUTER에 속한 모든 제품 보이게 하기 */
   
   
 function Header({ isLogin, setIsLogin, isAdmin }) {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const categories = useSelector(state => state.categories);
+  const cartItems = useSelector(state => state.cart.items);
+  const [cartCount, setCartCount] = useState(0);
+
 
   // 로그아웃 클릭하면 실행될 코드
   const onLogout = () => {
@@ -21,6 +29,15 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
     setIsLogin(false);
     navigate('/');
   }
+
+  // 무한 상태변경? ( 수정하기 )
+  // useEffect(() => {
+  //   // 장바구니 아이템의 수량이 변할 때마다 상태를 업데이트
+  //   if(isLogin) {
+  //     dispatch(fetchCartList());
+  //     // setCartCount(cartItems.length);
+  //   }
+  // }, [cartItems]);
 
   return(
     <HeaderWrap>
@@ -82,16 +99,27 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
               </SearchWrap> */}
 
               {
-              isLogin ? 
-                <>
-                  <LogoutLi onClick={onLogout}>Logout</LogoutLi>
-                  <MyPageLi><Link to="/myPage">MyPage</Link></MyPageLi>
-                </>
-                : 
-                <LoginLi><Link to="/login">Login</Link></LoginLi>
+                isLogin ? 
+                  <>
+                    <LogoutLi onClick={onLogout}>로그아웃</LogoutLi>
+                    <MyPageLi><Link to="/myPage">마이페이지</Link></MyPageLi>
+                  </>
+                  : 
+                  <LoginLi><Link to="/login">로그인</Link></LoginLi>
               }
 
-              <ShoppingBag><Link to="/cart"><SlBag /></Link></ShoppingBag>
+              <ShoppingBag>
+                <Link to="/cart">
+                  {
+                    isLogin && cartItems.length > 0 ?
+                      <span id="car_count">{cartCount}</span>
+                    :
+                      <></>
+                  }
+                  
+                  <SlBag />
+                </Link>
+              </ShoppingBag>
 
               <SearchWrap>
                 <div><input type="search"></input></div>
@@ -114,8 +142,8 @@ const HeaderWrap = styled.header`
   height: 100px;
   margin-bottom: 100px;
   padding: 0 10px;
-  border-bottom: 1px solid #000;
-  // background-color: yellow;
+  border-bottom: 1px solid #333;
+  z-index: 999;
 `
 
 const HeaderWrapFlex = styled(FlexBox)`
@@ -128,7 +156,7 @@ const HeaderWrapFlex = styled(FlexBox)`
 `
 
 const H1Wrap = styled.div`
-  margin-right: 64px;
+  margin-right: 40px;
 `
 
 const GnbUserWrap = styled.div`
@@ -145,13 +173,17 @@ const Gnb = styled.ul`
   justify-content: space-between;
 
   li {
-    min-width: 90px;
+    min-width: 80px;
     text-align: center;
+    // background: pink;
   }
 `
 
 const MouseOver = styled.li`
   position: relative;
+  line-height: 60px;
+  // background: pink;
+
 
   &:hover {
     font-weight: 600;
@@ -159,37 +191,38 @@ const MouseOver = styled.li`
 
   &:hover .lnb {
     display: block;
+    position: absolute;
+    top:100%;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 16px;
+    font-weight: 400;
+    background-color: #fff;
+    border: 1px solid #333;
   }
 `
 /* lnb 디자인.. 최선인가? */
 const Lnb = styled.ul `
   display: none;
-  position: absolute;
-  // padding-top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-weight: 400;
-  background-color: #fff;
-  border: 1px solid #000;
-  border-radius: 4px;
 `
 
 const LnbLi = styled.li`
-  width: 120px;
-  padding: 12px 10px;
+  width: 160px;
+  padding: 12px 20px;
   align-items: center;
   font-size: 14px;
   word-break: break-all;
-  // border-bottom: 1px solid #000;
+  border-bottom: 1px solid #333;
+  // background: yellow;
 
 
   &:hover {
     font-weight: 600;
   }
 
-  // &:last-child {
-  //   border-bottom: none;
-  // }
+  &:last-child {
+    border-bottom: none;
+  }
 `
 
 const UserWrap = styled.ul`
@@ -243,26 +276,51 @@ const SearchWrap = styled.li`
   }
 `
 const LoginLi = styled.li`
+  margin-left: 40px;
   margin-right: 20px;
+  font-size: 12px;
 `
 
 const LogoutLi = styled.li`
-  width: 100%;
+  width: 80px;
+  margin-left: 40px;
+  font-size: 12px;
+  text-align: center;
   cursor: pointer;
+  // background: pink;
 `
 
 const MyPageLi = styled.li`
-  width: 100%;
-  margin: 0 20px;
+  width: 80px;
+  // margin: 0 20px;
+  font-size: 12px;
+  text-align: center;
   cursor: pointer;
+  // background: yellowgreen;
+
 `
 
 /* 장바구니 아이콘 */
 const ShoppingBag = styled.li`
+  position: relative;
+
+  #car_count {
+    position:absolute;
+    top: -2px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    font-size: 10px;
+    text-align: center;
+    line-height: 12px;
+    color: #fff;
+    border-radius: 50%;
+    background-color: #F82A2A;
+  }
+
   svg {
-    width: 20px;
-    height: 32px;
-    
+    width: 18px;
+    height: auto;
   }
 `
 
