@@ -64,7 +64,10 @@ function Product() {
             <div><h2>{minorName}</h2></div>
           </>
           :
-          <div><h2>{majorName}</h2></div>
+          <>
+            <div>{majorName}</div>
+            <div><h2>{majorName}</h2></div>
+          </>
         }
       </CtgryWrap>
 
