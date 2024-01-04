@@ -14,7 +14,6 @@ import formatPrice from "../../src/utils/formatPrice";
 // 장바구니 중복 처리하기 ( )
 
 
-
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,7 +37,7 @@ function Cart() {
     setIsModalOpened(true);
   };
 
-  console.log('선택된 항목', checkedProducts);
+  console.log('선택된 항목cc', checkedProducts);
   
   // 체크박스 토글
   const handleCheckbox = (checked, cartNum) => {
@@ -113,9 +112,13 @@ function Cart() {
   }, [cartItems ,checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산합니다.
 
 
-
   // 주문하기 
   const handelOrder = async () => {
+    if(checkedProducts.length === 0) {
+      window.alert("상품을 선택해주세요.");
+      return;
+    }
+
     try {
       const pickCartRes = await axios.post('/pickCart', {
         cartNumber: checkedProducts,
@@ -289,23 +292,29 @@ function Cart() {
             <DeleteChkedBtn 
               type="submit" 
               onClick={handelRemoveCart}
+              disabled={checkedProducts.length > 0 ? false : true}
             >
               선택 삭제
             </DeleteChkedBtn>
           </div>
         </ProductSection>
 
-        <TotalPriceSection className="total_price_section">
-          <div className="total_box">
-            <div className="total_box_title">총 금액</div>
-            <div className="total_price">{formatPrice(total)}원</div>
-          </div>
-        </TotalPriceSection>
-        
-        <div className="order_btn_box">
-          <button id="order_btn" onClick={handelOrder}>주문하기</button>
-        </div>
-
+        {cartItems.length > 0 ?
+          <>
+            <TotalPriceSection className="total_price_section">
+              <div className="total_box">
+                <div className="total_box_title">총 주문금액</div>
+                <div className="total_price">{formatPrice(total)}원</div>
+              </div>
+            </TotalPriceSection>
+            
+            <div className="order_btn_box">
+              <button id="order_btn" onClick={handelOrder}>주문하기</button>
+            </div>
+          </>
+        :
+          <></>
+        }
       </Container>
     </CartWrap>
   )
@@ -474,9 +483,11 @@ const TotalPriceSection = styled.section`
   align-items: center;
   height: 120px;
   margin: 100px 0;
-  border-top: 1px solid #333;
+  border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  // background: #eee;
+  background-color: #f9f9f9;
+  // background-color: #eee;
+
 
   .total_box {
     display: flex;
@@ -486,6 +497,8 @@ const TotalPriceSection = styled.section`
   }
 
   .total_box_title {
+    font-size: 20px;
+    line-height: 32px;
     // height: 40px;
   }
 
