@@ -21,6 +21,21 @@ function MyPage() {
     })
   }, []);
 
+  const [orderList, setOrderList] = useState([]);
+  useEffect(() => {
+    axios.post('/afterPayList', {
+      userNumber: sessionStorage.getItem("userNumber"),
+    })
+    .then(res => {
+      setOrderList(res.data);
+      console.log('주문내역조회',res.data);
+
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }, [])
+
   // 사이드 탭메뉴
   const tabContent = data ? [
     {
@@ -44,10 +59,19 @@ function MyPage() {
     },
     {
       id: 2,
-      title: "장바구니",
+      title: "주문 내역 조회",
       content: (
         <div id="mp_info_content" className="content">
-          <h2>장바구니</h2>
+          <h2>주문 내역 조회</h2>
+          {orderList ? 
+            orderList.map(item => (
+              <div key={item.cartNumber}>
+                <div>{item.productName}</div>
+              </div>
+            ))
+          :
+            <>데이터 없음</>
+          }
           
         </div>
       )     
@@ -77,8 +101,6 @@ function MyPage() {
                   {tabContent.filter(item => index === item.id).map(item => (
                     <div key={index}>{item.content}</div>
                   ))}
-                  
-
                 </MyPageContents> 
               </FlexBox>
             </ConentBox>
