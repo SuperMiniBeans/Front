@@ -32,9 +32,36 @@ function Order() {
   const location = useLocation();
   const { pickedItems, totalPrice } = location.state;
   console.log('order.js pickedItems', pickedItems);
-  console.log('totalPrice', totalPrice)
-
+  console.log('totalPrice', totalPrice);
   const [userInfo, setUserInfo] = useState(null);
+  const cartNumbers = pickedItems.map(item => item.cartNumber);
+
+  // 결제완료된 상품 cartNumber보내기
+  const submitPayList = async () => {
+    try {
+      const res = await axios.post('/afterPay', {
+        // 카트넘버 배열에 담아서 보내기 
+        cartNumber: cartNumbers,
+      });
+      console.log('afterPay res', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 결제 완료된 상품은 cart에서 제거
+  const orderCompleteDelFromCart = async () => {
+    try {
+      const res = await axios.post('/deleteCart', {
+        cartNumber: cartNumbers,
+      });
+      console.log('afterPay res', res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // 사용자 정보 표시
   useEffect(() => {
     axios.post('/myPage', {
       userNumber: sessionStorage.getItem("userNumber"),
@@ -48,20 +75,7 @@ function Order() {
     })
   }, []);
 
-  // let allCartPrice; // 상위 스코프에서 allCartPrice 선언
-  // async function fetchCartPrice() {
-  //   try {
-  //     const response = await axios.post('/allCartPrice');
-  //     allCartPrice = response.data; // allCartPrice 업데이트
-  //   } catch (error) {
-  //     console.error('Error fetching cart price', error);
-  //     console.log('allCartPrice', allCartPrice);
-  //   }
-  // }
-  // fetchCartPrice();
-
-
-  /* 없어도 되는 부분인가? 나중에 실행해서 확인해보기 (여기부터) */
+  // import사용 설정
   useEffect(() => {
     const jquery = document.createElement("script");
     jquery.src = "http://code.jquery.com/jquery-1.12.4.min.js";
@@ -74,9 +88,8 @@ function Order() {
       document.head.removeChild(iamport);
     };
   }, []);
-  /* 없어도 되는 부분인가? 나중에 실행해서 확인해보기 (여기까지) */
 
-
+  // 결제하기 누르면 실행
   const requestPay = () => {
     const { IMP } = window;
     IMP.init('imp28217053');
@@ -99,8 +112,11 @@ function Order() {
         // data: 서버에서 보내준 결과를 data라는 변수에 담는 것/ 서버 주소 뒤의 res.imp_uid는 결제 검증을 위해 요청 url에 보내는 값/ imp_uid는 아임포트 결제 후에 반환되는 response객체 내부에 있는 속성으로 아임포트에서 결제 완료 시 자동으로 생성되는 고유한 결제 ID
         console.log('data', data);
         
-        if (res.paid_amount === data.response.amount) { // 요청 결제 금액이 서버에서 반환하는 금액과 같으면 결제성공!/ data.response.amount에서 amount는 서버 코드에 작성된 변수에 맞추기
+        if (res.paid_amount === data.response.amount) {
           alert('결제 성공');
+          submitPayList();
+          orderCompleteDelFromCart();
+
         } else {
           alert('결제가 취소되었습니다.');
           console.log('data', data);
@@ -111,7 +127,6 @@ function Order() {
       }
     });
   }
-
 
   return(
     <OrderWrap>
@@ -201,10 +216,16 @@ function Order() {
             </OrderItemsTable>
         </section>
 
-        <section className="payment-section">
+        <section className="payment_section">
           <h3>결제 정보</h3>
+
           <div>
-            <button onClick={requestPay}>결제하기</button>
+            <ul className="payment_method">
+              <li className="payment_method_tit">결제 수단</li>
+              <li>
+                <button id="kakaopay" onClick={requestPay}>카카오 페이</button>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -235,6 +256,27 @@ const OrderWrap = styled.div`
     font-size: 20px;
     font-weight: 600;
     border-bottom: 2px solid #333;
+  }
+
+  .payment_section {
+
+    .payment_method {
+      display: flex;
+
+      .payment_method_tit {
+        width: 120px;
+        font-weight: 600;
+      }
+
+      #kakaopay {
+        width: 120px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #fff;
+        cursor: pointer;
+      }
+    }
   }
 `
 
