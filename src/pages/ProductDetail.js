@@ -197,21 +197,24 @@ function ProductDetail() {
   return(
     <ProductDetailWrap>
       <Container>
-      <CtgryWrap>
-        {
-          minorName ? 
-          <>
-            <FlexBox>
-            <div>{majorName}</div>
-            <span></span>
-            <div>{minorName}</div>
-            </FlexBox>
-            <div><h2>{minorName}</h2></div>
-          </>
-          :
-          <div><h2>{majorName}</h2></div>
-        }
-      </CtgryWrap>
+        <CtgryWrap>
+          {
+            minorName ? 
+            <>
+              <FlexBox>
+                <div>{majorName}</div>
+                <span></span>
+                <div>{minorName}</div>
+              </FlexBox>
+              <div><h2>{minorName}</h2></div>
+            </>
+            :
+            <>
+              <div>{majorName}</div>
+              <div><h2>{majorName}</h2></div>
+            </>
+          }
+        </CtgryWrap>
 
         <FlexBox>
           <div className="left">
