@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BtnBg } from "../styles/ButtonStyle";
 import { FlexBox } from "../styles/Layout";
-import Post from "../components/Post";
+import PostCodeModal from "../components/PostCodeModal";
 
 function Join() {
   const navigate = useNavigate();
@@ -340,7 +340,7 @@ function Join() {
               <PostcodeInput type="number" name="userAddressNumber" value={enroll_company.postcode} placeholder="우편번호를 검색하세요" onChange={handleInput} readOnly></PostcodeInput>
               <AdrSearchBtn onClick={handleComplete}>우편번호 검색</AdrSearchBtn>
             </FlexBox>
-            {popup && <Post company={enroll_company} setcompany={setEnroll_company}></Post>}
+            {popup && <PostCodeModal company={enroll_company} setcompany={setEnroll_company}></PostCodeModal>}
           </div>
         </ItemWrap>
 

@@ -3,27 +3,28 @@ import styled from "styled-components";
 
 import { Routes, Route, useParams } from "react-router-dom";
 
-import Home from "../pages/Home";
+// import Home from "../pages/Home";
 
-import Login from "../pages/Login";
-import ResetPwIdChk from "../pages/ResetPwIdChk";
-import ResetPwEmailChk from "../pages/ResetPwEmailChk";
-import ResetPw from "../pages/ResetPw";
-import SearchId from "../pages/SearchId";
-import Join from "../pages/Join";
-import JoinComplete from "../pages/JoinComplete";
+// import Login from "../pages/Login";
+// import ResetPwIdChk from "../pages/ResetPwIdChk";
+// import ResetPwEmailChk from "../pages/ResetPwEmailChk";
+// import ResetPw from "../pages/ResetPw";
+// import SearchId from "../pages/SearchId";
+// import Join from "../pages/Join";
+// import JoinComplete from "../pages/JoinComplete";
 
-import MyPage from "../pages/MyPage";
-import Admin from "../pages/Admin";
+// import MyPage from "../pages/MyPage";
+// import Admin from "../pages/Admin";
 
-import Product from "../pages/Product";
-import ProductDetail from "../pages/ProductDetail";
+// import Product from "../pages/Product";
+// import ProductDetail from "../pages/ProductDetail";
 
-import AddProduct from "../pages/AddProduct";
-import UpdateProduct from "../pages/UpdateProduct";
+// import AddProduct from "../pages/AddProduct";
+// import UpdateProduct from "../pages/UpdateProduct";
 
-import Cart from "../pages/Cart";
-import Order from "../pages/Order";
+// import Cart from "../pages/Cart";
+// import Order from "../pages/Order";
+// import OrderComplete from "../pages/OrderComplete";
 
 // 로그인한 사용자만 볼 수 있는 페이지는 redirect to='/login'처리하기( )
 
@@ -33,7 +34,8 @@ function Main() {
 
   return (
     <MainWrap>
-      <Routes>
+      {/* <Routes>
+        <Route path='/order/complete' element={<OrderComplete />} />
         <Route path='/order' element={<Order />} />
         <Route path='/cart' element={<Cart />} />
 
@@ -43,27 +45,8 @@ function Main() {
 
         <Route path='/myPage' element={<MyPage />} />
 
-        {/* <Route 
-          path='/product/list/*' 
-          element={
-            <Product 
-              category={category} 
-              onMajorCategoryClick={onMajorCategoryClick}
-              onMinorCategoryClick={onMinorCategoryClick} 
-              cateProduct={cateProduct}
-            />
-          } 
-        /> */}
-
         <Route 
-          path='/product/list/:majorName/:minorName?' 
-          element={
-            <Product 
-              // cateProduct={cateProduct}
-              // onCategoryClick={onCategoryClick}
-            />
-          } 
-        />
+          path='/product/list/:majorName/:minorName?' element={<Product />} />
         <Route path='/product/list/detail/:id' element={<ProductDetail />} />
 
         <Route path='/join/joincomplete' element={<JoinComplete />} />
@@ -76,15 +59,14 @@ function Main() {
         <Route path='/login' element={<Login />} />
 
         <Route exact path='/' element={<Home />} />
-      </Routes>
+      </Routes> */}
     </MainWrap>
   );
 }
 
 const MainWrap = styled.section `
-  // margin-bottom: 600px;
-  // background-color: #ccc;
-
+  // padding: 100px 0;
+  background: pink;
 `
 
 export default Main;

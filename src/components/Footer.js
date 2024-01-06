@@ -46,7 +46,7 @@ const FooterWrap = styled.footer`
   width: 100%;
   min-width: 1200px;
   height: 360px;
-  margin-top: 160px;
+  // margin-top: 160px;
   bottom: 0;
   align-items: center;
   background-color: #000;

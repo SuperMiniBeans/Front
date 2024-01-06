@@ -242,7 +242,7 @@ function ProductDetail() {
                   </>
                 ) : (
                   <>
-                    <span className="non_dscnt_price">{formatPrice(productPrice)}</span>
+                    <span className="non_dscnt_price">{formatPrice(productPrice)}원</span>
                   </>
                 )}
               </PriceWrap>

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { FlexBoxCol } from "../styles/Layout";
-import { Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import formatPrice from "../utils/formatPrice";
 
 function ProductList({ products }) {
 
@@ -12,7 +13,10 @@ function ProductList({ products }) {
 
           <ImgWrap>
             <Link to={`/product/list/detail/${products.productNumber}`}>
-              <img src={`/upload/${products.fileUploadPath}/${products.fileUuid}_${products.fileName}`} alt={products.productName} />
+              <img 
+                src={`/upload/${products.fileUploadPath}/${products.fileUuid}_${products.fileName}`} 
+                alt={products.productName} 
+              />
             </Link>
           </ImgWrap>
 
@@ -25,13 +29,13 @@ function ProductList({ products }) {
           <PriceWrap>
                 {products.discountRate > 0 ? (
                   <>
-                    <span className="dscnt_rate">{products.discountRate}%</span>
-                    <span className="dscnt_price">{products.discountPrice}</span>
-                    <span className="price">{products.productPrice}</span>
+                    <span className="dscnt_rate">{formatPrice(products.discountRate)}%</span>
+                    <span className="dscnt_price">{formatPrice(products.discountPrice)}원</span>
+                    <span className="price">{formatPrice(products.productPrice)}원</span>
                   </>
                 ) : (
                   <>
-                    <span className="non_dscnt_price">{products.productPrice}</span>
+                    <span className="non_dscnt_price">{formatPrice(products.productPrice)}원</span>
                   </>
                 )}
               </PriceWrap>
@@ -63,7 +67,7 @@ const Title = styled.div`
 const PriceWrap = styled.div`
   position: relative;
   display: flex;
-  margin-bottom: 120px;
+  margin-bottom: 40px;
 
   .non_dscnt_price {
     line-height: 20px;
@@ -73,19 +77,20 @@ const PriceWrap = styled.div`
   /* 할인가 스타일 적용 */
   .dscnt_rate {
     font-size: 20px;
-    color: red;
+    font-weight: 600;
+    color: #F82A2A;
   }
 
   .dscnt_price {
-    font-size: 20px;
     margin: 0 8px;
+    font-size: 20px;
+    font-weight: 600;
   }
 
   .price {
     font-size: 14px;
     line-height: 20px;
-    text-decoration: line-through;
-    color: #aaa;
+    color: #ccc;
   }
 `
 
