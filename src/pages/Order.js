@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import MyInfo from "../components/MyInfo";
 import { useDispatch } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { useNavigate ,Link, useLocation } from "react-router-dom";
 
 // 디자인 레퍼런스 다시 찾아서 해보기( )
 
@@ -28,7 +28,7 @@ import { Link, useLocation } from "react-router-dom";
 
 
 function Order() {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const { pickedItems, totalPrice } = location.state;
   console.log('order.js pickedItems', pickedItems);
@@ -116,6 +116,7 @@ function Order() {
           alert('결제 성공');
           submitPayList();
           orderCompleteDelFromCart();
+          navigate('/order/complete');
 
         } else {
           alert('결제가 취소되었습니다.');
