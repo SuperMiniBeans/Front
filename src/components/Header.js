@@ -140,10 +140,9 @@ const HeaderWrap = styled.header`
   width: 100%;
   min-width: 1200px;
   height: 100px;
-  margin-bottom: 100px;
   padding: 0 10px;
   border-bottom: 1px solid #333;
-  z-index: 999;
+  z-index: 10;
 `
 
 const HeaderWrapFlex = styled(FlexBox)`
@@ -152,7 +151,6 @@ const HeaderWrapFlex = styled(FlexBox)`
   transform: translateY(-30px);
   height: 60px;
   align-items: center;
-  // background-color: skyblue;
 `
 
 const H1Wrap = styled.div`
