@@ -3,7 +3,7 @@ import { Container, FlexBox } from "../styles/Layout";
 import { BtnBorder } from "../styles/ButtonStyle";
 
 import { useState, useEffect } from "react";
-import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import CartOptionChangeModal from "../components/CartOptionChangeModal";
@@ -61,7 +61,12 @@ function Cart() {
 
   // '삭제하기'클릭
   const handleRemoveEachCart = (id) => {
-    window.alert("상품을 삭제하시겠습니까?");
+    const confirmResult = window.confirm("상품을 삭제하시겠습니까?");
+
+    if (!confirmResult) {
+      return;
+    }
+
     const clickRemove = [...checkedProducts, id];
     setCheckedProducts(clickRemove);
 
@@ -81,7 +86,11 @@ function Cart() {
 
   // '선택삭제' 클릭
   const handelRemoveCart = () => {
-    window.alert("상품을 삭제하시겠습니까?");
+    const confirmResult = window.confirm("상품을 삭제하시겠습니까?");
+
+    if (!confirmResult) {
+      return;
+    }
 
     axios.post('/deleteCart', {
       cartNumber: checkedProducts,
@@ -96,6 +105,7 @@ function Cart() {
       .catch(error => {
         console.log(error);
       });
+      
     window.alert("장바구니에서 삭제되었습니다.");
   }
 
@@ -124,6 +134,28 @@ function Cart() {
         cartNumber: checkedProducts,
       });
       console.log('pickCart', pickCartRes.data);
+  
+      const allCartPriceRes = await axios.post('/allCartPrice', {
+        cartNumber: checkedProducts,
+      });
+      console.log('allCartPrice', allCartPriceRes.data);
+  
+      navigate('/order', {
+        state: { 
+          pickedItems: pickCartRes.data, 
+          totalPrice: allCartPriceRes.data.discountTotalPrice,
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handelOrderEach = async () => {
+    try {
+      const pickCartRes = await axios.post('/pickCart', {
+        cartNumber: checkedProducts,
+      });
   
       const allCartPriceRes = await axios.post('/allCartPrice', {
         cartNumber: checkedProducts,
@@ -257,12 +289,12 @@ function Cart() {
                       }
                     </td>
 
-                    <td>
+                    <td className="cart_table_btn_wrap">
                       <div>
-                        <button id="each_order_btn">주문하기</button>
+                        <button id="click_order_btn" onClick={handelOrderEach}>주문하기</button>
                       </div>
                       <div>
-                        <button>찜</button>
+                        <button id="click_whish">찜</button>
                       </div>
                       <div>
                         <button 
@@ -444,6 +476,29 @@ const ProductSection = styled.section`
     }
   }
 
+  .cart_table_btn_wrap {
+
+    div:nth-child(2) > button {
+      margin: 4px 0;
+    }
+
+    button {
+      padding: 4px 8px;
+      font-size: 12px;
+      color: #666;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      background: none;
+      cursor: pointer;
+    }
+
+    #click_order_btn {
+      color: #fff;
+      background: #333;
+      border: 1px solid #333;
+    }
+  }
+
 `
 
 const PriceWrap = styled.div`
@@ -475,6 +530,14 @@ const DeleteChkedBtn = styled(BtnBorder)`
   height: 32px;
   margin-top: 10px;
   font-size: 14px;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  &:disabled {
+    color: #ccc;
+    cursor: default;
+  }
 `
 
 const TotalPriceSection = styled.section`
