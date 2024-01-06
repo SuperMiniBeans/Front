@@ -1,15 +1,41 @@
+import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import GlobalStyle from './styles/GlobalStyle';
 import Header from './components/Header';
 import Main from './components/Main';
 import Footer from './components/Footer';
 import axios from 'axios';
+import { Routes, Route, useParams } from "react-router-dom";
+
+import Home from "./pages/Home";
+
+import Login from './pages/Login';
+import ResetPwIdChk from "./pages/ResetPwIdChk";
+import ResetPwEmailChk from "./pages/ResetPwEmailChk";
+import ResetPw from "./pages/ResetPw";
+import SearchId from "./pages/SearchId";
+import Join from "./pages/Join";
+import JoinComplete from "./pages/JoinComplete";
+
+import MyPage from "./pages/MyPage";
+import Admin from "./pages/Admin";
+
+import Product from "./pages/Product";
+import ProductDetail from "./pages/ProductDetail";
+
+import AddProduct from "./pages/AddProduct";
+import UpdateProduct from "./pages/UpdateProduct";
+
+import Cart from "./pages/Cart";
+import Order from "./pages/Order";
+import OrderComplete from "./pages/OrderComplete"; 
 
 
 function App() {
+  const [isLogin, setIsLogin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // 사용자 로그인 상태관리
-  const [isLogin, setIsLogin] = useState(false);
   useEffect(() => {
     if(sessionStorage.getItem("아이디") === null) {
       console.log('isLogin?', isLogin);
@@ -20,7 +46,6 @@ function App() {
   }, []);
 
   // 관리자 로그인 상태관리
-  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     if(sessionStorage.getItem("아이디") !== 'admin') {
       console.log('isAdmin?', isAdmin);
@@ -78,13 +103,47 @@ function App() {
         isAdmin={isAdmin} setIsAdmin={setIsAdmin}
         // onCategoryClick={handleCategoryClick}
       />
-      <Main 
+
+      {/* 라우터 경로 설정 */}
+      <MainContentWrap>
+        <Routes>
+          <Route path='/order/complete' element={<OrderComplete />} />
+          <Route path='/order' element={<Order />} />
+          <Route path='/cart' element={<Cart />} />
+
+          <Route exact path='/admin/*' element={<Admin />} />
+          <Route path='/admin/add' element={<AddProduct />} />
+          <Route path='/admin/products/:id/edit' element={<UpdateProduct />} />
+
+          <Route path='/myPage' element={<MyPage />} />
+
+          <Route path='/product/list/:majorName/:minorName?' element={<Product />} />
+          <Route path='/product/list/detail/:id' element={<ProductDetail />} />
+
+          <Route path='/join/joincomplete' element={<JoinComplete />} />
+          <Route path='/join' element={<Join />} />
+
+          <Route path='/search/id' element={<SearchId />} />
+          <Route path='/search/check/pw' element={<ResetPw />} />
+          <Route path='/search/check/email' element={<ResetPwEmailChk />} />
+          <Route path='/search/check/id' element={<ResetPwIdChk />} />
+          <Route path='/login' element={<Login />} />
+
+          <Route exact path='/' element={<Home />} />
+        </Routes>
+      </MainContentWrap>
+
+      {/* <Main 
         // onCategoryClick={handleCategoryClick}
         // cateProduct={cateProduct}
-      />
+      /> */}
       <Footer />
     </div>
   );
 }
+
+const MainContentWrap = styled.body`
+  padding: 40px 0 100px;
+`
 
 export default App;
