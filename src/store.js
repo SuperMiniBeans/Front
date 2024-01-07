@@ -218,6 +218,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCartList.fulfilled, (state, action) => {
         state.items = action.payload;
+        state.cartCount = action.payload.length;
       });
   },
 });
