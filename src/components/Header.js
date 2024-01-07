@@ -5,21 +5,14 @@ import { Container, FlexBox } from "../styles/Layout";
 import { GoSearch } from "react-icons/go"
 import { SlBag } from "react-icons/sl"
 import { useDispatch, useSelector } from "react-redux";
-
 import { fetchCartList } from "../store";
-
-
-  /* 카테고리 Link to에도 쿼리스트링으로 지정?! 아니면 라우터로 설정? */
-  /* OUTER클릭하면 OUTER에 속한 모든 제품 보이게 하기 */
-  
   
 function Header({ isLogin, setIsLogin, isAdmin }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const categories = useSelector(state => state.categories);
   const cartItems = useSelector(state => state.cart.items);
-  const [cartCount, setCartCount] = useState(0);
-
+  const cartCount = useSelector(state => state.cart.cartCount);
 
   // 로그아웃 클릭하면 실행될 코드
   const onLogout = () => {
@@ -30,14 +23,12 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
     navigate('/');
   }
 
-  // 무한 상태변경? ( 수정하기 )
-  // useEffect(() => {
-  //   // 장바구니 아이템의 수량이 변할 때마다 상태를 업데이트
-  //   if(isLogin) {
-  //     dispatch(fetchCartList());
-  //     // setCartCount(cartItems.length);
-  //   }
-  // }, [cartItems]);
+  // 장바구니에 담긴 상품 수량 표시하기
+  useEffect(() => {
+    if(isLogin) {
+      dispatch(fetchCartList());
+    }
+  }, [isLogin]);
 
   return(
     <HeaderWrap>
@@ -173,15 +164,12 @@ const Gnb = styled.ul`
   li {
     min-width: 80px;
     text-align: center;
-    // background: pink;
   }
 `
 
 const MouseOver = styled.li`
   position: relative;
   line-height: 60px;
-  // background: pink;
-
 
   &:hover {
     font-weight: 600;
@@ -211,8 +199,6 @@ const LnbLi = styled.li`
   font-size: 14px;
   word-break: break-all;
   border-bottom: 1px solid #333;
-  // background: yellow;
-
 
   &:hover {
     font-weight: 600;
@@ -294,8 +280,6 @@ const MyPageLi = styled.li`
   font-size: 12px;
   text-align: center;
   cursor: pointer;
-  // background: yellowgreen;
-
 `
 
 /* 장바구니 아이콘 */
