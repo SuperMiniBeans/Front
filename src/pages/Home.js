@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Carousel from "../components/Carousel";
 
 function Home() {
+  // 배너 이미지
   const images = [
     require('../img/home_banner_img1.jpg'),
     require('../img/home_banner_img2.jpg'),
@@ -28,9 +29,32 @@ function Home() {
         <TrendSection>
           <h2>기획전</h2>
           <div className="content_wrap">
-            <div><img src={require("../img/home_banner_img1.jpg")} alt="" /></div>
-            <div><img src={require("../img/home_banner_img1.jpg")} alt="" /></div>
-            <div><img src={require("../img/home_banner_img1.jpg")} alt="" /></div>
+            <div className="content_box">
+              <img src={require("../img/home_banner_img1.jpg")} alt="" />
+              <div className="square"></div>
+              <div className="content_title">
+                <span>New In Shop</span>
+                <span>Winter 2023</span>
+              </div>
+            </div>
+
+            <div className="content_box">
+              <img src={require("../img/home_banner_img1.jpg")} alt="" />
+              <div className="square"></div>
+              <div className="content_title">
+                <span>New In Shop</span>
+                <span>Winter 2023</span>
+              </div>
+            </div>
+
+            <div className="content_box">
+              <img src={require("../img/home_banner_img1.jpg")} alt="" />
+              <div className="square"></div>
+              <div className="content_title">
+                <span>New In Shop</span>
+                <span>Winter 2023</span>
+              </div>
+            </div>
           </div>
         </TrendSection>
 
@@ -65,32 +89,70 @@ const ImgBannerSection = styled.section`
 `
 
 const TrendSection = styled.section`  
-  margin-bottom: 80px;
+  margin: 120px 0;
 
   h2 {
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 24px;
   }
 
   .content_wrap {
+    position:relative;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 20px;
     width: 1180px;
     height: 380px;
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .content_box {
+      position:relative;
+      cursor: pointer;
+
+      .square {
+        position: absolute;
+        top:0;
+        width: 100%;
+        height: 100%;
+        transition: all 0.5s ease-in-out;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
+  
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .content_title {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #fff;
+
+        span {
+          display: block;
+
+          &:first-child {
+            font-size: 24px;
+            margin-bottom: 10px;
+
+          }
+        }
+      }
     }
+
   }
 `
 
 const BestItemSection = styled.section`
   h2 {
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 24px;
   }
 
   .best_item_wrap {
