@@ -142,8 +142,8 @@ function App() {
   );
 }
 
-const MainContentWrap = styled.body`
-  padding: 40px 0 100px;
+const MainContentWrap = styled.div`
+  padding: 40px 0 200px;
 `
 
 export default App;
