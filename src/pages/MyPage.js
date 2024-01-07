@@ -3,6 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import MyInfo from "../components/MyInfo";
+import CheckOrderList from "../components/CheckOrderList";
 
 
 function MyPage() {
@@ -21,20 +22,20 @@ function MyPage() {
     })
   }, []);
 
-  const [orderList, setOrderList] = useState([]);
-  useEffect(() => {
-    axios.post('/afterPayList', {
-      userNumber: sessionStorage.getItem("userNumber"),
-    })
-    .then(res => {
-      setOrderList(res.data);
-      console.log('주문내역조회',res.data);
+  // const [orderList, setOrderList] = useState([]);
+  // useEffect(() => {
 
-    })
-    .catch(error => {
-      console.log(error);
-    })
-  }, [])
+  //   axios.post('/afterPayList', {
+  //     userNumber: sessionStorage.getItem("userNumber"),
+  //   })
+  //   .then(res => {
+  //     setOrderList(res.data);
+  //     console.log('주문내역조회',res.data);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   })
+  // }, []);
 
   // 사이드 탭메뉴
   const tabContent = data ? [
@@ -63,15 +64,8 @@ function MyPage() {
       content: (
         <div id="mp_info_content" className="content">
           <h2>주문 내역 조회</h2>
-          {orderList ? 
-            orderList.map(item => (
-              <div key={item.cartNumber}>
-                <div>{item.productName}</div>
-              </div>
-            ))
-          :
-            <>데이터 없음</>
-          }
+          <CheckOrderList />
+
           
         </div>
       )     
