@@ -73,7 +73,7 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
     <ModalWrapper className={`${isModalOpened ? "open" : "close"}`}>
       <ModalBackGround>
         <div className="modal_content">
-          <h3>옵션 변경</h3>
+          <h2>옵션 변경</h2>
           <div className="close_modal_box"><button id="colse_modal_btn" onClick={closeModal}></button></div>
         
 
@@ -102,26 +102,23 @@ function CartOptionChangeModal({ isModalOpened, closeModal, items }) {
                 </option>
               ))}
             </select>
-
-            {/* 수량 변경 */}
-            <div className="handle_quantity_box">
-              <button id="minus_btn" onClick={minus}>-</button>
-              <span id="option_quantity">{newQuantity}</span>
-              <button id="plus_btn" onClick={plus}>+</button>
-            </div>
-
-            <FlexBox>
-              <button onClick={closeModal}>취소</button>
-              <button onClick={updateCartOption}>적용</button>
-            </FlexBox>
-
           </SelectBox> {/* select_box */}
 
-          
+        
+          {/* 수량 변경 */}
+          <QuantityBox className="handle_quantity_box">
+            <button id="minus_btn" onClick={minus}></button>
+            <span id="option_quantity">{newQuantity}</span>
+            <button id="plus_btn" onClick={plus}></button>
+          </QuantityBox>
+
+          <ModalBtnBox>
+            <button onClick={closeModal}>취소</button>
+            <button onClick={updateCartOption}>적용</button>
+          </ModalBtnBox>
         </div>
         
       </ModalBackGround>
-    
     </ModalWrapper>
   )
 }
@@ -146,6 +143,9 @@ const ModalBackGround = styled.div`
   background-color: rgba(51, 51, 51, 0.4);
 
   .modal_content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: absolute; 
     top: 50%;
     left: 50%;
@@ -156,21 +156,21 @@ const ModalBackGround = styled.div`
     margin: 0 auto;
     background-color: #fff;
 
-    h3 {
-      font-size: 24px;
+    h2 {
       margin-bottom: 20px;
-      background-color: #eee;
-
+      text-align: left;
+      font-weight: 400;
+      // background-color: #eee;
     }
   }
 
   .close_modal_box {
     position: absolute;
-    top: 16px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     width: 32px;
     height: 32px;
-    background: pink;
+    // background: pink;
   }
 
   #colse_modal_btn {
@@ -199,24 +199,18 @@ const ModalBackGround = styled.div`
     &:after {
       transform: rotate(-45deg);
     }
-
-
-
-
-
   }
 `
 
-
 const SelectBox = styled.div`
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  // background: skyblue;
 
   select {
-    width: 360px;
+    width: 100%;
     height: 40px;
-    margin-bottom: 10px;
     padding: 0 10px;
-    font-size: 12px;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: none;
 
@@ -224,75 +218,97 @@ const SelectBox = styled.div`
       margin-bottom: 4px;
     }
   }
-
 `
 
-const SelectedOptionBox = styled.div`
+const QuantityBox = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 400px;
-  height: auto;
-  font-size: 14px;
+  align-items:center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  // background-color: #eee;
 
-  ul {
-    
-    li {
-      display: flex;
-      align-items: centery;
-      width: 400px;
-      height: 40px;
-      padding-left: 10px;
-      // border-bottom: 1px solid #ccc;
-      background-color: orange;
-      margin-bottom: 4px;
 
-      #minus_btn,
-      #plus_btn,
-      #remove_btn {
-        width: 20px;
-        height: 20px;
-        border-radius: none;
-        cursor: pointer;
-      }
+  button {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    background: none;
+    cursor: pointer;
 
-      #option_text {
-        display: flex;
-        align-items: center;
-        width: 200px;
-        background-color: yellow;
+    &:hover {
+      background-color: #eee;
+      transition: all 0.3s;
+    }
+  }
 
-      }
+  #minus_btn {
+    &:before {
+      position: absolute;
+      top:50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 1px;
+      content: '';
+      background: #333;
+    }
+  }
 
-      #minus_btn {
-        // margin-left: 120px;
-      }
+  #option_quantity {
+    width: 40px;
+    text-align: center;
+    // background: pink;
+  }
 
-      #option_quantity {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-      }
+  #plus_btn {
+    &:before,
+    &:after {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 1px;
+      content: '';
+      background: #333;
+    }
 
-      #plus_btn {
-        // margin-right: 80px;
-      }
+    &:before {
+      transform: translate(-50%, -50%);
+    }
 
-      #option_cal_price {
-        display: flex;
-        align-items: center;
-      }
-
-      #remove_btn {
-        margin-left: 20px;
-        right: 0;
-        border: none;
-        background: none;
-      }
+    &:after {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
     }
   }
 `
 
+const ModalBtnBox = styled.div`
+  display: flex;
+  justify-content: space-between;
 
+  button {
+    flex: 1;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+
+    &:first-child {
+      margin-right: 10px;
+      border: 1px solid #aaa;
+      background-color: #fff;
+    }
+
+    &:last-child {
+      color: #fff;
+      background-color: #333;
+    }
+  }
+`
 
 export default CartOptionChangeModal;
