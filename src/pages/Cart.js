@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import { BtnBorder } from "../styles/ButtonStyle";
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,16 +9,13 @@ import CartOptionChangeModal from "../components/CartOptionChangeModal";
 import { removeFromCart, fetchCartList } from "../store";
 import formatPrice from "../../src/utils/formatPrice";
 
-
-// 장바구니 중복 처리하기 ( )
-
-
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
   const [checkedProducts, setCheckedProducts] = useState([]);
   const [total, setTotal] = useState(0);
+  const [editItemSelect, setEditItemSelect] = useState(null);
 
   // 옵션 수정 모달
   const [isModalOpened, setIsModalOpened] = useState(false);
@@ -31,7 +27,6 @@ function Cart() {
   }, [dispatch]);
 
   // 수정하기 버튼 클릭
-  const [editItemSelect, setEditItemSelect] = useState(null);
   const handleEditClick = (cartItems) => {
     setEditItemSelect(cartItems);
     setIsModalOpened(true);
@@ -109,20 +104,7 @@ function Cart() {
     window.alert("장바구니에서 삭제되었습니다.");
   }
 
-  // 주문 할 상품의 총 금액
-  console.log('cartItems', cartItems);
-  useEffect(() => {
-    // 선택한 상품의 총 금액을 계산합니다.
-    const sumPrice = checkedProducts.reduce((sum, cart_num) => {
-      const product = cartItems.find(product => product.cartNumber === cart_num);
-      const finalPrice = product.discountRate > 0 ? product.discountPrice : product.productPrice;
-      return sum + finalPrice * product.totalCount
-    }, 0);
-    setTotal(sumPrice);
-  }, [cartItems ,checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산합니다.
-
-
-  // 주문하기 
+  // 체크한 상품 주문하기
   const handelOrder = async () => {
     if(checkedProducts.length === 0) {
       window.alert("상품을 선택해주세요.");
@@ -151,14 +133,18 @@ function Cart() {
     }
   }
 
-  const handelOrderEach = async () => {
+  // 개별 상품 주문하기 
+  const handelOrderEach = async (id) => {
+    const clickOrderEach = [...checkedProducts, id];
+    setCheckedProducts(clickOrderEach);
+
     try {
       const pickCartRes = await axios.post('/pickCart', {
-        cartNumber: checkedProducts,
+        cartNumber: clickOrderEach,
       });
   
       const allCartPriceRes = await axios.post('/allCartPrice', {
-        cartNumber: checkedProducts,
+        cartNumber: clickOrderEach,
       });
       console.log('allCartPrice', allCartPriceRes.data);
   
@@ -171,7 +157,30 @@ function Cart() {
     } catch (error) {
       console.log(error);
     }
+    console.log('checkedProducts', checkedProducts)
   }
+
+  // 모달 밖에서 스크롤 금지
+  useEffect(() => {
+    if(isModalOpened) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "auto";
+    }
+  });
+
+  // 주문 할 상품의 총 금액
+  console.log('cartItems', cartItems);
+  useEffect(() => {
+    // 선택한 상품의 총 금액을 계산합니다.
+    const sumPrice = checkedProducts.reduce((sum, cart_num) => {
+      const product = cartItems.find(product => product.cartNumber === cart_num);
+      const finalPrice = product.discountRate > 0 ? product.discountPrice : product.productPrice;
+      return sum + finalPrice * product.totalCount
+    }, 0);
+    setTotal(sumPrice);
+  }, [cartItems ,checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산합니다.
+  
 
   return(
     <CartWrap>
@@ -185,10 +194,11 @@ function Cart() {
               <tr>
                 <th scope="col" id="cart_list_total_count">전체 {cartItems.length}개</th>
                 <th scope="col" id="cart_list_chk">
-                  <input type="checkbox" 
-                          onChange={e => handleAllCheck(e.target.checked)} 
-                          checked={cartItems.length > 0 && checkedProducts.length === cartItems.length ? true : false}
-                          disabled={cartItems.length < 1 ? true : false}
+                  <input 
+                    type="checkbox" 
+                    onChange={e => handleAllCheck(e.target.checked)} 
+                    checked={cartItems.length > 0 && checkedProducts.length === cartItems.length ? true : false}
+                    disabled={cartItems.length < 1 ? true : false}
                   />
                 </th>
                 <th scope="col" id="cart_list_info">상품 정보</th>
@@ -291,7 +301,7 @@ function Cart() {
 
                     <td className="cart_table_btn_wrap">
                       <div>
-                        <button id="click_order_btn" onClick={handelOrderEach}>주문하기</button>
+                        <button id="click_order_btn" onClick={() => handelOrderEach(items.cartNumber)}>주문하기</button>
                       </div>
                       <div>
                         <button id="click_whish">찜</button>

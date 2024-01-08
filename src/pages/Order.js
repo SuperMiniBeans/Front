@@ -43,7 +43,7 @@ function Order() {
         // 카트넘버 배열에 담아서 보내기 
         cartNumber: cartNumbers,
       });
-      console.log('afterPay res', res.data);
+      console.log('결제 완료 후 카트넘버 보내기 /afterPay res', res.data);
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +55,7 @@ function Order() {
       const res = await axios.post('/deleteCart', {
         cartNumber: cartNumbers,
       });
-      console.log('afterPay res', res.data);
+      console.log('결제 완료 후 장바구니에서 삭제 /deleteCart res', res.data);
     } catch (error) {
       console.log(error);
     }
@@ -113,11 +113,18 @@ function Order() {
         console.log('data', data);
         
         if (res.paid_amount === data.response.amount) {
-          alert('결제 성공');
-          submitPayList();
-          orderCompleteDelFromCart();
-          navigate('/order/complete');
+          alert('주문이 완료되었습니다.');
+          // submitPayList();
+          // orderCompleteDelFromCart();
+          // navigate('/order/complete');
 
+          Promise.all([submitPayList(), orderCompleteDelFromCart()])
+            .then(() => {
+              navigate('/order/complete');
+            })
+            .catch(error => {
+              console.error('결제 완료 처리 중 오류 발생:', error);
+            });
         } else {
           alert('결제가 취소되었습니다.');
           console.log('data', data);

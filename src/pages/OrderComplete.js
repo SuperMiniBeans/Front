@@ -38,6 +38,7 @@ const OrderCompleteWrap = styled.div`
   h2 {
     text-align: center;
     margin-bottom: 40px;
+    background: pink;
   }
 `
 
