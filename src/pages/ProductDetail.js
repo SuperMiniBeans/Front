@@ -3,10 +3,9 @@ import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { sendCartItems } from "../store";
 import formatPrice from "../utils/formatPrice";
-
 import { SlBag } from "react-icons/sl"
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { IoChevronForwardSharp, IoChevronBackSharp } from "react-icons/io5";
@@ -24,6 +23,8 @@ function ProductDetail() {
   const dispatch = useDispatch();
   const { id, majorName, minorName } = useParams();
   const navigate = useNavigate();
+  const cartItems = useSelector((state) => state.cart.items);
+
 
   const [product, setProduct] = useState({
     productName: '',
@@ -216,9 +217,34 @@ function ProductDetail() {
     setTotalPrice(calAllPrice());
   }, [selectedOptions]);
 
-  
+  console.log('cartItems', cartItems);
+  console.log('selectedOptions', selectedOptions);
+  console.log(id)
+
   // 장바구니에 담기 클릭
   const handleAddToCart = () => {
+    const selectedProduct = {
+      productNumber: selectedOptions.productNumber,
+      selectedSize: selectedOptions.size,
+      selectedColor: selectedOptions.color,
+    };
+  
+    const isProductInCart = cartItems.some(item => 
+      item.productNumber === selectedProduct.productNumber && 
+      item.selectedSize === selectedProduct.selectedSize && 
+      item.selectedColor === selectedProduct.selectedColor
+    );
+  
+    if (isProductInCart) {
+      const isContinue = window.confirm('장바구니에 이미 같은 상품이 있습니다. 장바구니로 이동하시겠습니까?');
+  
+      if (isContinue) {
+        navigate('/cart');
+      }
+
+      return;
+    }
+
     dispatch(sendCartItems({
       selectedOptions: selectedOptions.map(option => ({
         userNumber: sessionStorage.getItem("userNumber"),
