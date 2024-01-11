@@ -128,7 +128,7 @@ function Admin() {
             <tbody>
               <tr>
                 <td colSpan={8}>
-                  등록된 상품이 없습니다.
+                  로딩중
                 </td>
               </tr>
             </tbody>

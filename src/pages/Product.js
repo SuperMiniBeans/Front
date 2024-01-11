@@ -80,7 +80,7 @@ function Product() {
                     />
           })
         ) : (
-          <div>데이터 없음</div>
+          <div>로딩중</div>
         )}
       </ProductListGrid>
     </Container>
