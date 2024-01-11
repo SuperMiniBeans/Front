@@ -22,21 +22,6 @@ function MyPage() {
     })
   }, []);
 
-  // const [orderList, setOrderList] = useState([]);
-  // useEffect(() => {
-
-  //   axios.post('/afterPayList', {
-  //     userNumber: sessionStorage.getItem("userNumber"),
-  //   })
-  //   .then(res => {
-  //     setOrderList(res.data);
-  //     console.log('주문내역조회',res.data);
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //   })
-  // }, []);
-
   // 사이드 탭메뉴
   const tabContent = data ? [
     {
@@ -44,7 +29,7 @@ function MyPage() {
       title: "내 정보",
       content: (
         <div id="mp_info_content" className="content">
-          <h2>내 정보</h2>
+          <h3>내 정보</h3>
           <MyInfo />
         </div>
       )
@@ -54,7 +39,7 @@ function MyPage() {
       title: "찜 목록",
       content: (
         <div id="mp_info_content" className="content">
-          <h2>찜 목록</h2>
+          <h3>찜 목록</h3>
         </div>
       )
     },
@@ -63,7 +48,7 @@ function MyPage() {
       title: "주문 내역 조회",
       content: (
         <div id="mp_info_content" className="content">
-          <h2>주문 내역 조회</h2>
+          <h3>주문 내역 조회</h3>
           <CheckOrderList />
 
           
@@ -76,10 +61,10 @@ function MyPage() {
   return(
     <Container>
         {data ? (
-          <>
-            <Hello>
-              <div className="hello">{data.userName}님, 안녕하세요!</div>
-            </Hello>
+          <MyPageWrap>
+            <div>
+              <h2>마이페이지</h2>
+            </div>
 
             <ConentBox className="tab_container">
               <FlexBox>
@@ -98,7 +83,7 @@ function MyPage() {
                 </MyPageContents> 
               </FlexBox>
             </ConentBox>
-          </>
+          </MyPageWrap>
         )
           :
           (<div>---로딩중---</div>
@@ -107,27 +92,27 @@ function MyPage() {
   )
 }
 
-const Hello = styled.div`
-  height: 200px;
-  // background-color: pink;
-
-
-  .hello {
-    padding-top: 100px;
-    font-size: 40px;
-    // background-color: yellow;
+const MyPageWrap = styled.div`
+  h2 {
+    margin-bottom: 30px;
+    text-align: center;
   }
+
+
 `
 
 const ConentBox = styled.section`
-  border-top: 1px solid #000;
-  border-bottom: 1px solid #000;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 `
 
 const SideMenu = styled.div`
-  padding: 64px 0;
   width: 180px;
-  border-right: 1px solid #000;
+  height: 600px;
+  padding-top: 20px;
+  padding-left: 20px;
+  color: #333;
+  background-color: #F9F9F9;
 
   ul {
     // background-color: yellow;
@@ -135,29 +120,31 @@ const SideMenu = styled.div`
     li {
       width: 100%;
       height: 40px;
-      padding-left: 40px;
-      font-size: 20px;
       line-height: 40px;
       cursor: pointer;
 
       &.active {
         font-weight: 600;
-        background-color: pink;
       }
 
       &:hover {
         font-weight: 600;
-        background-color: pink;
       }
     }
   }
 `
 
 const MyPageContents = styled.div`
-  padding: 64px 0 64px 40px;
+  padding: 40px;
 
   h2 {
     margin-bottom: 40px;
+  }
+
+  h3 {
+    margin-bottom: 40px;
+    font-size: 24px;
+    font-weight: 600;
   }
 `
 
