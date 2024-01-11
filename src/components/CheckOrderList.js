@@ -119,7 +119,72 @@ const MyInfoContents = styled.div`
 `
 
 const OrderListTable = styled.table`
-  background: pink;
+width: 780px;
+// background: pink;
+
+  caption {
+    font-size: 0;
+  }
+
+  // 테이블 스타일 설정
+  th,
+  td {
+    padding: 10px 0;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+
+  thead {
+    font-weight: 600;
+  }
+
+  #cart_list_quantity {
+    width: 80px;
+  }
+
+  #cart_list_pay_price {
+    width: 160px;
+  }
+
+  tbody {
+    height: 80px;
+
+    td {
+      vertical-align: middle;
+    }
+  }
+
+
+  // 썸네일 이미지 박스 스타일
+  #admin_thumb_box {
+    width: 60px;
+    height: 80px;
+    margin-right: 10px;
+  }
+
+  // 썸네일 이미지 스타일
+  #cart_thumb_img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+  }
+
+  .cart_item_info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-left: 20px;
+    text-align: left;
+
+    .cart_product_name {
+      margin-bottom: 10px;
+    }
+
+    .selected_option {
+      font-size: 14px;
+      color: #333;
+    }
+  }
 
 `
 
