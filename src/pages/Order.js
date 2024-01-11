@@ -6,35 +6,16 @@ import MyInfo from "../components/MyInfo";
 import { useDispatch } from "react-redux";
 import { useNavigate ,Link, useLocation } from "react-router-dom";
 
-// 디자인 레퍼런스 다시 찾아서 해보기( )
-
-/* 프론트에서 아임포트로 직접요청하지말고 서버(스프링)에서 해야합니다.
-
-받는 서버는 아래처럼 구현해야 합니다.
-
-1. 데이터를 받는다.
-2. 검증요청을 한다
-3. 검증요청 후 결과가 정상이면 결재요청을한다
-4. 결재후 결과값을 프론트에게 되돌려준다.
-
-프론트는 axios 모듈을 활용하여 서버에게 결재를 요청(예: http:x.x.x.x/결재요청) 하고,
-
-서버는 프론트한테 요청 받으면 위 4단계 다 하고나서 결과값을 프론트에게 되돌려주면됩니다.
-
-카카오톡, 네이버 및 구글 같은 소셜로그인, 디지털원패스와 비슷한 개념입니다!
-*/
-
-// 결제 완료 후 이동할 페이지 만들기( )
-
 
 function Order() {
   const navigate = useNavigate();
   const location = useLocation();
   const { pickedItems, totalPrice } = location.state;
-  console.log('order.js pickedItems', pickedItems);
-  console.log('totalPrice', totalPrice);
+  // console.log('order.js pickedItems', pickedItems);
+  // console.log('totalPrice', totalPrice);
   const [userInfo, setUserInfo] = useState(null);
   const cartNumbers = pickedItems.map(item => item.cartNumber);
+  // console.log('cartNumbers', cartNumbers);
 
   // 결제완료된 상품 cartNumber보내기
   const submitPayList = async () => {
@@ -44,18 +25,8 @@ function Order() {
         cartNumber: cartNumbers,
       });
       console.log('결제 완료 후 카트넘버 보내기 /afterPay res', res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+      console.log('결제 완료 후 cartNumbers', cartNumbers);
 
-  // 결제 완료된 상품은 cart에서 제거
-  const orderCompleteDelFromCart = async () => {
-    try {
-      const res = await axios.post('/deleteCart', {
-        cartNumber: cartNumbers,
-      });
-      console.log('결제 완료 후 장바구니에서 삭제 /deleteCart res', res.data);
     } catch (error) {
       console.log(error);
     }
@@ -94,9 +65,8 @@ function Order() {
     const { IMP } = window;
     IMP.init('imp28217053');
     
-    // 결제창 호출, { }안에는 결제 데이터 정의 - 이후에 vale 자리에 데이터 바인딩하기 
     IMP.request_pay({
-      pg: 'kakaopay', //{PG사코드}.{PG상점ID}
+      pg: 'kakaopay',
       pay_method: 'card',
       merchant_uid: new Date().getTime(),
       name: `${pickedItems[0].productName} 외 ${pickedItems.length - 1}개`,
@@ -109,22 +79,17 @@ function Order() {
     }, async (res) => {
       try {
         const { data } = await axios.post('/verifyIamport/' + res.imp_uid); 
-        // data: 서버에서 보내준 결과를 data라는 변수에 담는 것/ 서버 주소 뒤의 res.imp_uid는 결제 검증을 위해 요청 url에 보내는 값/ imp_uid는 아임포트 결제 후에 반환되는 response객체 내부에 있는 속성으로 아임포트에서 결제 완료 시 자동으로 생성되는 고유한 결제 ID
-        console.log('data', data);
         
         if (res.paid_amount === data.response.amount) {
           alert('주문이 완료되었습니다.');
-          // submitPayList();
-          // orderCompleteDelFromCart();
-          // navigate('/order/complete');
 
-          Promise.all([submitPayList(), orderCompleteDelFromCart()])
-            .then(() => {
-              navigate('/order/complete');
-            })
-            .catch(error => {
-              console.error('결제 완료 처리 중 오류 발생:', error);
-            });
+          // 순차적으로 서버에 요청을 보냄
+          try {
+            await submitPayList();
+            navigate('/order/complete');
+          } catch (error) {
+            console.error('결제 완료 처리 중 오류 발생:', error);
+          }
         } else {
           alert('결제가 취소되었습니다.');
           console.log('data', data);
@@ -249,7 +214,6 @@ const OrderWrap = styled.div`
   h2 {
     margin-bottom: 30px;
     text-align: center;
-
   }
 
   section {
