@@ -14,17 +14,19 @@ function Carousel({ imgArray, imgWidth, imgHeight }) {
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setImageIndex((prevIndex) => prevIndex + 1 === imgArray.length ? 0 : prevIndex + 1);
-    }, 3000); // 1.5초마다 이미지 변경
+    }, 3000); // 3초마다 이미지 변경
 
     return () => {
-      clearInterval(intervalRef.current); // 컴포넌트 unmount 시, setInterval을 정리합니다.
+      clearInterval(intervalRef.current); // 컴포넌트 unmount 시, setInterval을 정리
     };
   }, [imgArray]);
 
+  // 배너에 마우스 올라가면 시간 멈추기
   const handleMouseEnter = () => {
     clearInterval(intervalRef.current);
   }
 
+  // 배너에 마우스 내려가면 시간 다시 흐르기
   const handleMouseLeave = () => {
     intervalRef.current = setInterval(() => {
       setImageIndex(prevIndex => prevIndex + 1 === imgArray.length ? 0 : prevIndex + 1)
@@ -82,6 +84,7 @@ const CarouselButton = styled.button`
   background: rgba(255, 255, 255, 0.3);
   border: none;
   cursor: pointer;
+  transition: all 0.3s ease;
 
   svg {
     width: 20px;
@@ -95,6 +98,10 @@ const CarouselButton = styled.button`
 
   &:last-child {
     right: 0;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.6);
   }
 `;
 
