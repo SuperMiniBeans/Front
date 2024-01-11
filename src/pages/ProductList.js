@@ -43,7 +43,7 @@ function ProductList({ products }) {
         </FlexBoxCol>
       </div>
       : 
-      <div>데이터 로딩즁</div>
+      <div>로딩중</div>
       }
     </>
   )
