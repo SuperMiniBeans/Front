@@ -132,7 +132,7 @@ const HeaderWrap = styled.header`
   min-width: 1200px;
   height: 100px;
   padding: 0 10px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #eee;
   z-index: 10;
 `
 
