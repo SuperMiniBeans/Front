@@ -143,7 +143,7 @@ function App() {
 }
 
 const MainContentWrap = styled.div`
-  padding: 40px 0 200px;
+  padding: 100px 0 160px;
 `
 
 export default App;
