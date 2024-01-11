@@ -172,16 +172,17 @@ function Cart() {
   // 주문 할 상품의 총 금액
   console.log('cartItems', cartItems);
   useEffect(() => {
-    // 선택한 상품의 총 금액을 계산합니다.
-    const sumPrice = checkedProducts.reduce((sum, cart_num) => {
-      const product = cartItems.find(product => product.cartNumber === cart_num);
-      const finalPrice = product.discountRate > 0 ? product.discountPrice : product.productPrice;
-      return sum + finalPrice * product.totalCount
-    }, 0);
-    setTotal(sumPrice);
-  }, [cartItems ,checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산합니다.
+    // 선택한 상품의 총 금액을 계산
+    if(cartItems.length > 0) {
+      const sumPrice = checkedProducts.reduce((sum, cart_num) => {
+        const product = cartItems.find(product => product.cartNumber === cart_num);
+        const finalPrice = product.discountRate > 0 ? product.discountPrice : product.productPrice;
+        return sum + finalPrice * product.totalCount
+      }, 0);
+      setTotal(sumPrice);
+    }
+  }, [cartItems, checkedProducts]);  // 선택한 상품이 변경될 때마다 총 금액을 다시 계산
   
-
   return(
     <CartWrap>
       <Container>
@@ -396,8 +397,6 @@ const ProductSection = styled.section`
   th,
   td {
     text-align: center;
-    // border: none;
-    // border: 1px solid #000;
   }
 
   th,
@@ -433,7 +432,6 @@ const ProductSection = styled.section`
   #cart_list_pay_price,
   #cart_list_price {
     width: 160px;
-    // background-color: red;
   }
 
   tbody {
@@ -458,7 +456,6 @@ const ProductSection = styled.section`
     height: 80px;
     object-fit: cover;
   }
-
 
   .cart_item_info {
     display: flex;
@@ -508,11 +505,9 @@ const ProductSection = styled.section`
       border: 1px solid #333;
     }
   }
-
 `
 
 const PriceWrap = styled.div`
-  // position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -558,21 +553,17 @@ const TotalPriceSection = styled.section`
   margin: 100px 0;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  background-color: #f9f9f9;
-  // background-color: #eee;
-
+  background-color: #F9F9F9;
 
   .total_box {
     display: flex;
     font-size: 32px;
     text-align: center;
-    // background: blue;
   }
 
   .total_box_title {
     font-size: 20px;
     line-height: 32px;
-    // height: 40px;
   }
 
   .total_price {
