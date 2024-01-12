@@ -7,23 +7,23 @@ import CheckOrderList from "../components/CheckOrderList";
 
 
 function MyPage() {
-   // 유저 정보 중 수정 가능한 정보는 input태그에 넣고 disalbled 설정, 수정 버튼 누르면 활성화하기
+  // 유저 정보 중 수정 가능한 정보는 input태그에 넣고 disalbled 설정, 수정 버튼 누르면 활성화하기
 
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    axios.post('/myPage', {
-      userNumber: sessionStorage.getItem("userNumber"),
-    })
-    .then(response => {
-      setData(response.data);
-    })
-    .catch(error => {
-      console.log(error);
-    })
-  }, []);
+  // const [data, setData] = useState(null);
+  // useEffect(() => {
+  //   axios.post('/myPage', {
+  //     userNumber: sessionStorage.getItem("userNumber"),
+  //   })
+  //   .then(response => {
+  //     setData(response.data);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   })
+  // }, []);
 
   // 사이드 탭메뉴
-  const tabContent = data ? [
+  const tabContent =  [
     {
       id: 0,
       title: "내 정보",
@@ -55,12 +55,12 @@ function MyPage() {
         </div>
       )     
     }
-  ] : [];
+  ];
   const [index, setIndex] = useState(0);
 
   return(
     <Container>
-        {data ? (
+        {/* ( */}
           <MyPageWrap>
             <div>
               <h2>마이페이지</h2>
@@ -71,23 +71,30 @@ function MyPage() {
                 <SideMenu className="side_menu">
                   <ul>
                     {tabContent.map(item => (
-                      <li key={item.id} className={index === item.id ? 'active' : null} onClick={() => setIndex(item.id)}>{item.title}</li>
+                      <li 
+                        key={item.id} 
+                        className={index === item.id ? 'active' : null} 
+                        onClick={() => setIndex(item.id)}
+                      >
+                        {item.title}
+                      </li>
                     ))}
                   </ul>
                 </SideMenu>
 
                 <MyPageContents>
-                  {tabContent.filter(item => index === item.id).map(item => (
+                  {/* {tabContent.filter(item => index === item.id).map(item => (
                     <div key={index}>{item.content}</div>
-                  ))}
+                  ))} */}
+                  {tabContent[index].content}
                 </MyPageContents> 
               </FlexBox>
             </ConentBox>
           </MyPageWrap>
-        )
+        {/* )
           :
-          (<div>---로딩중---</div>
-        )}
+          (<div>로딩중</div>
+        ) */}
     </Container>
   )
 }
