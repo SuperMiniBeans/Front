@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Container, FlexBox, FlexBoxSB } from "../styles/Layout";
+import { Container, FlexBox } from "../styles/Layout";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -64,12 +64,11 @@ function ProductDetail() {
       title: "배송 안내", 
       content: (
         <p className="shipping_guide">
-          {productExplanation2}<br />
-          배송 방법 : 택배
-          배송 지역 : 전국지역
-          배송 기간 : 3일 ~ 7일
-          배송 안내 :
-          고객님께서 주문하신 상품은 입금 확인후 배송해 드립니다. 다만, 상품종류에 따라서 상품의 배송이 다소 지연될 수 있습니다.
+          {productExplanation2} <br />
+          배송 방법 : 택배 <br />
+          배송 지역 : 전국지역 <br />
+          배송 기간 : 3일 ~ 7일 <br />
+          배송 안내 : 고객님께서 주문하신 상품은 입금 확인후 배송해 드립니다. 다만, 상품종류에 따라서 상품의 배송이 다소 지연될 수 있습니다.
         </p>
       )
     },
@@ -90,10 +89,6 @@ function ProductDetail() {
         setImgData(response.data);
         setProduct(response.data[0]);
         sessionStorage.setItem("productNumber", response.data[0].productNumber);
-        // setMajorCategory(response.data[0].categoryMajorCode);
-        // setMinorCategory(response.data[0].categoryMinorCode);
-        console.log('response.data', response.data);
-
       }
       catch(error) {
         console.log(error);
@@ -173,10 +168,15 @@ function ProductDetail() {
     }
   };
 
-  useEffect(() => {
-    handleAddOption();
-  }, [selectedColor]);
+  // useEffect(() => {
+  //   handleAddOption();
+  // }, [selectedColor]);
 
+  useEffect(() => {
+    if (selectedSize && selectedColor) {
+      handleAddOption();
+    }
+  }, [selectedColor, selectedSize]);
   
   const minus = (optionIndex) => {
     const updatedOptions = [...selectedOptions];
@@ -213,6 +213,7 @@ function ProductDetail() {
   }
 
   const [totalPrice, setTotalPrice] = useState(0);
+
   useEffect(() => {
     setTotalPrice(calAllPrice());
   }, [selectedOptions]);
@@ -234,6 +235,11 @@ function ProductDetail() {
       item.selectedSize === selectedProduct.selectedSize && 
       item.selectedColor === selectedProduct.selectedColor
     );
+
+    if (selectedOptions.length === 0) {
+      alert('상품을 선택해주세요.');
+      return;
+    }
   
     if (isProductInCart) {
       const isContinue = window.confirm('장바구니에 이미 같은 상품이 있습니다. 장바구니로 이동하시겠습니까?');
@@ -241,7 +247,6 @@ function ProductDetail() {
       if (isContinue) {
         navigate('/cart');
       }
-
       return;
     }
 
@@ -257,33 +262,44 @@ function ProductDetail() {
     }));
   };
 
-  // 개별 상품 주문하기 
-  const [checkedProducts, setCheckedProducts] = useState([]);
-
-  const handelOrderEach = async (id) => {
-    const clickOrderEach = [...checkedProducts, id];
-    setCheckedProducts(clickOrderEach);
-
+  // 바로구매
+  const handelOrderEach = async () => {
     try {
-      const pickCartRes = await axios.post('/pickCart', {
-        cartNumber: clickOrderEach,
-      });
-  
-      const allCartPriceRes = await axios.post('/allCartPrice', {
-        cartNumber: clickOrderEach,
-      });
-      console.log('allCartPrice', allCartPriceRes.data);
-  
-      navigate('/order', {
-        state: { 
-          pickedItems: pickCartRes.data, 
-          totalPrice: allCartPriceRes.data.discountTotalPrice,
+      const immediatePaymentRes = selectedOptions.map(option => 
+        axios.post('/addCart', {
+          userNumber: sessionStorage.getItem("userNumber"),
+          productNumber: id,
+          selectedSize: option.size,
+          selectedColor: option.color,
+          cartCount: option.quantity,
+          totalPrice: totalPrice,
+        })
+      );
+
+      const immediatePaymentResponses = await Promise.all(immediatePaymentRes);
+
+      for (let i = 0; i < immediatePaymentResponses.length; i++) {
+        const response = immediatePaymentResponses[i];
+        
+        if (response.data === 1) {
+          try {
+            const newResponse = await axios.post('/getCartNumberIp', { 
+              orderCondition: 3
+            });
+
+            console.log('cartNum', newResponse);
+            
+            // const cartNum = newResponse.data;
+            // const pickCartResponse = await axios.post('/pickCart', {  cartNumber:  [cartNum] });
+            // console.log(`pickCart response from request ${i}:`, pickCartResponse.data);
+          } catch (error) {
+            console.error(error);
+          }
         }
-      });
+      }
     } catch (error) {
       console.log(error);
     }
-    console.log('checkedProducts', checkedProducts)
   }
 
 
@@ -322,12 +338,6 @@ function ProductDetail() {
   const [mainImg, setMainImg] = useState(""); // mainImg의 초기값을 빈 문자열로 설정합니다.
   const [imageIndex, setImageIndex] = useState(0);
 
-  useEffect(() => {
-    if (imgPathList.length > 0) { // imgPathList에 이미지가 있을 때만 mainImg를 업데이트합니다.
-      setMainImg(imgPathList[imageIndex]);
-    }
-  }, [imgPathList, imageIndex]); // imgPathList의 상태가 변경될 때마다 이 효과를 실행합니다.
-
   const handlePrevClick = () => {
     setImageIndex(prevIndex => prevIndex - 1 < 0 ? imgPathList.length - 1 : prevIndex - 1);
   };
@@ -335,6 +345,13 @@ function ProductDetail() {
   const handleNextClick = () => {
     setImageIndex(prevIndex => prevIndex + 1 === imgPathList.length ? 0 : prevIndex + 1);
   };
+
+  useEffect(() => {
+    if (imgPathList.length > 0) { // imgPathList에 이미지가 있을 때만 mainImg를 업데이트합니다.
+      setMainImg(imgPathList[imageIndex]);
+    }
+  }, [imgPathList, imageIndex]); // imgPathList의 상태가 변경될 때마다 이 효과를 실행합니다.
+
 
 
   return(
@@ -455,7 +472,7 @@ function ProductDetail() {
               </SelectBox> {/* select_box */}
 
               <BuyBtnWrap className="btn_wrap">
-                <button id="buy_btn" onClick={() => handelOrderEach()}>
+                <button id="buy_btn" onClick={handelOrderEach}>
                   바로구매
                 </button>
                 <button id="add_cart_btn" onClick={handleAddToCart}>
