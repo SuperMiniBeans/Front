@@ -145,7 +145,7 @@ export const sendCartItems = createAsyncThunk(
       productSizes,
       productColors
     }));
-    return addOptionData;
+    return addOptionData; // productSizes, productColors는 장바구니에서 옵션 수정하기 위해 필요. 그래서 서버에서 받은 배열 데이터에 값을 추가하고 리턴.
   }
 );
 

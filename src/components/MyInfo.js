@@ -63,7 +63,7 @@ function MyInfo() {
         )
         :
         (
-          <div>---로딩중---</div>
+          <div>로딩중</div>
         )
       }
     </>
