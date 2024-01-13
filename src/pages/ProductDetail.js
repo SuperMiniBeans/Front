@@ -265,8 +265,9 @@ function ProductDetail() {
   // 바로구매
   const handelOrderEach = async () => {
     try {
+      // 사용자가 선택한 상품 데이터를 서버로 전송
       const immediatePaymentRes = selectedOptions.map(option => 
-        axios.post('/addCart', {
+        axios.post('/immediatePayment', {
           userNumber: sessionStorage.getItem("userNumber"),
           productNumber: id,
           selectedSize: option.size,
@@ -274,7 +275,7 @@ function ProductDetail() {
           cartCount: option.quantity,
           totalPrice: totalPrice,
         })
-      );
+      ); 
 
       const immediatePaymentResponses = await Promise.all(immediatePaymentRes);
 
@@ -283,15 +284,28 @@ function ProductDetail() {
         
         if (response.data === 1) {
           try {
+            // 서버로부터 장바구니 번호 받아오기
             const newResponse = await axios.post('/getCartNumberIp', { 
               orderCondition: 3
+            }); 
+            const cartNum = newResponse.data;
+
+            // 받은 장바구니 번호 넘기기
+            const pickCartRes = await axios.post('/pickCart', {  
+              cartNumber: [cartNum] 
+            });
+            // 상품 가격 받기(결제할 때 비교용)
+            const allCartPriceRes = await axios.post('/allCartPrice', {
+              cartNumber: [cartNum]
             });
 
-            console.log('cartNum', newResponse);
-            
-            // const cartNum = newResponse.data;
-            // const pickCartResponse = await axios.post('/pickCart', {  cartNumber:  [cartNum] });
-            // console.log(`pickCart response from request ${i}:`, pickCartResponse.data);
+            // 결제 페이지로 이동
+            navigate('/order', {
+              state: { 
+                pickedItems: pickCartRes.data, 
+                totalPrice: allCartPriceRes.data.discountTotalPrice,
+              }
+            });
           } catch (error) {
             console.error(error);
           }
