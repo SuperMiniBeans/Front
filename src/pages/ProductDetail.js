@@ -292,14 +292,14 @@ function ProductDetail() {
 
             // 받은 장바구니 번호 넘기기
             const pickCartRes = await axios.post('/pickCart', {  
-              cartNumber: [cartNum] 
+              cartNumber: cartNum 
             });
             // 상품 가격 받기(결제할 때 비교용)
             const allCartPriceRes = await axios.post('/allCartPrice', {
-              cartNumber: [cartNum]
+              cartNumber: cartNum
             });
 
-            // 결제 페이지로 이동
+            // 결제 페이지로 이동0
             navigate('/order', {
               state: { 
                 pickedItems: pickCartRes.data, 
