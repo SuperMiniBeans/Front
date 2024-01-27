@@ -3,6 +3,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { Container, FlexBox } from "../styles/Layout";
 import MyInfo from "../components/MyInfo";
+import MyInfoEdit from "../components/MyInfoEdit";
 import CheckOrderList from "../components/CheckOrderList";
 
 
@@ -22,6 +23,12 @@ function MyPage() {
   //   })
   // }, []);
 
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleMyInfoEdit = () => {
+    setIsEditing(!isEditing);
+  };
+
   // 사이드 탭메뉴
   const tabContent =  [
     {
@@ -30,7 +37,13 @@ function MyPage() {
       content: (
         <div id="mp_info_content" className="content">
           <h3>내 정보</h3>
-          <MyInfo />
+          {/* <MyInfo /> */}
+          {isEditing ? <MyInfoEdit /> : <MyInfo />}
+          <div>
+            <button onClick={handleMyInfoEdit}>
+              {isEditing ? '취소' : '수정'}
+            </button>
+          </div>
         </div>
       )
     },
