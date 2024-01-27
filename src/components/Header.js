@@ -32,6 +32,7 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
 
   return(
     <HeaderWrap>
+      <Container>
         <HeaderWrapFlex>
           <H1Wrap>
             <h1><Link to="/">LYS</Link></h1>
@@ -84,28 +85,27 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
             </nav>
 
             <UserWrap>
-              {/* <SearchWrap>
-                <div><input type="search"></input></div>
-                <div><button type="submit"><GoSearch /></button></div>
-              </SearchWrap> */}
-
               {
                 isLogin ? 
                   <>
                     <LogoutLi onClick={onLogout}>로그아웃</LogoutLi>
-                    <MyPageLi><Link to="/myPage">마이페이지</Link></MyPageLi>
+                    <MyPageLi>
+                      <Link to="/myPage">마이페이지</Link>
+                    </MyPageLi>
                   </>
                   : 
-                  <LoginLi><Link to="/login">로그인</Link></LoginLi>
+                  <LoginLi>
+                    <Link to="/login">로그인</Link>
+                  </LoginLi>
               }
 
               <ShoppingBag>
                 <Link to="/cart">
                   {
                     isLogin && cartItems.length > 0 ?
-                      <span id="car_count">{cartCount}</span>
+                    <span id="car_count">{cartCount}</span>
                     :
-                      <></>
+                    <></>
                   }
                   
                   <SlBag />
@@ -120,7 +120,7 @@ function Header({ isLogin, setIsLogin, isAdmin }) {
           </GnbUserWrap>
 
         </HeaderWrapFlex>
-
+      </Container>
     </HeaderWrap>
   ) 
 }
@@ -187,7 +187,7 @@ const MouseOver = styled.li`
     border: 1px solid #333;
   }
 `
-/* lnb 디자인.. 최선인가? */
+
 const Lnb = styled.ul `
   display: none;
 `
@@ -217,7 +217,7 @@ const UserWrap = styled.ul`
 const SearchWrap = styled.li`
   position: relative;
   display: flex;
-  margin: 0 20px ; 
+  margin-left: 10px;
   align-items: center;
 
   input {
@@ -266,17 +266,15 @@ const LoginLi = styled.li`
 `
 
 const LogoutLi = styled.li`
-  width: 80px;
   margin-left: 40px;
+  padding: 0 10px;
   font-size: 12px;
   text-align: center;
   cursor: pointer;
-  // background: pink;
 `
 
 const MyPageLi = styled.li`
-  width: 80px;
-  // margin: 0 20px;
+  padding: 0 10px;
   font-size: 12px;
   text-align: center;
   cursor: pointer;
@@ -285,6 +283,7 @@ const MyPageLi = styled.li`
 /* 장바구니 아이콘 */
 const ShoppingBag = styled.li`
   position: relative;
+  padding: 0 10px;
 
   #car_count {
     position:absolute;
